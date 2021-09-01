@@ -5,6 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/.pytest_cache" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/.mypy_cache" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (map-stp)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
