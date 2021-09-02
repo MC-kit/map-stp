@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from map_stp import __version__
+from mapstp import __version__
 
 
 def find_version_from_project_toml():

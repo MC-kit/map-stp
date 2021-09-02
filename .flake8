@@ -1,0 +1,25 @@
+[flake8]
+#select = ANN,B,B9,BLK,C,D,DAR,E,F,I,S,W
+select = C,E,F,W
+max-complexity = 10
+max-line-length = 88
+ignore =
+    # E203: Whitespace before ‘:'
+    E203,
+    # E501: Line too long
+    E501,
+    # W503: Line break before binary operator: for compatibility with black settings
+    W503
+exclude =
+    .git,
+    __pycache__,
+    docs/source/conf.py,
+    adhoc,
+    wrk,
+    build,
+    dist,
+per-file-ignores =
+    noxfile.py:ANN
+#    tests/*:S101,ANN
+
+# vim: set ts=4 sw=0 tw=79 ss=0 ft=ini et ai :

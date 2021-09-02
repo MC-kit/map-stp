@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "map-stp"
+name = "mapstp"
 version = "0.1.0"
 description = "Creates map from 'STP tree path to component' => 'Numbered list of cells to be produced by SuperMC for the component'"
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
@@ -23,12 +23,13 @@ classifiers = [
 python = "3.9"
 tomli = "^1.2.1"
 click = "^8.0.1"
+click-loguru = "^1.3.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
 pytest-cache = "^1.0"
 pytest-cov = "^2.12.1"
-coverage = "^5.5"
+coverage = { version = "^5.5", extras = ["toml"] }
 nox = "^2021.6.12"
 Pygments = "^2.10.0"
 black = "^21.8b0"
@@ -70,8 +71,8 @@ multi_line_output = 3
 line_length = 88
 include_trailing_comma = true
 lines_between_types = 1
-skip = [ "setup-generated.py" ]
-skip_glob = [ "*-example.py" ]
+skip = ["setup-generated.py"]
+skip_glob = ["*-example.py"]
 
 
 # NOTE: you have to use single-quoted strings in TOML for regular expressions.
@@ -90,22 +91,88 @@ exclude = '''
 (
     \.eggs
   | \.git
-  | \.hg
   | \.mypy_cache
-  | \.tox
+  | \.pytest_cache
   | \.nox
   | \.venv
+  | \.idea
   | _build
   | build
   | build_configs
   | dist
-  | 3rd-party
   | data
   | htmlcov
   | .egg-info
-  | _tab.py$
   | notebooks
-  | tutorial
   | wrk
 )
 '''
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+norecursedirs = ".* build dist *.egg-info data"
+python_functions = "test_*  profile_*"
+addopts = "-ra -q --tb=short --doctest-modules --strict-markers --ignore setup.py --failed-first"
+# coverage doesn't allow to work with PyCharm debugger, run run-coverage script to update coverage
+doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES"
+testpaths = ["tests"]
+markers = [
+    "slow: too slow tests"
+]
+# xfail tests that pass should fail the test suite
+xfail_strict = true
+
+
+[tool.coverage]
+
+[tool.coverage.run]
+source = ["map_stp"]
+# omit =    *_tab.py
+branch = true
+
+[tool.coverage.report]
+
+# Regexes for lines to exclude from consideration
+exclude_lines = [
+    # Have to re-enable the standard pragma
+    "pragma: no cover",
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self.debug",
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+    # Don't complain if non-runnable code isn't run:
+    "if 0:",
+    "if __name__ == .__main__.:",
+]
+ignore_errors = true
+sort = "Cover"
+
+
+# MyPy config
+# See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
+[tool.mypy]
+python_version = 3.9
+follow_imports = "skip"
+warn_return_any = true
+warn_unused_configs = true
+show_error_codes = true
+error_summary = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+# Needed because of bug in MyPy
+disallow_subclassing_any = false
+
+# mypy_path = mckit
+files = "src/map_stp/**/*.py"
+
+
+[[tool.mypy.overrides]]
+module = [
+    "nox.*",
+]
+ignore_missing_imports = true
+
+

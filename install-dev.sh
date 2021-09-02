@@ -1,10 +1,10 @@
 #!/usr/bash
 
+
 deps=(
   Pygments
   black
   codecov
-  coverage
   darglint
   flake8
   flake8-annotations
@@ -29,4 +29,7 @@ deps=(
   yappi
 )
 
-poetry add --dev ${deps[@]}
+poetry add --dev "${deps[@]}"
+poetry add --dev coverage --extras toml
+
+poetry update
