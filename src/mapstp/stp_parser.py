@@ -1,10 +1,9 @@
-from typing import Dict, Iterable, List, TextIO
+from typing import Dict, Iterable, List, TextIO, Tuple
 
 import re
 
 from collections import defaultdict
 from dataclasses import dataclass, field
-from functools import singledispatch
 from pathlib import Path
 
 _SELECT_PATTERN = re.compile(
@@ -106,20 +105,7 @@ class Body(Numbered):
         return cls(number, name)
 
 
-# _NUMBERED_PATTERN = re.compile(r"^#(?P<digits>\d+)=")
-_PRODUCT_PATTERN = re.compile(
-    r"^#(?P<digits>\d+)=PRODUCT_DEFINITION\('(?P<name>[^']+)',.*"
-)
-_LINK_PATTERN = re.compile(
-    r"^#(?P<digits>\d+)=NEXT_ASSEMBLY_USAGE_OCCURRENCE\('(?P<name>[^']+)',.*#(?P<src>\d+),#(?P<dst>\d+),\$\);"
-)
-_BODY_PATTERN = re.compile(
-    r"^#(?P<digits>\d+)=MANIFOLD_SOLID_BREP\('(?P<name>[^']+)',.*\);"
-)
-
-
-@singledispatch
-def parse(inp: TextIO):
+def parse(inp: TextIO) -> Tuple[List[Product], Dict[int, List[int]]]:
     products = []  # this list maintains sequence of products and bodies in the products
     graph = defaultdict(list)
     for line in inp:
@@ -142,12 +128,18 @@ def parse(inp: TextIO):
     return products, graph
 
 
-def make_index(products: Iterable[Numbered]) -> Dict[int, Numbered]:
+def parse_path(inp: Path):
+    with inp.open(encoding="utf8") as _inp:
+        return parse(_inp)
+
+
+def make_index(products: Iterable[Product]) -> Dict[int, Product]:
     return dict((p.number, p) for p in products)
 
 
 def invert_graph(graph: Dict[int, List[int]]) -> Dict[int, int]:
     inverted_graph = dict()
+
     for k, v in graph.items():
         for i in v:
             assert i not in inverted_graph, "The parents in a tree should be unique"
@@ -159,7 +151,6 @@ def create_bodies_paths(products, graph):
     inverted_graph = invert_graph(graph)
     products_index = make_index(products)
     bodies_paths = []
-    body_id = 0
     for p in products:
         inverted_path = [p.name]
         pp: int = inverted_graph.get(p.number)
@@ -168,11 +159,5 @@ def create_bodies_paths(products, graph):
             pp = inverted_graph.get(pp)
         path = inverted_path[::-1]
         for b in p.bodies:
-            bodies_paths.append(path + [b.name + f"{++body_id}"])
+            bodies_paths.append(path + [b.name])
     return bodies_paths
-
-
-@parse.register
-def _(inp: Path):
-    with inp.open(encoding="utf8") as _inp:
-        return parse(_inp)

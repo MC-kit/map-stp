@@ -1,6 +1,6 @@
 import pytest
 
-from mapstp.stp_parser import Body, Link, Product, create_bodies_paths, parse
+from mapstp.stp_parser import Body, Link, Product, create_bodies_paths, parse_path
 
 # def test_numbered():
 #     actual = Numbered(1)
@@ -65,7 +65,7 @@ def test_body_from_string(text, expected):
 
 
 def test_stp_parser1(data):
-    products, graph = parse(data / "test1.stp")  # noqa
+    products, graph = parse_path(data / "test1.stp")
     assert len(products) == 3
     components = list(map(lambda x: x.name, products))
     assert components == ["test1", "Component1", "Component2"]
@@ -75,7 +75,7 @@ def test_stp_parser1(data):
 
 
 def test_stp_parser2(data):
-    products, graph = parse(data / "test2.stp")  # noqa
+    products, graph = parse_path(data / "test2.stp")  # noqa
     assert len(products) == 4
     components = list(map(lambda x: x.name, products))
     assert components == ["Component1", "Component11", "test2", "Component2"]
@@ -86,7 +86,7 @@ def test_stp_parser2(data):
 
 
 def test_create_bodies_paths(data):
-    products, graph = parse(data / "test1.stp")  # noqa
+    products, graph = parse_path(data / "test1.stp")  # noqa
     bodies_paths = create_bodies_paths(products, graph)
     assert len(bodies_paths) == 3
     assert bodies_paths[0][-1] == "Body1"
