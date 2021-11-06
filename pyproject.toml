@@ -8,6 +8,9 @@ repository = "https://github.com/MC-kit/map-stp"
 license = "MIT"
 keywords = ["STP", "MCNP", "SuperMC"]
 readme = "README.md"
+packages = [
+    { include = "mapstp", from = "src" },
+]
 # Select from PyPI classifiers: https://pypi.org/classifiers/
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -126,7 +129,7 @@ xfail_strict = true
 [tool.coverage]
 
 [tool.coverage.run]
-source = ["map_stp"]
+source = ["mapstp"]
 # omit =    *_tab.py
 branch = true
 
@@ -166,7 +169,7 @@ warn_unused_ignores = true
 disallow_subclassing_any = false
 
 # mypy_path = mckit
-files = "src/map_stp/**/*.py"
+files = "src/mapstp/**/*.py"
 
 
 [[tool.mypy.overrides]]

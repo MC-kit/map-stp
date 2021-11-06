@@ -2,13 +2,17 @@
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/.pytest_cache" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/.mypy_cache" />
       <excludeFolder url="file://$MODULE_DIR$/htmlcov" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.9 (map-stp)" jdkType="Python SDK" />
+    <content url="file://$MODULE_DIR$/../mckit">
+      <sourceFolder url="file://$MODULE_DIR$/../mckit" isTestSource="false" />
+    </content>
+    <orderEntry type="jdk" jdkName="Python 3.9 (mckit)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PackageRequirementsSettings">

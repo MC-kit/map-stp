@@ -15,7 +15,7 @@ def test_help_command(runner):
     result = runner.invoke(mapstp, args=["--help"], catch_exceptions=False)
     assert result.exit_code == 0, result.output
     assert "Usage: " in result.output
-    expected = meta.__summary__.replace("\n", "")
+    expected = meta.__summary__.replace("\n", "")[:-40]
     actual = result.output.replace("\n", "")
     assert expected in actual
 
