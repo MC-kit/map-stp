@@ -65,24 +65,23 @@ def test_body_from_string(text, expected):
 
 
 def test_stp_parser1(data):
-    products, graph = parse_path(data / "test1.stp")
+    products, links = parse_path(data / "test1.stp")
     assert len(products) == 3
     components = list(map(lambda x: x.name, products))
     assert components == ["test1", "Component1", "Component2"]
     numbers = list(map(lambda x: x.number, products))
     assert numbers == [69, 80, 88]
-    assert graph[69] == [80, 88]
+    assert links == [(69, 80), (69, 88)]
 
 
 def test_stp_parser2(data):
-    products, graph = parse_path(data / "test2.stp")  # noqa
+    products, links = parse_path(data / "test2.stp")  # noqa
     assert len(products) == 4
     components = list(map(lambda x: x.name, products))
     assert components == ["Component1", "Component11", "test2", "Component2"]
     numbers = list(map(lambda x: x.number, products))
     assert numbers == [81, 91, 94, 110]
-    assert graph[94] == [81, 110]
-    assert graph[81] == [91]
+    assert links == [(81, 91), (94, 81), (94, 110)]
 
 
 def test_create_bodies_paths(data):

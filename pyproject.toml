@@ -22,6 +22,9 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
 ]
 
+[tool.poetry.scripts]
+mapstp = "mapstp.cli.runner:mapstp"
+
 [tool.poetry.dependencies]
 python = "3.9"
 tomli = "^1.2.1"
