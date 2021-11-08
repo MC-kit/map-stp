@@ -12,7 +12,7 @@
     <content url="file://$MODULE_DIR$/../mckit">
       <sourceFolder url="file://$MODULE_DIR$/../mckit" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.9 (mckit)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (mapstp)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PackageRequirementsSettings">

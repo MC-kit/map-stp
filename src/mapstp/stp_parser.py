@@ -239,6 +239,10 @@ def collect_parents(number: int, nodes_index: Dict[int, Node]):
     return parents
 
 
+# TODO dvp: add verificattion of STP file protocol - is to be 'STEP AP214'
+# TODO dvp: refactor - create separate modules for Tree/Node and Product/Index management
+
+
 def create_bodies_paths(products, links):
     root, nodes_index = build_tree(links)
     products_index = make_index(products)
