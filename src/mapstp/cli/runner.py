@@ -1,8 +1,16 @@
+from typing import Iterable, List
+
+import sys
+
 from dataclasses import dataclass
 from pathlib import Path
 
 import click
 import mapstp.meta as meta
+import pandas as pd
+
+from mapstp.merge import merge_paths
+from mapstp.stp_parser import create_bodies_paths, parse_path
 
 # from click_loguru import ClickLoguru
 
@@ -32,7 +40,13 @@ VERSION = meta.__version__
 #     log_dir_parent=".logs",
 #     timer_log_level="info",
 # )
-# context = {}
+
+# TODO dvp: add customized configuring from a configuration toml-file.
+
+
+@dataclass
+class Config:
+    override: bool = False
 
 
 # @click_loguru.logging_options
@@ -41,11 +55,46 @@ VERSION = meta.__version__
 # @click_loguru.init_logger()
 # @click_loguru.stash_subcommand()
 @click.option("--override/--no-override", default=False)
+@click.option(
+    "--output",
+    "-o",
+    metavar="<output>",
+    type=click.Path(exists=False),
+    required=False,
+    help="File to write the MCNP with marked cells (default: stdout)",
+)
+@click.option(
+    "--excel",
+    "-e",
+    metavar="<excel-file>",
+    type=click.Path(),
+    required=False,
+    help="Excel file to write the component paths",
+)
+@click.option(
+    "--separator",
+    metavar="<separator>",
+    type=click.STRING,
+    default="/",
+    help="String to separate components in the STP path",
+)
+@click.option(
+    "--start-cell-number",
+    metavar="<number>",
+    type=click.INT,
+    default=1,
+    help="Number to start cell numbering in the Excel file",
+)
+@click.argument("stp", metavar="<stp-file>", type=click.Path(exists=True))
+@click.argument("mcnp", metavar="<mcnp-file>", type=click.Path(exists=True))
 @click.version_option(VERSION, prog_name=NAME)
 # @logger.catch(reraise=True)
 @click.pass_context
 # ctx, verbose: bool, quiet: bool, logfile: bool, profile_mem: bool, override: bool
-def mapstp(ctx, override: bool) -> None:
+def mapstp(
+    ctx, override: bool, output, excel, separator, start_cell_number, stp, mcnp
+) -> None:
+
     # if quiet:
     #     logger.level("WARNING")
     # if verbose:
@@ -54,14 +103,43 @@ def mapstp(ctx, override: bool) -> None:
     # logger.debug("Working dir {}", Path(".").absolute())
 
     #
-    # TODO dvp: add customized logger configuring from a configuration toml-file.
-    # ensure that ctx.obj exists and is a dict (in case `cli()` is called
-    # by means other than the `if` block below
-    # obj = ctx.ensure_object(dict)
+    cfg = ctx.ensure_object(Config)
     # obj["DEBUG"] = debug
-    # context["OVERRIDE"] = override
-    assert ctx
-    pass
+    cfg.override = override
+    _stp = Path(stp)
+    _mcnp = Path(mcnp)
+    products, graph, paths = create_stp_comments(output, _stp, _mcnp, separator)
+    if excel:
+        _excel = Path(excel)
+        create_excel(_excel, paths, separator, start_cell_number)
+
+
+def create_stp_comments(output, stp, mcnp, separator):
+    if output:
+        _output = Path(output).open(mode="w", encoding="cp1251")
+    else:
+        _output = sys.stdout
+    try:
+        products, graph = parse_path(stp)
+        paths = create_bodies_paths(products, graph)
+        merge_paths(_output, paths, mcnp, separator)
+        return products, graph, paths
+    finally:
+        if _output is not sys.stdout:
+            _output.close()
+
+
+def create_excel(
+    excel: Path, paths: List[List[str]], separator, start_cell_number
+) -> None:
+    df = pd.DataFrame(
+        list(map(lambda x: separator.join(x), paths)),
+        index=list(range(start_cell_number, len(paths) + start_cell_number)),
+        columns=["STP path"],
+    )
+    df.index.name = "cell"
+    with pd.ExcelWriter(excel) as xlsx:
+        df.to_excel(xlsx, sheet_name="Cells")
 
 
 if __name__ == "__main__":

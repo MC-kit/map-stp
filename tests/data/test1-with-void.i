@@ -7,9 +7,6 @@ C ACIS version:24.0.1
 C ====================================================================== C
 C Model Name  : /test1-with-void.i
 C Start Time  : 2021/09/01 5:40:18 AM:Wednesday
-C All Elapsed Time: 0 seconds.
-C Solids Analysis Time£º0 seconds.
-C Model Size  : 3 Cell(s), 17 Surface(s)
 C
 C ======================================================================
 1     0   ( -6 -15 7 16 -10 11)                                     

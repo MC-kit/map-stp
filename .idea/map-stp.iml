@@ -9,7 +9,10 @@
       <excludeFolder url="file://$MODULE_DIR$/.mypy_cache" />
       <excludeFolder url="file://$MODULE_DIR$/htmlcov" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.9 (map-stp)" jdkType="Python SDK" />
+    <content url="file://$MODULE_DIR$/../mckit">
+      <sourceFolder url="file://$MODULE_DIR$/../mckit" isTestSource="false" />
+    </content>
+    <orderEntry type="jdk" jdkName="Python 3.9 (mckit)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PackageRequirementsSettings">
@@ -18,6 +21,7 @@
   <component name="PyDocumentationSettings">
     <option name="format" value="GOOGLE" />
     <option name="myDocStringFormat" value="Google" />
+    <option name="renderExternalDocumentation" value="true" />
   </component>
   <component name="TestRunnerService">
     <option name="PROJECT_TEST_RUNNER" value="pytest" />
