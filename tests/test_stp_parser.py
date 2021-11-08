@@ -6,21 +6,6 @@ import pytest
 
 from mapstp.stp_parser import Body, Link, Product, create_bodies_paths, parse_path
 
-# def test_numbered():
-#     actual = Numbered(1)
-#     assert actual.number == 1
-
-
-# @pytest.mark.parametrize(
-#     "text, expected",
-#     [
-#         ("#69=xxx", 69),
-#     ],
-# )
-# def test_numbered_from_string(text, expected):
-#     actual = Numbered.from_string(text)
-#     assert actual.number == expected
-
 
 def test_product():
     actual = Product(2, "test")
@@ -175,46 +160,42 @@ class CreateBodiesPathsResult:
 @pytest.mark.parametrize(
     "stp, expected",
     [
-        # (
-        #     "test1.stp",
-        #     CreateBodiesPathsResult(
-        #         3,
-        #         ["test1", "Component1", "Body1"],
-        #         ["test1", "Component2", "Body3"],
-        #     ),
-        # ),
-        # (
-        #     "test3.stp",
-        #     CreateBodiesPathsResult(
-        #         3,
-        #         ["test3", "Component1", "Component11", "Body1"],
-        #         ["test3", "Component2", "Body3"],
-        #     ),
-        # ),
+        (
+            "test1.stp",
+            CreateBodiesPathsResult(
+                3,
+                ["test1", "Component1", "Body1"],
+                ["test1", "Component2", "Body3"],
+            ),
+        ),
+        (
+            "test3.stp",
+            CreateBodiesPathsResult(
+                3,
+                ["test3", "Component1", "Component11", "Body1"],
+                ["test3", "Component2", "Body3"],
+            ),
+        ),
         (
             "test-4-4-components-1-body.stp",
             CreateBodiesPathsResult(
                 5,
+                ["test-4-4-components-1-body", "Component1", "Component1-1.2", "Body3"],
+                ["test-4-4-components-1-body", "Component5", "Component1-1.2", "Body3"],
+            ),
+        ),
+        (
+            "test-5-3-components-1-body.stp",
+            CreateBodiesPathsResult(
+                3,
                 [
-                    "Component1",
-                    "Component1-1.2",
-                    "test-4-4-components-1-body",
-                    "Component2",
+                    "test-5-3-components-1-body",
+                    "Component6",
                     "Pattern",
-                    "Component3",
-                    "Component4",
-                    "Component5",
+                    "Component7",
+                    "Solid",
                 ],
-                [
-                    "Component1",
-                    "Component1-1.2",
-                    "test-4-4-components-1-body",
-                    "Component2",
-                    "Pattern",
-                    "Component3",
-                    "Component4",
-                    "Component5",
-                ],
+                ["test-5-3-components-1-body", "Component9", "Component7", "Solid"],
             ),
         ),
     ],
@@ -225,6 +206,22 @@ def test_create_bodies_paths(data, stp, expected):
     expected.check(stp, paths)
     # assert len(bodies_paths) == 3
     # assert bodies_paths[0][-1] == "Body1"
+
+
+def test_file_with_wrong_header(tmp_path):
+    p = tmp_path / "test_with_wrong_header.stp"
+    p.write_text("this is invalid stp file\nHEADER;")
+    with pytest.raises(ValueError) as exc_info:
+        parse_path(p)
+        assert "Not a valid STP file" in exc_info.value.args[0]
+
+
+def test_file_with_wrong_protocol(tmp_path):
+    p = tmp_path / "test_with_wrong_protocol.stp"
+    p.write_text('ISO-10303-21;\nHEADER;\nFILE_DESCRIPTION(("STEP AP246"), "1");\n')
+    with pytest.raises(ValueError) as exc_info:
+        parse_path(p)
+        assert "STP protocol AP214 is expected" in exc_info.value.args[0]
 
 
 if __name__ == "__main__":

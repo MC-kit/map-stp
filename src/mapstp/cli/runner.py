@@ -1,4 +1,4 @@
-from typing import Iterable, List
+from typing import List
 
 import sys
 
@@ -112,6 +112,9 @@ def mapstp(
     if excel:
         _excel = Path(excel)
         create_excel(_excel, paths, separator, start_cell_number)
+
+
+# TODO dvp: handle override option
 
 
 def create_stp_comments(output, stp, mcnp, separator):

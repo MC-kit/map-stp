@@ -1,4 +1,4 @@
-from typing import Dict, Iterable, List, Optional, TextIO, Tuple
+from typing import Dict, Iterable, List, TextIO, Tuple
 
 import re
 
@@ -28,14 +28,6 @@ _BODY_PATTERN = re.compile(
 @dataclass
 class Numbered:
     number: int
-
-    # @classmethod
-    # def from_string(cls, text: str) -> "Numbered":
-    #     match = _NUMBERED_PATTERN.search(text)
-    #     if not match:
-    #         raise ValueError(f"not a numbered line: '{text}'")
-    #     number = int(match["digits"])
-    #     return cls(number)
 
 
 @dataclass
@@ -104,36 +96,23 @@ class Body(Numbered):
         return cls(number, name)
 
 
-# def parse(inp: TextIO) -> Tuple[List[Product], Dict[int, List[int]]]:
-#     products = []  # this list maintains sequence of products and bodies in the products
-#     graph = defaultdict(list)
-#     for line in inp:
-#         match = _SELECT_PATTERN.search(line)
-#         if match:
-#             groups = match.groups()
-#             if groups[0] is not None:  # solid
-#                 body = Body.from_string(line)
-#                 assert products, "At least one product is to be loaded at this step"
-#                 last_product = products[-1]
-#                 last_product.bodies.append(body)
-#             elif groups[1] is not None:  # link
-#                 link = Link.from_string(line)
-#                 graph[link.src].append(link.dst)
-#             elif groups[2] is not None:  # product
-#                 product = Product.from_string(line)
-#                 products.append(product)
-#             else:
-#                 assert False, "Shouldn't be here, check _SELECT_PATTERN"
-#     return products, graph
-
-
 LinksList = List[Tuple[int, int]]
 ParseResult = Tuple[List[Product], LinksList]
+
+_VALID_FIRST_LINE = "ISO-10303-21;\n"
+_VALID_THIRD_LINE = "FILE_DESCRIPTION(('STEP AP214'),'1');\n"
 
 
 def parse(inp: TextIO) -> ParseResult:
     products: List[Product] = []
     links: LinksList = []
+    line = next(inp)
+    if line != _VALID_FIRST_LINE:
+        raise ValueError("Not a valid STP file")
+    next(inp)
+    line = next(inp)
+    if line != _VALID_THIRD_LINE:
+        raise ValueError("STP protocol AP214 is expected")
     for line in inp:
         match = _SELECT_PATTERN.search(line)
         if match:
@@ -163,99 +142,35 @@ def make_index(products: Iterable[Product]) -> Dict[int, Product]:
     return dict((p.number, p) for p in products)
 
 
-# def invert_graph(graph: Dict[int, List[int]]) -> Dict[int, int]:
-#     inverted_graph = dict()
-#
-#     for parent, childes in graph.items():
-#         for i in childes:
-#             if (
-#                 i in inverted_graph
-#             ):  # products may be duplicated
-#                 prev_parent = inverted_graph[i]
-#                 if prev_parent != parent:  # this actually can happen
-#                     raise ValueError(
-#                         f"Node {i} already has parent specified: {i}->{prev_parent} and {i}->{parent}"
-#                     )
-#             inverted_graph[i] = parent
-#     return inverted_graph
-#
-#
-# def create_bodies_paths(products, graph):
-#     inverted_graph = invert_graph(graph)
-#     products_index = make_index(products)
-#     bodies_paths = []
-#     for p in products:
-#         inverted_path = [p.name]
-#         pp: int = inverted_graph.get(p.number)
-#         while pp:
-#             inverted_path.append(products_index[pp].name)
-#             pp = inverted_graph.get(pp)
-#         path = inverted_path[::-1]
-#         for b in p.bodies:
-#             bodies_paths.append(path + [b.name])
-#     return bodies_paths
+def collect_parents(src: int, links_index):
+    parents = [src]
+    while True:
+        src = links_index.get(src, None)
+        if src is None:
+            break
+        parents.append(src)
+    return parents[::-1]
 
 
-@dataclass
-class Node(Numbered):
-    parent: "Node" = None
-    childes: Dict[int, "Node"] = field(default_factory=dict)
-
-
-def build_tree(links: LinksList) -> Tuple[Node, Dict[int, Node]]:
-    nodes_index: Dict[int, Node] = dict()
-    root: Optional[Node] = None
+def create_inner_nodes_index(links, products_index):
+    index = dict()
     for src, dst in links:
-        assert src != dst, "I'm paranoiac after reading STP file"
-        node: Node = nodes_index.get(src)
-        if node is None:
-            node = Node(src)
-            nodes_index[src] = node
-        if root is None:
-            root = node
-        child = nodes_index.get(dst)
-        if child is None:
-            child = Node(dst, parent=node)
-            nodes_index[dst] = child
-        else:
-            if child.parent is None:
-                child.parent = node
-                if root is child:
-                    root = node
-            else:
-                raise ValueError(f"Child {dst} already has parent {child.number}")
-        if dst in node.childes:
-            raise ValueError(f"Child {dst} is already added to parent {src}")
-        node.childes[dst] = child
-    return root, nodes_index
-
-
-def collect_parents(number: int, nodes_index: Dict[int, Node]):
-    node = nodes_index[number]
-    parents = [node]
-    while node.parent is not None:
-        node = node.parent
-        parents.append(node)
-    return parents
-
-
-# TODO dvp: add verificattion of STP file protocol - is to be 'STEP AP214'
-# TODO dvp: refactor - create separate modules for Tree/Node and Product/Index management
+        if not products_index[dst].bodies:
+            index[dst] = src
+    return index
 
 
 def create_bodies_paths(products, links):
-    root, nodes_index = build_tree(links)
     products_index = make_index(products)
+    links_index = create_inner_nodes_index(links, products_index)
     bodies_paths = []
     for link in links:
         src, dst = link
         product = products_index[dst]
         if product.bodies:
-            parents = collect_parents(dst, nodes_index)
-            inverted_path = list(
-                map(lambda node: products_index[node.number].name, parents)
-            )
-            path = inverted_path[::-1]
+            parents = collect_parents(src, links_index)
+            path = list(map(lambda number: products_index[number].name, parents))
+            path.append(product.name)
             for b in product.bodies:
                 bodies_paths.append(
                     path + [b.name]

@@ -8,6 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/.mypy_cache" />
       <excludeFolder url="file://$MODULE_DIR$/htmlcov" />
+      <excludeFolder url="file://$MODULE_DIR$/.benchmarks" />
     </content>
     <content url="file://$MODULE_DIR$/../mckit">
       <sourceFolder url="file://$MODULE_DIR$/../mckit" isTestSource="false" />
