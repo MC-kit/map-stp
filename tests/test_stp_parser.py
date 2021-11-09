@@ -58,11 +58,12 @@ class ParserTestResult:
     components: List[str]
     numbers: List[int]
     links: List[Tuple[int, int]]
+    case: str
 
     def check(self, components, numbers, links):
-        assert self.components == components, "Wrong components"
-        assert self.numbers == numbers, "Wrong numbers"
-        assert self.links == links, "Wrong links"
+        assert self.components == components, f"Wrong components, case: {self.case}"
+        assert self.numbers == numbers, f"Wrong numbers, case: {self.case}"
+        assert self.links == links, f"Wrong links, case: {self.case}"
 
 
 @pytest.mark.parametrize(
@@ -74,6 +75,7 @@ class ParserTestResult:
                 ["test1", "Component1", "Component2"],
                 [69, 80, 88],
                 [(69, 80), (69, 88)],
+                "two plain components",
             ),
         ),
         (
@@ -82,6 +84,16 @@ class ParserTestResult:
                 ["Component1", "Component11", "test3", "Component2"],
                 [81, 91, 94, 110],
                 [(81, 91), (94, 81), (94, 110)],
+                "one branch with two components and another with two bodies",
+            ),
+        ),
+        (
+            "test3a.stp",
+            ParserTestResult(
+                ["Component1", "Component11", "test3", "Component''s 2 replacement"],
+                [81, 91, 94, 110],
+                [(81, 91), (94, 81), (94, 110)],
+                "Same as above, but with apostrophe ('') in a component name",
             ),
         ),
         (
@@ -111,6 +123,7 @@ class ParserTestResult:
                     (211, 139),
                     (142, 211),
                 ],
+                "array of common body",
             ),
         ),
         (
@@ -134,6 +147,7 @@ class ParserTestResult:
                     (149, 109),
                     (122, 149),
                 ],
+                "one common body over several branches",
             ),
         ),
     ],

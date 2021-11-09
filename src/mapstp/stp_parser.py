@@ -5,24 +5,38 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-_SELECT_PATTERN = re.compile(
-    r"(?P<solid>MANIFOLD_SOLID_BREP)|(?P<link>NEXT_ASSEMBLY_USAGE)|(?P<product>PRODUCT_DEFINITION\()"
-)
-
 # check patterns on https://pythex.org/
 
-# _NUMBERED_PATTERN = re.compile(r"^#(?P<digits>\d+)=")
-_PRODUCT_PATTERN = re.compile(
-    r"^#(?P<digits>\d+)=PRODUCT_DEFINITION\('(?P<name>[^']+)',.*"
-)
-_LINK_PATTERN = re.compile(
-    r"^#(?P<digits>\d+)=NEXT_ASSEMBLY_USAGE_OCCURRENCE\('(?P<name>[^']+)',.*#(?P<src>\d+),#(?P<dst>\d+),\$\);"
-)
-_BODY_PATTERN = re.compile(
-    r"^#(?P<digits>\d+)=MANIFOLD_SOLID_BREP\('(?P<name>[^']+)',.*\);"
+_NUMBERED = r"^#(?P<digits>\d+)="
+_NAME = r"'(?P<name>(?:''|[^'])+)'"
+
+_SELECT_PATTERN = re.compile(
+    _NUMBERED
+    + r"(?P<solid>MANIFOLD_SOLID_BREP)|(?P<link>NEXT_ASSEMBLY_USAGE)|(?P<product>PRODUCT_DEFINITION\()"
 )
 
+_PRODUCT_PATTERN = re.compile(_NUMBERED + r"PRODUCT_DEFINITION\(" + _NAME + r",.*")
+_LINK_PATTERN = re.compile(
+    _NUMBERED
+    + r"NEXT_ASSEMBLY_USAGE_OCCURRENCE\("
+    + _NAME
+    + r",.*#(?P<src>\d+),#(?P<dst>\d+),\$\);"
+)
+_BODY_PATTERN = re.compile(_NUMBERED + r"MANIFOLD_SOLID_BREP\(" + _NAME + r",.*\);")
+
 # 89=MANIFOLD_SOLID_BREP('Body2',#159);
+
+
+class FileError(ValueError):
+    """
+    STP parser file format error.
+    """
+
+
+class ParseError(FileError):
+    """
+    STP parser syntax error.
+    """
 
 
 @dataclass
@@ -46,7 +60,7 @@ class Product(Numbered):
     def from_string(cls, text: str) -> "Product":
         match = _PRODUCT_PATTERN.search(text)
         if not match:
-            raise ValueError(f"not a 'Product' line: '{text}'")
+            raise ParseError(f"not a 'Product' line: '{text}'")
         number = int(match["digits"])
         name = match["name"]
         return cls(number, name)
@@ -68,7 +82,7 @@ class Link(Numbered):
     def from_string(cls, text: str) -> "Link":
         match = _LINK_PATTERN.search(text)
         if not match:
-            raise ValueError(f"not a 'Next assembly usage' line: '{text}'")
+            raise ParseError(f"not a 'Next assembly usage' line: '{text}'")
         number = int(match["digits"])
         name = match["name"]
         src = int(match["src"])
@@ -90,7 +104,7 @@ class Body(Numbered):
     def from_string(cls, text: str) -> "Body":
         match = _BODY_PATTERN.search(text)
         if not match:
-            raise ValueError(f"not a 'solid brep' line: '{text}'")
+            raise ParseError(f"not a 'solid brep' line: '{text}'")
         number = int(match["digits"])
         name = match["name"]
         return cls(number, name)
@@ -108,28 +122,35 @@ def parse(inp: TextIO) -> ParseResult:
     links: LinksList = []
     line = next(inp)
     if line != _VALID_FIRST_LINE:
-        raise ValueError("Not a valid STP file")
+        raise FileError(
+            f"Not a valid STP file: the expected first row {_VALID_FIRST_LINE[:-1]}, actual {line}"
+        )
     next(inp)
     line = next(inp)
     if line != _VALID_THIRD_LINE:
-        raise ValueError("STP protocol AP214 is expected")
-    for line in inp:
-        match = _SELECT_PATTERN.search(line)
-        if match:
-            groups = match.groups()
-            if groups[0] is not None:  # solid
-                body = Body.from_string(line)
-                assert products, "At least one product is to be loaded at this step"
-                last_product = products[-1]
-                last_product.bodies.append(body)
-            elif groups[1] is not None:  # link
-                link = Link.from_string(line)
-                links.append((link.src, link.dst))
-            elif groups[2] is not None:  # product
-                product = Product.from_string(line)
-                products.append(product)
-            else:
-                assert False, "Shouldn't be here, check _SELECT_PATTERN"
+        raise FileError(
+            f"STP protocol is not AP214, the expected third row {_VALID_THIRD_LINE}, actual {line}"
+        )
+    for line_no_minus_3, line in enumerate(inp):
+        try:
+            match = _SELECT_PATTERN.search(line)
+            if match:
+                group = match.lastgroup
+                if group == "solid":
+                    body = Body.from_string(line)
+                    assert products, "At least one product is to be loaded at this step"
+                    last_product = products[-1]
+                    last_product.bodies.append(body)
+                elif group == "link":
+                    link = Link.from_string(line)
+                    links.append((link.src, link.dst))
+                elif group == "product":
+                    product = Product.from_string(line)
+                    products.append(product)
+                else:
+                    assert False, "Shouldn't be here, check _SELECT_PATTERN"
+        except ParseError as exception:
+            raise FileError(f"Error in line {line_no_minus_3 + 3}") from exception
     return products, links
 
 

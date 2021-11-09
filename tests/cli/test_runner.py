@@ -88,5 +88,42 @@ def test_commenting1_with_excel(runner, tmp_path, data):
     assert_array_equal(df.index.values, [100, 101, 102])
 
 
+@pytest.mark.parametrize(
+    "touch_output, touch_excel, expected",
+    [
+        (False, False, 0),
+        (True, False, 1),
+        (False, True, 1),
+        (True, True, 1),
+    ],
+)
+def test_override(runner, tmp_path, data, touch_output, touch_excel, expected):
+    output: Path = tmp_path / "test1-with-comments.i"
+    excel: Path = tmp_path / "test1.xlsx"
+    if touch_output:
+        output.touch()
+        assert output.exists()
+    if touch_excel:
+        excel.touch()
+        assert excel.exists()
+    stp = data / "test1.stp"
+    mcnp = data / "test1.i"
+    result = runner.invoke(
+        mapstp,
+        args=[
+            "--output",
+            str(output),
+            "--excel",
+            str(excel),
+            "--start-cell-number",
+            str(100),
+            str(stp),
+            str(mcnp),
+        ],
+        catch_exceptions=True,
+    )
+    assert result.exit_code == expected, result.output
+
+
 if __name__ == "__main__":
     pytest.main()

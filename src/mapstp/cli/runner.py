@@ -54,12 +54,16 @@ class Config:
 @click.command(help=meta.__summary__, name=NAME)
 # @click_loguru.init_logger()
 # @click_loguru.stash_subcommand()
-@click.option("--override/--no-override", default=False)
+@click.option(
+    "--override/--no-override",
+    default=False,
+    help="Override existing files, (default: no)",
+)
 @click.option(
     "--output",
     "-o",
     metavar="<output>",
-    type=click.Path(exists=False),
+    type=click.Path(),
     required=False,
     help="File to write the MCNP with marked cells (default: stdout)",
 )
@@ -108,18 +112,26 @@ def mapstp(
     cfg.override = override
     _stp = Path(stp)
     _mcnp = Path(mcnp)
-    products, graph, paths = create_stp_comments(output, _stp, _mcnp, separator)
+    products, graph, paths = create_stp_comments(
+        override, output, _stp, _mcnp, separator
+    )
     if excel:
         _excel = Path(excel)
-        create_excel(_excel, paths, separator, start_cell_number)
+        create_excel(override, _excel, paths, separator, start_cell_number)
 
 
 # TODO dvp: handle override option
 
 
-def create_stp_comments(output, stp, mcnp, separator):
+def create_stp_comments(override, output, stp, mcnp, separator):
     if output:
-        _output = Path(output).open(mode="w", encoding="cp1251")
+        p = Path(output)
+        if p.exists():
+            if not override:
+                raise FileExistsError(
+                    f"File {p} already exists. Consider --override command line option."
+                )
+        _output = p.open(mode="w", encoding="cp1251")
     else:
         _output = sys.stdout
     try:
@@ -133,8 +145,13 @@ def create_stp_comments(output, stp, mcnp, separator):
 
 
 def create_excel(
-    excel: Path, paths: List[List[str]], separator, start_cell_number
+    override, excel: Path, paths: List[List[str]], separator, start_cell_number
 ) -> None:
+    if excel.exists():
+        if not override:
+            raise FileExistsError(
+                f"File {excel} already exists. Consider --override command line option."
+            )
     df = pd.DataFrame(
         list(map(lambda x: separator.join(x), paths)),
         index=list(range(start_cell_number, len(paths) + start_cell_number)),
