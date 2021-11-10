@@ -10,7 +10,8 @@ import mapstp.meta as meta
 import pandas as pd
 
 from mapstp.merge import merge_paths
-from mapstp.stp_parser import create_bodies_paths, parse_path
+from mapstp.stp_parser import parse_path
+from mapstp.tree import create_bodies_paths
 
 # from click_loguru import ClickLoguru
 

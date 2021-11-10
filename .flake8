@@ -1,9 +1,14 @@
 [flake8]
-#select = ANN,B,B9,BLK,C,D,DAR,E,F,I,S,W
-select = C,E,F,W
+# select = ANN,B,B9,BLK,C,D,DAR,E,F,I,S,W
+select = ANN,B,B9,BLK,C,D,DAR,E,F,S,W
+# select = C,E,F,W
 max-complexity = 10
 max-line-length = 88
 ignore =
+    # ANN101 Missing type annotation for self in method
+    ANN101
+    # ANN102 Missing type annotation for cls in classmethod
+    ANN102
     # E203: Whitespace before ‘:'
     E203,
     # E501: Line too long

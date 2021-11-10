@@ -4,14 +4,17 @@ from dataclasses import dataclass
 
 import pytest
 
-from mapstp.stp_parser import Body, Link, Product, create_bodies_paths, parse_path
+from mapstp.stp_parser import Body, LeafProduct, Product, _Link, parse_path
+from mapstp.tree import create_bodies_paths
 
 
 def test_product():
     actual = Product(2, "test")
-    assert actual.number == 2
-    assert actual.name == "test"
-    assert len(actual.bodies) == 0
+    assert 2 == actual.number
+    assert "test" == actual.name
+    assert not actual.is_leaf
+    actual2 = LeafProduct(actual.number, actual.name)
+    assert actual2.is_leaf
 
 
 @pytest.mark.parametrize(
@@ -30,12 +33,12 @@ def test_product_from_string(text, expected):
     [
         (
             "#79=NEXT_ASSEMBLY_USAGE_OCCURRENCE('Component1','Component1','Component1',#69,#80,$);",
-            Link(79, "Component1", 69, 80),
+            _Link(79, "Component1", 69, 80),
         ),
     ],
 )
 def test_link_from_string(text, expected):
-    actual = Link.from_string(text)
+    actual = _Link.from_string(text)
     assert actual == expected
 
 
@@ -166,9 +169,9 @@ class CreateBodiesPathsResult:
     last_path: List[str]
 
     def check(self, stp, paths):
-        assert self.length == len(paths), f"Wrong length of paths found in {stp}"
-        assert self.first_path == paths[0], f"Wrong first path found in {stp}"
-        assert self.last_path == paths[-1], f"Wrong last path found in {stp}"
+        assert len(paths) == self.length, f"Wrong length of paths found in {stp}"
+        assert paths[0] == self.first_path, f"Wrong first path found in {stp}"
+        assert paths[-1] == self.last_path, f"Wrong last path found in {stp}"
 
 
 @pytest.mark.parametrize(
