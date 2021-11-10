@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from mapstp.stp_parser import Body, LeafProduct, Product, _Link, parse_path
+from mapstp.stp_parser import Body, LeafProduct, Link, Product, parse_path
 from mapstp.tree import create_bodies_paths
 
 
@@ -33,12 +33,12 @@ def test_product_from_string(text, expected):
     [
         (
             "#79=NEXT_ASSEMBLY_USAGE_OCCURRENCE('Component1','Component1','Component1',#69,#80,$);",
-            _Link(79, "Component1", 69, 80),
+            Link(79, "Component1", 69, 80),
         ),
     ],
 )
 def test_link_from_string(text, expected):
-    actual = _Link.from_string(text)
+    actual = Link.from_string(text)
     assert actual == expected
 
 

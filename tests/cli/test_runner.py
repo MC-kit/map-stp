@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from mapstp.cli.runner import VERSION, mapstp, meta
+from mapstp.cli.mapstp import VERSION, mapstp, meta
 from numpy.testing import assert_array_equal
 
 

@@ -9,6 +9,7 @@ import click
 import mapstp.meta as meta
 import pandas as pd
 
+from mapstp.material import load_materials
 from mapstp.merge import merge_paths
 from mapstp.stp_parser import parse_path
 from mapstp.tree import create_bodies_paths
@@ -77,6 +78,14 @@ class Config:
     help="Excel file to write the component paths",
 )
 @click.option(
+    "--materials-index",
+    "-m",
+    metavar="<materials-index-file>",
+    type=click.Path(),
+    required=False,
+    help="Excel file containing materials mnemonics and corresponding references for MCNP model.",
+)
+@click.option(
     "--separator",
     metavar="<separator>",
     type=click.STRING,
@@ -97,7 +106,15 @@ class Config:
 @click.pass_context
 # ctx, verbose: bool, quiet: bool, logfile: bool, profile_mem: bool, override: bool
 def mapstp(
-    ctx, override: bool, output, excel, separator, start_cell_number, stp, mcnp
+    ctx,
+    override: bool,
+    output,
+    excel,
+    materials_index,
+    separator,
+    start_cell_number,
+    stp,
+    mcnp,
 ) -> None:
 
     # if quiet:
@@ -113,46 +130,43 @@ def mapstp(
     cfg.override = override
     _stp = Path(stp)
     _mcnp = Path(mcnp)
-    products, graph, paths = create_stp_comments(
-        override, output, _stp, _mcnp, separator
+    products, graph, paths, materials = create_stp_comments(
+        override, output, _stp, _mcnp, materials_index, separator
     )
     if excel:
         _excel = Path(excel)
-        create_excel(override, _excel, paths, separator, start_cell_number)
+        check_existing_path(excel, override)
+        create_excel(_excel, paths, materials, separator, start_cell_number)
 
 
 # TODO dvp: handle override option
 
 
-def create_stp_comments(override, output, stp, mcnp, separator):
+def create_stp_comments(override, output, stp, mcnp, materials_index, separator):
     if output:
         p = Path(output)
-        if p.exists():
-            if not override:
-                raise FileExistsError(
-                    f"File {p} already exists. Consider --override command line option."
-                )
+        check_existing_path(p, override)
         _output = p.open(mode="w", encoding="cp1251")
     else:
         _output = sys.stdout
     try:
         products, graph = parse_path(stp)
         paths = create_bodies_paths(products, graph)
+        materials = load_materials(paths, materials_index)
         merge_paths(_output, paths, mcnp, separator)
-        return products, graph, paths
+        return products, graph, paths, materials
     finally:
         if _output is not sys.stdout:
             _output.close()
 
 
 def create_excel(
-    override, excel: Path, paths: List[List[str]], separator, start_cell_number
+    excel: Path,
+    paths: List[List[str]],
+    materials,
+    separator,
+    start_cell_number,
 ) -> None:
-    if excel.exists():
-        if not override:
-            raise FileExistsError(
-                f"File {excel} already exists. Consider --override command line option."
-            )
     df = pd.DataFrame(
         list(map(lambda x: separator.join(x), paths)),
         index=list(range(start_cell_number, len(paths) + start_cell_number)),
@@ -161,6 +175,14 @@ def create_excel(
     df.index.name = "cell"
     with pd.ExcelWriter(excel) as xlsx:
         df.to_excel(xlsx, sheet_name="Cells")
+
+
+def check_existing_path(excel, override):
+    if excel.exists():
+        if not override:
+            raise FileExistsError(
+                f"File {excel} already exists. Consider --override command line option."
+            )
 
 
 if __name__ == "__main__":

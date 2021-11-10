@@ -37,7 +37,7 @@ class ParseError(FileError):
 
 @dataclass
 class Numbered:
-    """The class shares common propotry of STP objects: number."""
+    """The class shares common property of STP objects: number."""
 
     number: int
 
@@ -93,7 +93,7 @@ class LeafProduct(Product):
 
 
 @dataclass
-class _Link(Numbered):
+class Link(Numbered):
     """Linkage between products."""
 
     name: str
@@ -101,7 +101,17 @@ class _Link(Numbered):
     dst: int
 
     @classmethod
-    def from_string(cls, text: str) -> "_Link":
+    def from_string(cls, text: str) -> "Link":
+        """Parse STP line with NEXT_OCCURRENCE_USAGE.
+
+        The line specifies a source->destination link between products.
+
+        Args:
+            text: line from STP file being parsed.
+
+        Returns:
+            new `Link` object.
+        """
         match = _LINK_PATTERN.search(text)
         if not match:
             raise ParseError(f"not a 'Next assembly usage' line: '{text}'")
@@ -114,16 +124,13 @@ class _Link(Numbered):
 
 @dataclass
 class Body(Numbered):
-    """
-    Body (MCNP cell) definition.
-
-    #89=MANIFOLD_SOLID_BREP('Body2',#159);
-    """
+    """Body (MCNP cell) definition."""
 
     name: str
 
     @classmethod
     def from_string(cls, text: str) -> "Body":
+        """Parse MANIFOLD_SOLID_BREP line."""
         match = _BODY_PATTERN.search(text)
         if not match:
             raise ParseError(f"not a 'solid brep' line: '{text}'")
@@ -173,7 +180,7 @@ def parse(inp: TextIO) -> ParseResult:
                         )
                     last_product.append(body)
                 elif group == "link":
-                    link = _Link.from_string(line)
+                    link = Link.from_string(line)
                     links.append((link.src, link.dst))
                 elif group == "product":
                     product = Product.from_string(line)
