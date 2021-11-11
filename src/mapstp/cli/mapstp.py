@@ -9,7 +9,7 @@ import click
 import mapstp.meta as meta
 import pandas as pd
 
-from mapstp.material import load_materials
+from mapstp.extract_info import extract_info, load_materials_index
 from mapstp.merge import merge_paths
 from mapstp.stp_parser import parse_path
 from mapstp.tree import create_bodies_paths
