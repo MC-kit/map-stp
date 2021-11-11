@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 
 from mapstp.cli.mapstp import VERSION, mapstp, meta
+from mapstp.merge import CELL_START_PATTERN
 from numpy.testing import assert_array_equal
 
 
@@ -125,21 +126,40 @@ def test_override(runner, tmp_path, data, touch_output, touch_excel, expected):
     assert result.exit_code == expected, result.output
 
 
-def test_info_assignemnt(runner, tmp_path, data):
+def extract_first_void_cell_lines(lines):
+    for line in lines:
+        if CELL_START_PATTERN.search(line):
+            yield line
+
+
+def test_info_assignment(runner, tmp_path, data):
     output: Path = tmp_path / "test-extract-info-prepared.i"
     excel: Path = tmp_path / "test-extract-info.xlsx"
     stp = data / "test-extract-info.stp"
     mcnp = data / "test-extract-info.i"
     result = runner.invoke(
         mapstp,
-        args=["--output", str(output), "--excel", excel, str(stp), str(mcnp)],
+        args=[
+            "--output",
+            str(output),
+            "--excel",
+            excel,
+            "--start-cell-number",
+            "2000",
+            str(stp),
+            str(mcnp),
+        ],
         catch_exceptions=False,
     )
     assert result.exit_code == 0, result.output
     assert output.exists(), f"Should create output file {output}"
     with output.open(encoding="cp1251") as stream:
-        lines = list(extract_stp_comment_lines(stream.readlines()))
-    assert len(lines) == 5
+        lines = list(stream.readlines())
+    stp_comment_lines = list(extract_stp_comment_lines(lines))
+    assert len(stp_comment_lines) == 5
+    assert "Inconel718" in stp_comment_lines[3]
+    first_void_lines = list(extract_first_void_cell_lines(lines))
+    assert len(first_void_lines) == 2
 
 
 if __name__ == "__main__":

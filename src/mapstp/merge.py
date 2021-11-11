@@ -40,14 +40,14 @@ def extract_number_and_density(
     """
     number, density, factor = path_info.iloc[row][["number", "density", "factor"]]
 
+    if number is None or density is None:
+        return None
+
     if number <= 0:
         raise ValueError("The values in `number` column are to be positive")
 
     if density < 0:
         raise ValueError("The values in `density` column cannot be negative")
-
-    if number is None or density is None:
-        return None
 
     if factor is not None:
         if factor < 0.0:
@@ -65,7 +65,7 @@ def _correct_first_line(
 
     if nd is not None:
         number, density = nd
-        _line = _line[: match_end - 1] + f" {number} {-density}" + _line[match_end:]
+        _line = _line[: match_end - 1] + f" {number} {-density:.5g}" + _line[match_end:]
 
     return _line
 
@@ -104,12 +104,17 @@ def merge_lines(
             else:
                 match = CELL_START_PATTERN.match(line)
                 if match:
-                    line = _correct_first_line(
-                        line, match.end(), current_path_idx, path_info
-                    )
                     if first_cell:
+                        line = _correct_first_line(
+                            line, match.end(), current_path_idx, path_info
+                        )
                         first_cell = False
                     else:
+                        first_cell_line_info_row = current_path_idx + 1
+                        if first_cell_line_info_row < len(paths):
+                            line = _correct_first_line(
+                                line, match.end(), first_cell_line_info_row, path_info
+                            )
                         yield format_comment()
                     yield line
                 else:

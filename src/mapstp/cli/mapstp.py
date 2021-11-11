@@ -1,22 +1,16 @@
-from typing import List
-
-import sys
-
 from dataclasses import dataclass
 from pathlib import Path
 
 import click
 import mapstp.meta as meta
-import pandas as pd
 
-from mapstp.extract_info import extract_info, load_materials_index
-from mapstp.merge import merge_paths
-from mapstp.stp_parser import parse_path
-from mapstp.tree import create_bodies_paths
+from mapstp.core import create_excel, create_stp_comments
+
+# from .logging import logger
+from mapstp.utils.io import can_override
 
 # from click_loguru import ClickLoguru
 
-# from .logging import logger
 
 NAME = meta.__title__
 VERSION = meta.__version__
@@ -130,60 +124,16 @@ def mapstp(
     cfg.override = override
     _stp = Path(stp)
     _mcnp = Path(mcnp)
-    products, graph, paths, materials = create_stp_comments(
+    products, graph, paths, materials, path_info = create_stp_comments(
         override, output, _stp, _mcnp, materials_index, separator
     )
     if excel:
         _excel = Path(excel)
         can_override(_excel, override)
-        create_excel(_excel, paths, materials, separator, start_cell_number)
+        create_excel(_excel, paths, path_info, separator, start_cell_number)
 
 
 # TODO dvp: handle override option
-
-
-def create_stp_comments(override, output, stp, mcnp, materials_index, separator):
-    if output:
-        p = Path(output)
-        can_override(p, override)
-        _output = p.open(mode="w", encoding="cp1251")
-    else:
-        _output = sys.stdout
-    try:
-        products, graph = parse_path(stp)
-        paths = create_bodies_paths(products, graph)
-        materials = load_materials_index(materials_index)
-        path_info = extract_info(paths, materials)
-        merge_paths(_output, paths, path_info, mcnp, separator)
-        return products, graph, paths, materials
-    finally:
-        if _output is not sys.stdout:
-            _output.close()
-
-
-def create_excel(
-    excel: Path,
-    paths: List[List[str]],
-    materials,
-    separator,
-    start_cell_number,
-) -> None:
-    df = pd.DataFrame(
-        list(map(lambda x: separator.join(x), paths)),
-        index=list(range(start_cell_number, len(paths) + start_cell_number)),
-        columns=["STP path"],
-    )
-    df.index.name = "cell"
-    with pd.ExcelWriter(excel) as xlsx:
-        df.to_excel(xlsx, sheet_name="Cells")
-
-
-def can_override(path: Path, override: bool):
-    if not override and path.exists():
-        raise FileExistsError(
-            f"File {path} already exists."
-            "Consider to use '--override' command line option or remove the file."
-        )
 
 
 if __name__ == "__main__":
