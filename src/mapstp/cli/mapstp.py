@@ -135,7 +135,7 @@ def mapstp(
     )
     if excel:
         _excel = Path(excel)
-        check_existing_path(excel, override)
+        can_override(_excel, override)
         create_excel(_excel, paths, materials, separator, start_cell_number)
 
 
@@ -145,15 +145,16 @@ def mapstp(
 def create_stp_comments(override, output, stp, mcnp, materials_index, separator):
     if output:
         p = Path(output)
-        check_existing_path(p, override)
+        can_override(p, override)
         _output = p.open(mode="w", encoding="cp1251")
     else:
         _output = sys.stdout
     try:
         products, graph = parse_path(stp)
         paths = create_bodies_paths(products, graph)
-        materials = load_materials(paths, materials_index)
-        merge_paths(_output, paths, mcnp, separator)
+        materials = load_materials_index(materials_index)
+        path_info = extract_info(paths, materials)
+        merge_paths(_output, paths, path_info, mcnp, separator)
         return products, graph, paths, materials
     finally:
         if _output is not sys.stdout:
@@ -177,12 +178,12 @@ def create_excel(
         df.to_excel(xlsx, sheet_name="Cells")
 
 
-def check_existing_path(excel, override):
-    if excel.exists():
-        if not override:
-            raise FileExistsError(
-                f"File {excel} already exists. Consider --override command line option."
-            )
+def can_override(path: Path, override: bool):
+    if not override and path.exists():
+        raise FileExistsError(
+            f"File {path} already exists."
+            "Consider to use '--override' command line option or remove the file."
+        )
 
 
 if __name__ == "__main__":

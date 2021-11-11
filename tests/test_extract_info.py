@@ -1,12 +1,7 @@
 import pandas as pd
 import pytest
 
-from mapstp.extract_info import extract_info, load_materials_index
-
-
-@pytest.fixture(scope="session")
-def materials():
-    return load_materials_index()
+from mapstp.extract_info import extract_info
 
 
 def test_load_materials_index(materials):

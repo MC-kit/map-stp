@@ -1,5 +1,4 @@
 """Extract meta information from paths given in an STP file."""
-
 import re
 
 from pathlib import Path

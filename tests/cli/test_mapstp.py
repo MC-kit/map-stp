@@ -125,5 +125,22 @@ def test_override(runner, tmp_path, data, touch_output, touch_excel, expected):
     assert result.exit_code == expected, result.output
 
 
+def test_info_assignemnt(runner, tmp_path, data):
+    output: Path = tmp_path / "test-extract-info-prepared.i"
+    excel: Path = tmp_path / "test-extract-info.xlsx"
+    stp = data / "test-extract-info.stp"
+    mcnp = data / "test-extract-info.i"
+    result = runner.invoke(
+        mapstp,
+        args=["--output", str(output), "--excel", excel, str(stp), str(mcnp)],
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 0, result.output
+    assert output.exists(), f"Should create output file {output}"
+    with output.open(encoding="cp1251") as stream:
+        lines = list(extract_stp_comment_lines(stream.readlines()))
+    assert len(lines) == 5
+
+
 if __name__ == "__main__":
     pytest.main()
