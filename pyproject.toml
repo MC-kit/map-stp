@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "mapstp"
 version = "0.2.0"
-description = "Identifies cells in an MCNP file with corresponding component pathes in original STP files"
+description = "Transfers metainformation from STP to MCNP"
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 homepage = "https://github.com/MC-kit/map-stp"
 repository = "https://github.com/MC-kit/map-stp"
@@ -37,7 +37,7 @@ openpyxl = "^3.0.9"
 pytest = "^6.2.5"
 pytest-cache = "^1.0"
 pytest-cov = "^2.12.1"
-coverage = { version = "^5.5", extras = ["toml"] }
+coverage = { version = "^5.5", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
 nox = "^2021.6.12"
 Pygments = "^2.10.0"
 black = "^21.8b0"
