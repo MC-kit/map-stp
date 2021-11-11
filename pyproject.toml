@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "mapstp"
-version = "0.1.0"
+version = "0.2.0"
 description = "Identifies cells in an MCNP file with corresponding component pathes in original STP files"
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 homepage = "https://github.com/MC-kit/map-stp"
 repository = "https://github.com/MC-kit/map-stp"
 license = "MIT"
 keywords = ["STP", "MCNP", "SuperMC"]
-readme = "README.md"
+readme = "README.rst"
 packages = [
     { include = "mapstp", from = "src" },
 ]
@@ -23,7 +23,7 @@ classifiers = [
 ]
 
 [tool.poetry.scripts]
-mapstp = "mapstp.cli.runner:mapstp"
+mapstp = "mapstp.cli.mapstp:mapstp"
 
 [tool.poetry.dependencies]
 python = "3.9"
