@@ -9,21 +9,9 @@ import mapstp.meta as meta
 from mapstp.core import create_excel, create_stp_comments
 
 # from .logging import logger
-from mapstp.utils.io import can_override
+from mapstp.utils.io import can_override, find_first_cell_number
 
 # from click_loguru import ClickLoguru
-from mapstp.utils.re import CELL_START_PATTERN
-
-
-def find_first_cell_number(mcnp):
-    _mcnp = Path(mcnp)
-    with _mcnp.open(encoding="cp1251") as stream:
-        for line in stream:
-            match = CELL_START_PATTERN.search(line)
-            if match:
-                cell_number = int(line[: match.end()].split()[0])
-                return cell_number
-    raise ValueError(f"Cells with material 0 are not found in {mcnp}. Is it MCNP file?")
 
 
 def correct_start_cell_number(start_cell_number: Optional[int], mcnp: Optional[str]):
@@ -158,7 +146,7 @@ def mapstp(
         create_excel(_excel, paths, path_info, separator, start_cell_number)
 
 
-# TODO dvp: handle override option
+# TODO dvp: add logging
 
 
 if __name__ == "__main__":
