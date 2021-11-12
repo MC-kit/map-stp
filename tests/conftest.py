@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from mapstp.extract_info import load_materials_index
+from mapstp.materials_index import load_materials_index
 from mapstp.utils.resource import path_resolver
 
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mapstp"
-version = "0.2.0"
+version = "0.2.1"
 description = "Transfers metainformation from STP to MCNP"
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 homepage = "https://github.com/MC-kit/map-stp"

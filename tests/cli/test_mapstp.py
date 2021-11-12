@@ -5,8 +5,14 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from mapstp.cli.mapstp import VERSION, mapstp, meta
-from mapstp.merge import CELL_START_PATTERN
+from mapstp.cli.mapstp import (
+    VERSION,
+    correct_start_cell_number,
+    find_first_cell_number,
+    mapstp,
+    meta,
+)
+from mapstp.utils.re import CELL_START_PATTERN
 from numpy.testing import assert_array_equal
 
 
@@ -160,6 +166,51 @@ def test_info_assignment(runner, tmp_path, data):
     assert "Inconel718" in stp_comment_lines[3]
     first_void_lines = list(extract_first_void_cell_lines(lines))
     assert len(first_void_lines) == 2
+
+
+def test_find_first_cell_number(data):
+    mcnp = data / "test-extract-info.i"
+    actual = find_first_cell_number(mcnp)
+    assert actual == 2000
+
+
+@pytest.mark.parametrize(
+    "number, mcnp, expected",
+    [
+        (None, None, 1),
+        (None, "test-extract-info.i", 2000),
+        (0, "test-extract-info.i", 2000),
+        (10, "test-extract-info.i", 10),
+    ],
+)
+def test_correct_start_cell_number(data, number, mcnp, expected):
+    if mcnp:
+        mcnp = data / mcnp
+    actual = correct_start_cell_number(number, mcnp)
+    assert actual == expected
+
+
+def test_cli_correct_start_cell_number(runner, tmp_path, data):
+    output: Path = tmp_path / "test-extract-info-prepared.i"
+    excel: Path = tmp_path / "test-extract-info.xlsx"
+    stp = data / "test-extract-info.stp"
+    mcnp = data / "test-extract-info.i"
+    result = runner.invoke(
+        mapstp,
+        args=[
+            "--output",
+            str(output),
+            "--excel",
+            excel,
+            str(stp),
+            str(mcnp),
+        ],
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 0, result.output
+    assert output.exists(), f"Should create output file {output}"
+    actual = find_first_cell_number(output)
+    assert actual == 2005, "The first void cell number is wrong"
 
 
 if __name__ == "__main__":

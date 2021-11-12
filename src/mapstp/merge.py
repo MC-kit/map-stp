@@ -9,17 +9,11 @@ if specified in STP paths.
 
 from typing import Generator, Iterable, List, Optional, TextIO, Tuple
 
-import re
-
 from pathlib import Path
 
 import pandas as pd
 
-CELL_START_PATTERN = re.compile(r"^\s{0,5}\d+\s+0")
-"""Line starts with number followed with 0."""
-
-CELLS_END_PATTERN = re.compile(r"^\s*$")
-"""Empty line."""
+from mapstp.utils.re import CELL_START_PATTERN, CELLS_END_PATTERN
 
 
 def extract_number_and_density(
