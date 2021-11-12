@@ -31,8 +31,9 @@ import mapstp.meta as meta
 from mapstp.core import create_excel, create_stp_comments
 from mapstp.extract_info import extract_path_info
 from mapstp.materials_index import load_materials_index
-from mapstp.utils.io import can_override, find_first_cell_number
+from mapstp.stp_parser import parse_path
 from mapstp.tree import create_bodies_paths
+from mapstp.utils.io import can_override, find_first_cell_number
 from mapstp.utils.re import CELL_START_PATTERN
 
 # from .logging import logger
