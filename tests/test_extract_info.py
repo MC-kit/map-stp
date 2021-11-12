@@ -14,10 +14,10 @@ def test_load_materials_index(materials):
 @pytest.mark.parametrize(
     "paths, expected",
     [
-        ([["aaa [m:LH]", "bbb", "ccc0"]], [(2, 0.14822, None, None)]),
-        ([["aaa [m:LH]", "bbb[f:0.9]", "ccc0"]], [(2, 0.14822, 0.9, None)]),
+        ([["aaa [m-LH]", "bbb", "ccc0"]], [(2, 0.14822, None, None)]),
+        ([["aaa [m-LH]", "bbb[f-0.9]", "ccc0"]], [(2, 0.14822, 0.9, None)]),
         (
-            [["aaa [m:LH]", "bbb[f:0.99]", "ccc0[r:PBS55]"]],
+            [["aaa [m-LH]", "bbb[f-0.99]", "ccc0[r-PBS55]"]],
             [(2, 0.14822, 0.99, "PBS55")],
         ),
     ],

@@ -14,11 +14,14 @@ def extract_info(paths, materials: pd.DataFrame) -> pd.DataFrame:
             mnemonic = None
             factor = None
             rwcl = None
-            for part in path:
+            for i, part in enumerate(path):
                 match = _META_PATTERN.match(part)
                 if match:
                     meta = match["meta"]
-                    pars = dict(map(lambda x: x.split(":"), meta.split()))
+                    try:
+                        pars = dict(map(lambda x: x.split("-", 1), meta.split()))
+                    except ValueError as x:
+                        raise ValueError(f"On path {path} part #{i}: {part}") from x
                     mnemonic = pars.get("m", mnemonic)
                     factor = pars.get("f", factor)
                     rwcl = pars.get("r", rwcl)

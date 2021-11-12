@@ -213,5 +213,38 @@ def test_cli_correct_start_cell_number(runner, tmp_path, data):
     assert actual == 2005, "The first void cell number is wrong"
 
 
+def test_run_without_args(runner):
+    result = runner.invoke(
+        mapstp,
+        args=[],
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 2, result.output
+    assert "Missing argument" in result.output
+
+
+def test_run_without_args_for_output(runner, data):
+    stp = data / "test-extract-info.stp"
+    result = runner.invoke(
+        mapstp,
+        args=[str(stp)],
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 2, result.output
+    assert "Nor `excel`, neither `mcnp` parameter is specified" in result.output
+
+
+def test_run_without_excel_output_only(runner, tmp_path, data):
+    stp = data / "test-extract-info.stp"
+    excel: Path = tmp_path / "test-extract-info.xlsx"
+    result = runner.invoke(
+        mapstp,
+        args=["--excel", excel, str(stp)],
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 0, result.output
+    assert excel.exists(), f"Excel file {excel} is not created"
+
+
 if __name__ == "__main__":
     pytest.main()
