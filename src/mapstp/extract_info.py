@@ -1,4 +1,6 @@
 """Extract meta information from paths given in an STP file."""
+from typing import Any, Iterable, Tuple
+
 import re
 
 import pandas as pd
@@ -8,8 +10,21 @@ import pandas as pd
 _META_PATTERN = re.compile(".*\\[(?P<meta>[^]]+)]$")
 
 
-def extract_info(paths, materials: pd.DataFrame) -> pd.DataFrame:
-    def records():
+def extract_path_info(
+    paths: Iterable[Iterable[str]], mnemonic_table: pd.DataFrame
+) -> pd.DataFrame:
+    """Extract meta information from `paths` and associate corresponding data with each path.
+
+    Args:
+        paths: STP paths
+        mnemonic_table: mnemonic-material-density lookup table
+
+    Returns:
+        Table with material `number`, `density`, applied correction `factor`,
+        and `rwcl label corresponding to every path in paths
+    """
+
+    def _records() -> Tuple[int, float, float, Any]:
         for path in paths:
             mnemonic = None
             factor = None
@@ -20,16 +35,22 @@ def extract_info(paths, materials: pd.DataFrame) -> pd.DataFrame:
                     meta = match["meta"]
                     try:
                         pars = dict(map(lambda x: x.split("-", 1), meta.split()))
-                    except ValueError as x:
-                        raise ValueError(f"On path {path} part #{i}: {part}") from x
+                    except ValueError as _ex:
+                        raise ValueError(f"On path {path} part #{i}: {part}") from _ex
                     mnemonic = pars.get("m", mnemonic)
-                    factor = pars.get("f", factor)
+                    if mnemonic == "void":
+                        # all subsequent components in the STP tree are void,
+                        # except linked ones, if any
+                        mnemonic = None
+                        factor = None
+                    else:
+                        factor = pars.get("f", factor)
                     rwcl = pars.get("r", rwcl)
             if mnemonic:
                 number = int(
-                    materials.loc[mnemonic]["number"]
+                    mnemonic_table.loc[mnemonic]["number"]
                 )  # TODO dvp: check why type of number became float
-                density = materials.loc[mnemonic]["density"]
+                density = mnemonic_table.loc[mnemonic]["density"]
             else:
                 number = density = None
             if factor:
@@ -37,7 +58,7 @@ def extract_info(paths, materials: pd.DataFrame) -> pd.DataFrame:
             yield number, density, factor, rwcl
 
     df = pd.DataFrame.from_records(
-        records(),
+        _records(),
         columns="number density factor rwcl".split(),
     )
     return df

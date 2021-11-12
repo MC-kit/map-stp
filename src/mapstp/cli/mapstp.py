@@ -29,7 +29,7 @@ import click
 import mapstp.meta as meta
 
 from mapstp.core import create_excel, create_stp_comments
-from mapstp.extract_info import extract_info
+from mapstp.extract_info import extract_path_info
 from mapstp.materials_index import load_materials_index
 from mapstp.stp_parser import parse_path
 from mapstp.tree import create_bodies_paths
@@ -217,7 +217,7 @@ def mapstp(
     _stp = Path(stp)
     products, graph = parse_path(_stp)
     paths = create_bodies_paths(products, graph)
-    path_info = extract_info(paths, materials)
+    path_info = extract_path_info(paths, materials)
     if mcnp:
         _mcnp = Path(mcnp)
         create_stp_comments(override, output, paths, _mcnp, path_info, separator)

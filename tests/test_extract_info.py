@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from mapstp.extract_info import extract_info
+from mapstp.extract_info import extract_path_info
 
 
 def test_load_materials_index(materials):
@@ -26,7 +26,7 @@ def test_extract_info(materials, paths, expected):
     _expected = pd.DataFrame.from_records(
         expected, columns="number density factor rwcl".split()
     )
-    actual = extract_info(paths, materials)
+    actual = extract_path_info(paths, materials)
     isnull = actual.isnull()
     assert (isnull == _expected.isnull()).all(axis=None)
     assert (actual == _expected).mask(isnull).all(axis=None)
