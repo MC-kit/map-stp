@@ -193,7 +193,7 @@ def parse(inp: TextIO) -> ParseResult:
 
 
 def parse_path(inp: Path) -> ParseResult:
-    with inp.open(encoding="utf8") as _inp:
+    with inp.open(encoding="cp1251") as _inp:
         return parse(_inp)
 
 
