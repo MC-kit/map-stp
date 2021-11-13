@@ -8,7 +8,7 @@ if specified in STP paths.
 """
 
 from typing import Generator, Iterable, List, Optional, TextIO, Tuple
-
+import math
 from pathlib import Path
 
 import pandas as pd
@@ -40,13 +40,20 @@ def extract_number_and_density(
     if number <= 0:
         raise ValueError("The values in `number` column are to be positive")
 
+    if math.isnan(number):
+        raise ValueError(f"The value in `number` column is not defined in row #{row}")
+
     if density < 0:
         raise ValueError("The values in `density` column cannot be negative")
 
-    if factor is not None:
+    if not (math.isnan(factor) or factor is None):
         if factor < 0.0:
             raise ValueError("The values in `factor` column cannot be negative")
-        density *= factor
+
+    density *= factor
+
+    if math.isnan(density):
+        raise ValueError(f"Density is nan for row #{row}")
 
     return number, density
 

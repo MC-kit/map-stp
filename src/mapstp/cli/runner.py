@@ -19,7 +19,6 @@ as end of line comments after corresponding cells with prefix
 "sep:". The material numbers and densities are set according
 to the meta information provided in the STP.
 """
-
 from typing import Optional
 
 from dataclasses import dataclass
@@ -34,7 +33,6 @@ from mapstp.materials_index import load_materials_index
 from mapstp.stp_parser import parse_path
 from mapstp.tree import create_bodies_paths
 from mapstp.utils.io import can_override, find_first_cell_number
-from mapstp.utils.re import CELL_START_PATTERN
 
 # from .logging import logger
 # from click_loguru import ClickLoguru
@@ -55,12 +53,12 @@ VERSION = meta.__version__
 # NO_LEVEL_BELOW = 30
 #
 #
-# def stderr_log_format_func(msgdict):
+# def stderr_log_format_func(msg_dict):
 #     """Do level-sensitive formatting.
 #
 #     Just a copy from click-loguru so far."""
 #
-#     if msgdict["level"].no < NO_LEVEL_BELOW:
+#     if msg_dict["level"].no < NO_LEVEL_BELOW:
 #         return "<level>{message}</level>\n"
 #     return "<level>{level}</level>: <level>{message}</level>\n"
 #

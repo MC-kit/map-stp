@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from mapstp.cli.mapstp import VERSION, correct_start_cell_number, mapstp, meta
+from mapstp.cli.runner import VERSION, correct_start_cell_number, mapstp, meta
 from mapstp.utils.io import find_first_cell_number
 from mapstp.utils.re import CELL_START_PATTERN
 from numpy.testing import assert_array_equal
