@@ -31,7 +31,7 @@ def load_materials_index(materials_index: str = None) -> pd.DataFrame:
     materials = pd.read_excel(
         p,
         usecols=["mnemonic", "number", "eff.density, g/cm3"],
-        converters={"number": int},
+        converters={"number": int, "eff.density, g/cm3": float},
     )
     materials = materials.loc[materials["mnemonic"].notnull()]
     materials.rename(columns={"eff.density, g/cm3": "density"}, inplace=True)

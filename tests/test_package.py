@@ -1,3 +1,5 @@
+import re
+
 from pathlib import Path
 
 from mapstp import __version__
@@ -15,6 +17,13 @@ def find_version_from_project_toml():
         raise ValueError(f"Cannot find item 'version' in {toml_path}")
 
 
+_VERSION_NORM_PATTERN = re.compile(r"-(?P<letter>.)[^.]*\.(?P<prepatch>.*)$")
+
+
+def normalize_version(version: str):
+    return re.sub(_VERSION_NORM_PATTERN, r"\1\2", version)
+
+
 def test_package():
     version = find_version_from_project_toml()
-    assert __version__ == version
+    assert __version__ == normalize_version(version)
