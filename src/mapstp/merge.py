@@ -19,6 +19,14 @@ from mapstp.exceptions import PathInfoError
 from mapstp.utils.re import CELL_START_PATTERN, CELLS_END_PATTERN
 
 
+def is_defined(number) -> bool:
+    return number is not None and not math.isnan(number)
+
+
+def is_not_defined(number) -> bool:
+    return not is_defined(number)
+
+
 def extract_number_and_density(
     row: int, path_info: pd.DataFrame
 ) -> Optional[Tuple[int, float]]:
@@ -37,17 +45,19 @@ def extract_number_and_density(
     """
     number, density, factor = path_info.iloc[row][["number", "density", "factor"]]
 
-    if number is None or density is None:
-        return None
+    if not is_defined(number):
+        return None  # void space
+
+    if not is_defined(density):
+        raise PathInfoError(
+            f"The `density` value is not defined for material number {number}.",
+            row,
+            path_info,
+        )
 
     if number <= 0:
         raise PathInfoError(
             "The values in `number` column are to be positive.", row, path_info
-        )
-
-    if math.isnan(number):
-        raise PathInfoError(
-            f"The value in `number` column is not defined.", row, path_info
         )
 
     if density < 0:
@@ -55,7 +65,7 @@ def extract_number_and_density(
             "The values in `density` column cannot be negative.", row, path_info
         )
 
-    if not (math.isnan(factor) or factor is None):
+    if is_defined(factor):
         if factor < 0.0:
             raise PathInfoError(
                 "The values in `factor` column cannot be negative.", row, path_info
