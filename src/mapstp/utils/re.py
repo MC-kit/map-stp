@@ -1,3 +1,5 @@
+"""The regular expressions to be used in various modules."""
+
 import re
 
 CELL_START_PATTERN = re.compile(r"^\s{0,5}\d+\s+0")

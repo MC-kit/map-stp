@@ -1,3 +1,5 @@
+"""Code to retrieve information from the package meta information."""
+
 import importlib.metadata as meta
 
 __title__ = "mapstp"

@@ -27,12 +27,13 @@ from pathlib import Path
 import click
 import mapstp.meta as meta
 
-from mapstp.core import create_excel, create_stp_comments
+from mapstp.excel import create_excel
 from mapstp.extract_info import extract_path_info
 from mapstp.materials_index import load_materials_index
+from mapstp.merge import merge_paths
 from mapstp.stp_parser import parse_path
 from mapstp.tree import create_bodies_paths
-from mapstp.utils.io import can_override, find_first_cell_number
+from mapstp.utils.io import can_override, find_first_cell_number, select_output
 
 # from .logging import logger
 # from click_loguru import ClickLoguru
@@ -207,7 +208,8 @@ def mapstp(
     path_info = extract_path_info(paths, materials)
     if mcnp:
         _mcnp = Path(mcnp)
-        create_stp_comments(override, output, paths, _mcnp, path_info, separator)
+        with select_output(override, output) as _output:
+            merge_paths(_output, paths, path_info, _mcnp, separator)
     if excel:
         start_cell_number = correct_start_cell_number(start_cell_number, mcnp)
         _excel = Path(excel)

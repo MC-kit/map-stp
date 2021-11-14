@@ -18,9 +18,14 @@ from loguru import logger
 
 
 class InterceptHandler(logging.Handler):
-    """Send events from standard logging to loguru"""
+    """Send events from standard logging to loguru."""
 
-    def emit(self, record):
+    def emit(self, record: logging.LogRecord) -> None:
+        """See :meth:`logging.Handler.emit`.
+
+        Args:
+            record: data to log
+        """
         # Get corresponding Loguru level if it exists
         try:
             level = logger.level(record.levelname).name

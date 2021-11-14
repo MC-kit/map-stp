@@ -1,3 +1,5 @@
+"""Code to load materials index."""
+
 from pathlib import Path
 
 import pandas as pd
