@@ -106,7 +106,11 @@ def _correct_first_line(
 
     if nd is not None:
         number, density = nd
-        _line = _line[: match_end - 1] + f" {number} {-density:.5g}" + _line[match_end:]
+        _line = (
+            _line[: match_end - 1]
+            + f" {int(number)} {-density:.5g}"
+            + _line[match_end:]
+        )
 
     return _line
 
