@@ -8,11 +8,14 @@ if specified in STP paths.
 """
 
 from typing import Generator, Iterable, List, Optional, TextIO, Tuple
+
 import math
+
 from pathlib import Path
 
 import pandas as pd
 
+from mapstp.exceptions import PathInfoError
 from mapstp.utils.re import CELL_START_PATTERN, CELLS_END_PATTERN
 
 
@@ -38,22 +41,29 @@ def extract_number_and_density(
         return None
 
     if number <= 0:
-        raise ValueError("The values in `number` column are to be positive")
+        raise PathInfoError(
+            "The values in `number` column are to be positive.", row, path_info
+        )
 
     if math.isnan(number):
-        raise ValueError(f"The value in `number` column is not defined in row #{row}")
+        raise PathInfoError(
+            f"The value in `number` column is not defined.", row, path_info
+        )
 
     if density < 0:
-        raise ValueError("The values in `density` column cannot be negative")
+        raise PathInfoError(
+            "The values in `density` column cannot be negative.", row, path_info
+        )
 
     if not (math.isnan(factor) or factor is None):
         if factor < 0.0:
-            raise ValueError("The values in `factor` column cannot be negative")
-
-    density *= factor
+            raise PathInfoError(
+                "The values in `factor` column cannot be negative.", row, path_info
+            )
+        density *= factor
 
     if math.isnan(density):
-        raise ValueError(f"Density is nan for row #{row}")
+        raise PathInfoError(f"Density is nan.", row, path_info)
 
     return number, density
 

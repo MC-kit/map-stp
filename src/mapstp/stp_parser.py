@@ -6,6 +6,8 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from mapstp.exceptions import FileError, ParseError
+
 # check patterns on https://pythex.org/
 
 _NUMBERED = r"^#(?P<digits>\d+)="
@@ -25,14 +27,6 @@ _LINK_PATTERN = re.compile(
     + r",.*#(?P<src>\d+),#(?P<dst>\d+),\$\);"
 )
 _BODY_PATTERN = re.compile(_NUMBERED + r"MANIFOLD_SOLID_BREP\(" + _NAME + r",.*\);")
-
-
-class FileError(ValueError):
-    """STP parser file format error."""
-
-
-class ParseError(FileError):
-    """STP parser syntax error."""
 
 
 @dataclass
