@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mapstp"
-version = "0.2.3"
+version = "0.2.4-alpha.0"
 description = "Transfers meta information from STP to MCNP"
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 homepage = "https://github.com/MC-kit/map-stp"
@@ -23,7 +23,7 @@ classifiers = [
 ]
 
 [tool.poetry.scripts]
-mapstp = "mapstp.cli.mapstp:mapstp"
+mapstp = "mapstp.cli.runner:mapstp"
 
 [tool.poetry.dependencies]
 python = "3.9"

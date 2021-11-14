@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -exu
+
+pyenv virtualenv-delete -f  mapstp
+pyenv virtualenv 3.9.7 mapstp
+poetry install
+pyenv rehash
+mapstp --version
+
+
+# vim: set ts=4 sw=4 tw=92 ss=0 ft=sh et ai :
