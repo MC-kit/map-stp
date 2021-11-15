@@ -7,7 +7,7 @@ import pytest
 
 from mapstp.cli.runner import VERSION, correct_start_cell_number, mapstp, meta
 from mapstp.utils.io import find_first_cell_number
-from mapstp.utils.re import CELL_START_PATTERN
+from mapstp.utils.re import CELL_START_PATTERN, MATERIAL_PATTERN
 from numpy.testing import assert_array_equal
 
 
@@ -35,6 +35,13 @@ def extract_stp_comment_lines(lines):
     for line in lines:
         if _COMMENT_PATTERN.search(line):
             yield line
+
+
+def extract_material_lines(lines):
+    for line in lines:
+        match = MATERIAL_PATTERN.search(line)
+        if match:
+            yield int(match["material"]), line
 
 
 def test_commenting1(runner, tmp_path, data):
@@ -239,6 +246,38 @@ def test_run_without_excel_output_only(runner, tmp_path, data):
     )
     assert result.exit_code == 0, result.output
     assert excel.exists(), f"Excel file {excel} is not created"
+
+
+def test_export_materials(runner, tmp_path, data):
+    output: Path = tmp_path / "test-extract-info-prepared.i"
+    excel: Path = tmp_path / "test-extract-info.xlsx"
+    stp = data / "test-extract-info.stp"
+    mcnp = data / "test-extract-info.i"
+    materials = data / "111.txt"
+    result = runner.invoke(
+        mapstp,
+        args=[
+            "--output",
+            str(output),
+            "--excel",
+            excel,
+            "--materials",
+            str(materials),
+            str(stp),
+            str(mcnp),
+        ],
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 0, result.output
+    assert output.exists(), f"Should create output file {output}"
+    with output.open(encoding="cp1251") as stream:
+        lines = list(stream.readlines())
+    material_lines = dict(extract_material_lines(lines))
+    assert len(material_lines) == 1
+    assert (
+        material_lines[111]
+        == "m111    24050.31c   6.88386e-004 $CR 50 WEIGHT(%) 17.2500 AB(%)  4.34"
+    )
 
 
 if __name__ == "__main__":

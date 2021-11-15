@@ -123,6 +123,15 @@ to the meta information provided in the STP.
     help="Excel file to write the component paths",
 )
 @click.option(
+    "--materials",
+    metavar="<materials-file>",
+    type=click.Path(dir_okay=False, exists=True),
+    required=False,
+    help="Text file containing MCNP materials specifications."
+    "If present, the selected materials present in this file are printed"
+    "to the `output` MCNP model, so, it becomes complete valid model",
+)
+@click.option(
     "--materials-index",
     "-m",
     metavar="<materials-index-file>",
@@ -164,6 +173,7 @@ def mapstp(
     override: bool,
     output,
     excel,
+    materials,
     materials_index,
     separator,
     start_cell_number,
@@ -177,6 +187,7 @@ def mapstp(
         override:
         output:
         excel:
+        materials:
         materials_index:
         separator:
         start_cell_number:
@@ -206,6 +217,8 @@ def mapstp(
     products, graph = parse_path(_stp)
     paths = create_bodies_paths(products, graph)
     path_info = extract_path_info(paths, materials)
+    if materials:
+        materials_map = load_materials_map(materials)  # TODO continue here
     if mcnp:
         _mcnp = Path(mcnp)
         with select_output(override, output) as _output:

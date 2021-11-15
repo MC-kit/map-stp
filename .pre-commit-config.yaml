@@ -5,9 +5,9 @@ repos:
     rev: v4.0.1
     hooks:
     -   id: trailing-whitespace
-        exclude: \.(xlsx|zip)$
+        exclude: \.(xlsx|zip)$|data
     -   id: end-of-file-fixer
-        exclude: \.(xlsx|zip)$
+        exclude: \.(xlsx|zip)$|data
     -   id: check-yaml
     -   id: check-toml
     -   id: check-added-large-files
