@@ -1,0 +1,14 @@
+c test data
+m1   $ pure hydrogen
+         1001.31c   0.9999
+         1002.31c   0.0001
+C second material
+m400 $ water
+         1001.31c   6.33910e-002 $H   1 AMOUNT(%)  2.0000 AB(%) 99.99
+         1002.31c   7.29080e-006 $H   2 AMOUNT(%)  2.0000 AB(%)  0.01
+         8016.31c   3.15453e-002 $O  16 weight(%)     N/A ab(%) 99.76
+c intermediate comment
+         8017.31c   1.20164e-005 $O  17 weight(%)     N/A ab(%)  0.04
+         8018.31c   6.48253e-005 $O  18 weight(%)     N/A ab(%)  0.20
+c ======================================================
+mode n

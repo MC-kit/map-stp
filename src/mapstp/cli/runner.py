@@ -19,16 +19,18 @@ as end of line comments after corresponding cells with prefix
 "sep:". The material numbers and densities are set according
 to the meta information provided in the STP.
 """
-from typing import Optional
+from typing import Dict, List, Optional
 
 from dataclasses import dataclass
 from pathlib import Path
 
 import click
 import mapstp.meta as meta
+import pandas as pd
 
 from mapstp.excel import create_excel
 from mapstp.extract_info import extract_path_info
+from mapstp.materials import load_materials_map
 from mapstp.materials_index import load_materials_index
 from mapstp.merge import merge_paths
 from mapstp.stp_parser import parse_path
@@ -98,6 +100,8 @@ to the meta information provided in the STP.
 
 # @click_loguru.logging_options
 # @click.group(help=meta.__summary__, name=NAME)
+
+
 @click.command(help=_USAGE, name=NAME)
 # @click_loguru.init_logger()
 # @click_loguru.stash_subcommand()
@@ -212,22 +216,50 @@ def mapstp(
     cfg = ctx.ensure_object(Config)
     # obj["DEBUG"] = debug
     cfg.override = override
-    materials = load_materials_index(materials_index)
-    _stp = Path(stp)
-    products, graph = parse_path(_stp)
-    paths = create_bodies_paths(products, graph)
-    path_info = extract_path_info(paths, materials)
-    if materials:
-        materials_map = load_materials_map(materials)  # TODO continue here
+    paths, path_info = create_path_info(materials_index, stp)
+    materials_map = load_materials_map(materials) if materials else None
+    used_materials_text = (
+        get_used_materials(materials_map, path_info) if materials_map else None
+    )
     if mcnp:
         _mcnp = Path(mcnp)
+        joined_paths = join_paths(paths, separator)
         with select_output(override, output) as _output:
-            merge_paths(_output, paths, path_info, _mcnp, separator)
+            merge_paths(_output, joined_paths, path_info, _mcnp, used_materials_text)
     if excel:
         start_cell_number = correct_start_cell_number(start_cell_number, mcnp)
         _excel = Path(excel)
         can_override(_excel, override)
         create_excel(_excel, paths, path_info, separator, start_cell_number)
+
+
+def create_path_info(materials_index: str, stp: str):
+    _materials_index = load_materials_index(materials_index)
+    _stp = Path(stp)
+    products, graph = parse_path(_stp)
+    paths = create_bodies_paths(products, graph)
+    path_info = extract_path_info(paths, _materials_index)
+    return paths, path_info
+
+
+def materials_spec_mapper(materials_map: Dict[int, str]):
+    def _func(used_number: int):
+        text = materials_map.get(used_number)
+        if not text:
+            text = f"m{used_number}  $ dummy: is to be replaced manually\n        1.001.31c  1.0"
+        return text
+
+    return _func
+
+
+def get_used_materials(materials_map: Dict[int, str], path_info: pd.DataFrame):
+    used_numbers = sorted(set(path_info["number"].values))
+    used_materials_texts = list(map(materials_spec_mapper(materials_map), used_numbers))
+    return "".join(used_materials_texts)
+
+
+def join_paths(paths: List[List[str]], separator: str = "/") -> List[str]:
+    return list(map(lambda path: separator.join(path), paths))
 
 
 # TODO dvp: add logging

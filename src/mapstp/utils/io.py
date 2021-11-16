@@ -4,9 +4,10 @@ from typing import Generator, TextIO, Union
 import sys
 
 from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
 
-from mapstp.utils.re import CELL_START_PATTERN
+from mapstp.utils.re import CELL_START_PATTERN, MCNP_SECTIONS_SEPARATOR_PATTERN
 
 
 def can_override(path: Path, override: bool) -> Path:
@@ -80,3 +81,37 @@ def select_output(
     finally:
         if _output is not sys.stdout:
             _output.close()
+
+
+@dataclass
+class MCNPSections:
+    """Text sections from an MCNP file."""
+
+    cells: str
+    surfaces: str = None
+    cards: str = None
+    remainder: str = None
+
+
+def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
+    """Read text sections from MCNP file.
+
+    Args:
+        mcnp_path: path to file.
+
+    Returns:
+        MCNPSections: - the text sections
+
+    """
+    sections = MCNP_SECTIONS_SEPARATOR_PATTERN.split(
+        mcnp_path.read_text(encoding="cp1251"), maxsplit=4
+    )
+    sections_len = len(sections)
+    cells = sections[0]
+    surfaces = sections[1] if 1 <= sections_len else None
+    cards = sections[2] if 2 <= sections_len else None
+    if 3 <= sections_len:
+        remainder = sections[3].strip()
+        if remainder == "":
+            remainder = None
+    return MCNPSections(cells, surfaces, cards, remainder)

@@ -179,6 +179,6 @@ files = "src/mapstp/**/*.py"
 
 [[tool.mypy.overrides]]
 module = [
-    "nox.*",
+    "nox.*", "pandas",
 ]
 ignore_missing_imports = true

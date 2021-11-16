@@ -1,0 +1,113 @@
+"""Code to load materials map.
+
+The map associates material number to its MCNP specification text.
+"""
+
+from typing import Dict, Generator, Iterable, TextIO, Union
+
+from collections import defaultdict
+from dataclasses import dataclass, field
+from pathlib import Path
+
+from mapstp.utils.re import CARD_PATTERN, MATERIAL_PATTERN
+
+MaterialsDict = Dict[int, str]
+"""Mapping material number -> material MCNP text"""
+
+
+@dataclass
+class _Loader:
+    stream: TextIO
+    material_no: int = field(default=-1, init=False)
+    materials_dict: dict = field(default_factory=lambda: defaultdict(list), init=False)
+
+    @property
+    def _in_material_card(self) -> bool:
+        return 0 < self.material_no
+
+    def _append(self, line: str) -> None:
+        if 0 < self.material_no:
+            self.materials_dict[self.material_no].append(line)
+
+    def _check_if_material_line(self, line: str) -> bool:
+        match = MATERIAL_PATTERN.search(line)
+        if match:
+            self.material_no = int(match["material"])
+            if self.material_no <= 0:
+                raise ValueError(f"Wrong material number {self.material_no} found")
+            if self.material_no in self.materials_dict:
+                raise ValueError(f"Material number {self.material_no} is duplicated")
+            self._append(line)
+            return True
+        else:
+            return False  # skipping other cards and prepending text
+
+    def __post_init__(self) -> None:
+        for line in self.stream:
+            if self._in_material_card:
+                match = CARD_PATTERN.search(line)
+                if match:
+                    if match.lastgroup == "comment":
+                        pass  # skipping comment line
+                    else:
+                        if not self._check_if_material_line(line):
+                            self.material_no = -1
+                else:
+                    self._append(line)
+            else:
+                self._check_if_material_line(line)
+
+
+def load_materials_map_from_stream(stream: TextIO) -> MaterialsDict:
+    """Read materials from opened MCNP file.
+
+    Args:
+        stream: stream to read from
+
+    Returns:
+        MaterialsDict: mapping material number -> material text
+
+    """
+    loader = _Loader(stream)
+    materials_dict = dict((k, "".join(v)) for k, v in loader.materials_dict.items())
+    return materials_dict
+
+
+def load_materials_map(materials: Union[str, Path]) -> MaterialsDict:
+    """Read materials from MCNP file.
+
+    Args:
+        materials: name of MCNP file, containing materials to read
+
+    Returns:
+        MaterialsDict: mapping material number -> material text
+
+    """
+    path = Path(materials)
+    with path.open(encoding="cp1251") as stream:
+        return load_materials_map_from_stream(stream)
+
+
+def drop_material_cards(lines: Iterable[str]) -> Generator[str, None, None]:
+    """Drop lines belonging to material cards.
+
+    Used on replacing materials in the model with ones actually used.
+
+    Args:
+        lines: mcnp file split to lines
+
+    Yields:
+        all the lines of the model without material cards
+    """
+    in_material_card = False
+    for line in lines:
+        match = CARD_PATTERN.search(line)
+        if match:
+            if match.lastgroup == "card":
+                match = MATERIAL_PATTERN.search(line)
+                if match:
+                    in_material_card = True
+                else:
+                    in_material_card = False
+        if not in_material_card:
+            yield line

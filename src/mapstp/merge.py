@@ -18,7 +18,9 @@ from pathlib import Path
 import pandas as pd
 
 from mapstp.exceptions import PathInfoError
-from mapstp.utils.re import CELL_START_PATTERN, CELLS_END_PATTERN
+from mapstp.materials import drop_material_cards
+from mapstp.utils.io import read_mcnp_sections
+from mapstp.utils.re import CELL_START_PATTERN
 
 
 def is_defined(number: Union[int, float]) -> bool:
@@ -117,12 +119,10 @@ def _correct_first_line(
 
 @dataclass
 class _Merger:
-    paths: List[List[str]]
+    paths: List[str]
     path_info: pd.DataFrame
     mcnp_lines: Iterable[str]
-    separator: str = "/"
     first_cell: bool = field(init=False, default=True)
-    cells_over: bool = field(init=False, default=False)
     current_path_idx: int = field(init=False, default=0)
     paths_length: int = field(init=False)
 
@@ -133,68 +133,56 @@ class _Merger:
         self.paths_length = len(self.paths)
 
     def format_comment(self) -> str:
-        comment = (
-            f"      $ stp: {self.separator.join(self.paths[self.current_path_idx])}\n"
-        )
+        comment = f"      $ stp: {self.paths[self.current_path_idx]}"
         self.current_path_idx += 1
         return comment
 
     def merge_lines(self) -> Generator[str, None, None]:
         for line in self.mcnp_lines:
-            if self.cells_over or self.paths_length <= self.current_path_idx:
+            match = CELL_START_PATTERN.match(line)
+            if match:
+                if self.first_cell:
+                    line = _correct_first_line(
+                        line, match.end(), self.current_path_idx, self.path_info
+                    )
+                    self.first_cell = False
+                else:
+                    first_cell_line_info_row = self.current_path_idx + 1
+                    if first_cell_line_info_row < self.paths_length:
+                        line = _correct_first_line(
+                            line,
+                            match.end(),
+                            first_cell_line_info_row,
+                            self.path_info,
+                        )
+                        if self.current_path_idx < self.paths_length:
+                            yield self.format_comment()
                 yield line
             else:
-                if CELLS_END_PATTERN.match(line):
-                    if self.first_cell:
-                        raise ValueError("Incorrect MCNP file: no cells.")
-                    if self.current_path_idx < self.paths_length:
-                        yield self.format_comment()
-                    yield line
-                    if self.current_path_idx != self.paths_length:
-                        warnings.warn(
-                            f"Only {self.current_path_idx} merged,"
-                            f"expected  {self.paths_length}"
-                        )
-                    self.cells_over = True
-                else:
-                    match = CELL_START_PATTERN.match(line)
-                    if match:
-                        if self.first_cell:
-                            line = _correct_first_line(
-                                line, match.end(), self.current_path_idx, self.path_info
-                            )
-                            self.first_cell = False
-                        else:
-                            first_cell_line_info_row = self.current_path_idx + 1
-                            if first_cell_line_info_row < self.paths_length:
-                                line = _correct_first_line(
-                                    line,
-                                    match.end(),
-                                    first_cell_line_info_row,
-                                    self.path_info,
-                                )
-                            yield self.format_comment()
-                        yield line
-                    else:
-                        yield line
+                yield line
+        if self.current_path_idx < self.paths_length:
+            yield self.format_comment()
+        if self.current_path_idx != self.paths_length:
+            warnings.warn(
+                f"Only {self.current_path_idx} merged," f"expected  {self.paths_length}"
+            )
 
 
 def _merge_lines(
-    paths: List[List[str]],
+    paths: List[str],
     path_info: pd.DataFrame,
     mcnp_lines: Iterable[str],
-    separator: str = "/",
 ) -> Generator[str, None, None]:
-    merger = _Merger(paths, path_info, mcnp_lines, separator)
+    merger = _Merger(paths, path_info, mcnp_lines)
     yield from merger.merge_lines()
 
 
 def merge_paths(
     output: TextIO,
-    paths: List[List[str]],
+    paths: List[str],
     path_info: pd.DataFrame,
     mcnp: Path,
-    separator: str = "/",
+    used_materials_text: str,
 ) -> None:
     """Print to `output` the updated MCNP code.
 
@@ -207,8 +195,31 @@ def merge_paths(
         path_info: table with other information on cells:
                   material number, density, density correction factor.
         mcnp:   The input MCNP file name.
-        separator: The character to separate parts in an STP path.
+        used_materials_text: The materials specification to add to model.
     """
-    with mcnp.open(encoding="cp1251") as mcnp_stream:
-        for line in _merge_lines(paths, path_info, mcnp_stream.readlines(), separator):
-            print(line, file=output, end="")
+    mcnp_sections = read_mcnp_sections(mcnp)
+    cells = mcnp_sections.cells
+    lines = cells.split("\n")[:-1]  # drop the last empty line
+
+    for line in _merge_lines(paths, path_info, lines):
+        print(line, file=output)
+
+    surfaces = mcnp_sections.surfaces
+    if surfaces:
+        print(surfaces, file=output, end="")
+
+        cards = mcnp_sections.cards
+        if cards:
+            if used_materials_text:
+                print(used_materials_text, file=output)
+                cards_lines = cards.split("\n")[:-1]
+                for line in drop_material_cards(cards_lines):
+                    print(line, file=output)
+            else:
+                print(cards, file=output, end="")
+
+            remainder = mcnp_sections.remainder
+            if remainder:
+                print(remainder, file=output, end="")
+        else:
+            print(used_materials_text, file=output)

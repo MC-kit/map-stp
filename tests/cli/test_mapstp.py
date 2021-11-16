@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 
 from mapstp.cli.runner import VERSION, correct_start_cell_number, mapstp, meta
-from mapstp.utils.io import find_first_cell_number
+from mapstp.utils.io import find_first_cell_number, read_mcnp_sections
 from mapstp.utils.re import CELL_START_PATTERN, MATERIAL_PATTERN
 from numpy.testing import assert_array_equal
 
@@ -55,6 +55,8 @@ def test_commenting1(runner, tmp_path, data):
     )
     assert result.exit_code == 0, result.output
     assert output.exists(), f"Should create output file {output}"
+    sections = read_mcnp_sections(output)
+    assert sections.remainder is None
     with output.open() as stream:
         lines = list(extract_stp_comment_lines(stream.readlines()))
     assert len(lines) == 3
@@ -273,10 +275,10 @@ def test_export_materials(runner, tmp_path, data):
     with output.open(encoding="cp1251") as stream:
         lines = list(stream.readlines())
     material_lines = dict(extract_material_lines(lines))
-    assert len(material_lines) == 1
+    assert len(material_lines) == 2
     assert (
         material_lines[111]
-        == "m111    24050.31c   6.88386e-004 $CR 50 WEIGHT(%) 17.2500 AB(%)  4.34"
+        == "m111    24050.31c   6.88386e-004 $CR 50 WEIGHT(%) 17.2500 AB(%)  4.34\n"
     )
 
 
