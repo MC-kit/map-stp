@@ -1,3 +1,5 @@
+from typing import Dict, Iterable
+
 import re
 
 from pathlib import Path
@@ -250,6 +252,18 @@ def test_run_without_excel_output_only(runner, tmp_path, data):
     assert excel.exists(), f"Excel file {excel} is not created"
 
 
+def select_cell_and_stp_lines(lines: Iterable[str]) -> Dict[int, str]:
+    selected = list(
+        filter(lambda x: re.search(r"^\s{0,5}\d+\s+\d", x) or "$ stp: " in x, lines)
+    )
+    res = dict()
+    for i, line in enumerate(selected):
+        if "$ stp: " in line:
+            cell = int(selected[i - 1].split(maxsplit=2)[0])
+            res[cell] = line
+    return res
+
+
 def test_export_materials(runner, tmp_path, data):
     output: Path = tmp_path / "test-extract-info-prepared.i"
     excel: Path = tmp_path / "test-extract-info.xlsx"
@@ -272,13 +286,16 @@ def test_export_materials(runner, tmp_path, data):
     )
     assert result.exit_code == 0, result.output
     assert output.exists(), f"Should create output file {output}"
-    with output.open(encoding="cp1251") as stream:
-        lines = list(stream.readlines())
+    sections = read_mcnp_sections(output)
+    cell2stp = select_cell_and_stp_lines(sections.cells.split("\n"))
+    assert 2004 in cell2stp
+
+    lines = sections.cards.split("\n")
     material_lines = dict(extract_material_lines(lines))
-    assert len(material_lines) == 2
+    assert len(material_lines) == 2, f"There should be two materials in {output}"
     assert (
         material_lines[111]
-        == "m111    24050.31c   6.88386e-004 $CR 50 WEIGHT(%) 17.2500 AB(%)  4.34\n"
+        == "m111    24050.31c   6.88386e-004 $CR 50 WEIGHT(%) 17.2500 AB(%)  4.34"
     )
 
 

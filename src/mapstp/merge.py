@@ -155,8 +155,8 @@ class _Merger:
                             first_cell_line_info_row,
                             self.path_info,
                         )
-                        if self.current_path_idx < self.paths_length:
-                            yield self.format_comment()
+                    if self.current_path_idx < self.paths_length:
+                        yield self.format_comment()
                 yield line
             else:
                 yield line
@@ -206,17 +206,22 @@ def merge_paths(
 
     surfaces = mcnp_sections.surfaces
     if surfaces:
+        surfaces = surfaces.rstrip()
         print(surfaces, file=output, end="")
+        print("\n\n", file=output, end="")
 
         cards = mcnp_sections.cards
         if cards:
+            cards = cards.strip()
             if used_materials_text:
+                used_materials_text = used_materials_text.strip()
                 print(used_materials_text, file=output)
                 cards_lines = cards.split("\n")[:-1]
                 for line in drop_material_cards(cards_lines):
                     print(line, file=output)
             else:
                 print(cards, file=output, end="")
+            print("\n\n", file=output)
 
             remainder = mcnp_sections.remainder
             if remainder:
