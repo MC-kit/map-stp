@@ -26,4 +26,4 @@ def normalize_version(version: str):
 
 def test_package():
     version = find_version_from_project_toml()
-    assert __version__ == normalize_version(version)
+    assert __version__ == normalize_version(version), "Run 'poetry install'"
