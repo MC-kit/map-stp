@@ -32,6 +32,7 @@ _BODY_PATTERN = re.compile(
 )
 
 
+# noinspection PyClassHasNoInit
 @dataclass
 class Numbered:
     """The class shares common property of STP objects: number."""
@@ -39,6 +40,7 @@ class Numbered:
     number: int
 
 
+# noinspection PyClassHasNoInit
 @dataclass
 class Product(Numbered):
     """The class to store "Product definitions"."""
@@ -91,6 +93,7 @@ class Product(Numbered):
         return False
 
 
+# noinspection PyClassHasNoInit
 @dataclass
 class LeafProduct(Product):
     """The class to append bodies to "Product definitions"."""
@@ -120,6 +123,7 @@ class LeafProduct(Product):
         return True
 
 
+# noinspection PyClassHasNoInit
 @dataclass
 class Link(Numbered):
     """Linkage between products."""
@@ -153,6 +157,7 @@ class Link(Numbered):
         return cls(number, name, src, dst)
 
 
+# noinspection PyClassHasNoInit
 @dataclass
 class Body(Numbered):
     """Body (MCNP cell) definition."""
