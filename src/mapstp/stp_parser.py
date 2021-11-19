@@ -15,7 +15,7 @@ _NUMBERED = r"^#(?P<digits>\d+)="
 _NAME = r"'(?P<name>(?:''|[^'])+)'"
 
 _SELECT_PATTERN = re.compile(
-    _NUMBERED + r"(?P<solid>MANIFOLD_SOLID_BREP)|"
+    _NUMBERED + r"(?P<solid>MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)|"
     r"(?P<link>NEXT_ASSEMBLY_USAGE)|"
     r"(?P<product>PRODUCT_DEFINITION\()"
 )
@@ -27,7 +27,9 @@ _LINK_PATTERN = re.compile(
     + _NAME
     + r",.*#(?P<src>\d+),#(?P<dst>\d+),\$\);"
 )
-_BODY_PATTERN = re.compile(_NUMBERED + r"MANIFOLD_SOLID_BREP\(" + _NAME + r",.*\);")
+_BODY_PATTERN = re.compile(
+    _NUMBERED + r"(?:MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)\(" + _NAME + r",.*\);"
+)
 
 
 @dataclass
