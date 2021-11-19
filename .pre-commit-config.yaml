@@ -19,6 +19,7 @@ repos:
     hooks:
     -   id: isort
         name: isort
+        exclude: dev
         entry: poetry run isort
         language: system
         types: [python]
@@ -29,7 +30,7 @@ repos:
         types: [python]
     -   id: flake8
         name: flake8
-        exclude: tests|runner
+        exclude: tests|runner|dev
         entry: poetry run flake8
         language: system
         types: [python]
