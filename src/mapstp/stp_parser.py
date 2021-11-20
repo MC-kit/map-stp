@@ -15,7 +15,7 @@ _NUMBERED = r"^#(?P<digits>\d+)="
 _NAME = r"'(?P<name>(?:''|[^'])+)'"
 
 _SELECT_PATTERN = re.compile(
-    _NUMBERED + r"(?P<solid>MANIFOLD_SOLID_BREP)|"
+    _NUMBERED + r"(?P<solid>MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)|"
     r"(?P<link>NEXT_ASSEMBLY_USAGE)|"
     r"(?P<product>PRODUCT_DEFINITION\()"
 )
@@ -27,9 +27,12 @@ _LINK_PATTERN = re.compile(
     + _NAME
     + r",.*#(?P<src>\d+),#(?P<dst>\d+),\$\);"
 )
-_BODY_PATTERN = re.compile(_NUMBERED + r"MANIFOLD_SOLID_BREP\(" + _NAME + r",.*\);")
+_BODY_PATTERN = re.compile(
+    _NUMBERED + r"(?:MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)\(" + _NAME + r",.*\);"
+)
 
 
+# noinspection PyClassHasNoInit
 @dataclass
 class Numbered:
     """The class shares common property of STP objects: number."""
@@ -37,6 +40,7 @@ class Numbered:
     number: int
 
 
+# noinspection PyClassHasNoInit
 @dataclass
 class Product(Numbered):
     """The class to store "Product definitions"."""
@@ -89,6 +93,7 @@ class Product(Numbered):
         return False
 
 
+# noinspection PyClassHasNoInit
 @dataclass
 class LeafProduct(Product):
     """The class to append bodies to "Product definitions"."""
@@ -118,6 +123,7 @@ class LeafProduct(Product):
         return True
 
 
+# noinspection PyClassHasNoInit
 @dataclass
 class Link(Numbered):
     """Linkage between products."""
@@ -151,6 +157,7 @@ class Link(Numbered):
         return cls(number, name, src, dst)
 
 
+# noinspection PyClassHasNoInit
 @dataclass
 class Body(Numbered):
     """Body (MCNP cell) definition."""
