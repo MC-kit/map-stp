@@ -32,7 +32,7 @@ def test_product_from_string(text, expected):
     "text, expected",
     [
         (
-            "#79=NEXT_ASSEMBLY_USAGE_OCCURRENCE('Component1','Component1','Component1',#69,#80,$);",
+            "#79=NEXT_ASSEMBLY_USAGE_OCCURRENCE('Component1','Component1','Component1',#69,#80,$);",  # noqa
             Link(79, "Component1", 69, 80),
         ),
     ],
@@ -57,7 +57,7 @@ def test_body_from_string(text, expected):
 
 
 @dataclass
-class ParserTestResult:
+class _ParserTestResult:
     components: List[str]
     numbers: List[int]
     links: List[Tuple[int, int]]
@@ -74,7 +74,7 @@ class ParserTestResult:
     [
         (
             "test1.stp",
-            ParserTestResult(
+            _ParserTestResult(
                 ["test1", "Component1", "Component2"],
                 [69, 80, 88],
                 [(69, 80), (69, 88)],
@@ -83,7 +83,7 @@ class ParserTestResult:
         ),
         (
             "test3.stp",
-            ParserTestResult(
+            _ParserTestResult(
                 ["Component1", "Component11", "test3", "Component2"],
                 [81, 91, 94, 110],
                 [(81, 91), (94, 81), (94, 110)],
@@ -92,7 +92,7 @@ class ParserTestResult:
         ),
         (
             "test3a.stp",
-            ParserTestResult(
+            _ParserTestResult(
                 ["Component1", "Component11", "test3", "Component''s 2 replacement"],
                 [81, 91, 94, 110],
                 [(81, 91), (94, 81), (94, 110)],
@@ -101,7 +101,7 @@ class ParserTestResult:
         ),
         (
             "test-4-4-components-1-body.stp",
-            ParserTestResult(
+            _ParserTestResult(
                 [
                     "Component1",
                     "Component1-1.2",
@@ -131,7 +131,7 @@ class ParserTestResult:
         ),
         (
             "test-5-3-components-1-body.stp",
-            ParserTestResult(
+            _ParserTestResult(
                 [
                     "Pattern",
                     "Component7",
@@ -163,7 +163,7 @@ def test_stp_parser1(data, stp, expected):
 
 
 @dataclass
-class CreateBodiesPathsResult:
+class _CreateBodiesPathsResult:
     length: int
     first_path: List[str]
     last_path: List[str]
@@ -179,7 +179,7 @@ class CreateBodiesPathsResult:
     [
         (
             "test1.stp",
-            CreateBodiesPathsResult(
+            _CreateBodiesPathsResult(
                 3,
                 ["test1", "Component1", "Body1"],
                 ["test1", "Component2", "Body3"],
@@ -187,7 +187,7 @@ class CreateBodiesPathsResult:
         ),
         (
             "test3.stp",
-            CreateBodiesPathsResult(
+            _CreateBodiesPathsResult(
                 3,
                 ["test3", "Component1", "Component11", "Body1"],
                 ["test3", "Component2", "Body3"],
@@ -195,7 +195,7 @@ class CreateBodiesPathsResult:
         ),
         (
             "test-4-4-components-1-body.stp",
-            CreateBodiesPathsResult(
+            _CreateBodiesPathsResult(
                 5,
                 ["test-4-4-components-1-body", "Component1", "Component1-1.2", "Body3"],
                 ["test-4-4-components-1-body", "Component5", "Component1-1.2", "Body3"],
@@ -203,7 +203,7 @@ class CreateBodiesPathsResult:
         ),
         (
             "test-5-3-components-1-body.stp",
-            CreateBodiesPathsResult(
+            _CreateBodiesPathsResult(
                 3,
                 [
                     "test-5-3-components-1-body",

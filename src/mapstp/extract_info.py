@@ -1,7 +1,9 @@
 """Extract meta information from paths given in an STP file."""
-from typing import Any, Iterable, Tuple
+from typing import Dict, Generator, List, Optional, Tuple
 
 import re
+
+from dataclasses import dataclass
 
 import pandas as pd
 
@@ -10,8 +12,37 @@ import pandas as pd
 _META_PATTERN = re.compile(".*\\[(?P<meta>[^]]+)]$")
 
 
+def _create_pair(x: str) -> Tuple[str, str]:
+    a, b = x.split("-", 1)  # type: str, str
+    return a, b
+
+
+@dataclass
+class _MetaInfo:
+    mnemonic: Optional[str] = None
+    factor: Optional[float] = None
+    rwcl: Optional[str] = None
+
+    def update(self, pars: Dict[str, str]) -> None:
+        mnemonic = pars.get("m")
+        if mnemonic is not None:
+            if mnemonic == "void":
+                # all subsequent components in the STP tree are void,
+                # except linked ones, if any
+                self.mnemonic = None
+                self.factor = None
+            else:
+                self.mnemonic = mnemonic
+        t = pars.get("f")
+        if t is not None:
+            self.factor = float(t)
+        t = pars.get("r")
+        if t is not None:
+            self.rwcl = t
+
+
 def extract_path_info(
-    paths: Iterable[Iterable[str]], mnemonic_table: pd.DataFrame
+    paths: List[List[str]], mnemonic_table: pd.DataFrame
 ) -> pd.DataFrame:
     """Extract meta information from `paths` and associate corresponding data with each path.
 
@@ -24,41 +55,42 @@ def extract_path_info(
         and `rwcl label corresponding to every path in paths
     """
 
-    def _records() -> Tuple[int, float, float, Any]:
+    def _records() -> Generator[
+        Tuple[Optional[int], Optional[float], Optional[float], Optional[str]],
+        None,
+        None,
+    ]:
         for path in paths:
-            mnemonic = None
-            factor = None
-            rwcl = None
+            meta_info = _MetaInfo()
             for i, part in enumerate(path):
                 match = _META_PATTERN.match(part)
                 if match:
-                    meta = match["meta"]
-                    try:
-                        pars = dict(map(lambda x: x.split("-", 1), meta.split()))
-                    except ValueError as _ex:
-                        raise ValueError(f"On path {path} part #{i}: {part}") from _ex
-                    mnemonic = pars.get("m", mnemonic)
-                    if mnemonic == "void":
-                        # all subsequent components in the STP tree are void,
-                        # except linked ones, if any
-                        mnemonic = None
-                        factor = None
-                    else:
-                        factor = pars.get("f", factor)
-                    rwcl = pars.get("r", rwcl)
-            if mnemonic:
-                number = int(
-                    mnemonic_table.loc[mnemonic]["number"]
+                    pars = _extract_meta_info(i, match, part, path)
+                    meta_info.update(pars)
+            if meta_info.mnemonic:
+                number: Optional[int] = int(
+                    mnemonic_table.loc[meta_info.mnemonic]["number"]
                 )  # TODO dvp: check why type of number became float
-                density = mnemonic_table.loc[mnemonic]["density"]
+                density: Optional[float] = mnemonic_table.loc[meta_info.mnemonic][
+                    "density"
+                ]
             else:
                 number = density = None
-            if factor:
-                factor = float(factor)
-            yield number, density, factor, rwcl
+            yield number, density, meta_info.factor, meta_info.rwcl
 
     df = pd.DataFrame.from_records(
         _records(),
         columns="number density factor rwcl".split(),
     )
     return df
+
+
+def _extract_meta_info(
+    i: int, match: re.Match, part: str, path: List[str]
+) -> Dict[str, str]:
+    meta = match["meta"]
+    try:
+        pars: Dict[str, str] = dict(map(_create_pair, meta.split()))
+    except ValueError as _ex:
+        raise ValueError(f"On path {path} part #{i}: {part}") from _ex
+    return pars

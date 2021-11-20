@@ -50,7 +50,7 @@ class Tree:
             ParseError: if the information is screwed.
         """
         self._product_index: Dict[int, Product] = make_index(products)
-        self._node_index = dict()
+        self._node_index: Dict[int, Node] = dict()
         self._body_links = []
         for link in links:
             src, dst = link
@@ -101,9 +101,11 @@ class Tree:
             product = self._product_index[dst]
             if product.is_leaf:
                 node = self._node_index[src]
-                parents = node.collect_parents()
                 path = list(
-                    map(lambda parent: self._product_index[parent.number].name, parents)
+                    map(
+                        lambda parent: parent.name,
+                        node.collect_parents(),
+                    )
                 )
                 path.append(product.name)
                 # TODO dvp: design flaw: separate indexes for

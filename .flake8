@@ -1,10 +1,9 @@
 [flake8]
-# select = ANN,B,B9,BLK,C,D,DAR,E,F,I,S,W
-select = ANN,B,B9,BLK,C,D,DAR,E,F,S,W
-# select = C,E,F,W
-max-complexity = 10
-max-line-length = 88
-ignore =
+# select=ANN,B,B9,BLK,C,D,DAR,E,F,I,S,W
+select=ANN,B,B9,BLK,C,D,DAR,E,F,S,W
+max-complexity=10
+max-line-length=88
+ignore=
     # ANN101 Missing type annotation for self in method
     ANN101
     # ANN102 Missing type annotation for cls in classmethod
@@ -15,16 +14,17 @@ ignore =
     E501,
     # W503: Line break before binary operator: for compatibility with black settings
     W503
-exclude =
+exclude=
     .git,
     __pycache__,
+    src/mapstp/cli/runner.py,
     docs/source/conf.py,
     adhoc,
     wrk,
     build,
     dist,
 per-file-ignores =
-    noxfile.py:ANN
-#    tests/*:S101,ANN
-
+    noxfile.py:ANN,DAR101
+    tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
+ignore-decorators=click,pytest
 # vim: set ts=4 sw=0 tw=79 ss=0 ft=ini et ai :

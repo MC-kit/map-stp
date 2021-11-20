@@ -1,5 +1,5 @@
 """Input/output utility methods."""
-from typing import Generator, TextIO, Union
+from typing import Generator, Optional, TextIO, Union
 
 import sys
 
@@ -88,9 +88,9 @@ class MCNPSections:
     """Text sections from an MCNP file."""
 
     cells: str
-    surfaces: str = None
-    cards: str = None
-    remainder: str = None
+    surfaces: Optional[str] = None
+    cards: Optional[str] = None
+    remainder: Optional[str] = None
 
 
 def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
@@ -111,7 +111,9 @@ def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
     surfaces = sections[1] if 1 <= sections_len else None
     cards = sections[2] if 2 <= sections_len else None
     if 3 <= sections_len:
-        remainder = sections[3].strip()
+        remainder: Optional[str] = sections[3].strip()
         if remainder == "":
             remainder = None
+    else:
+        remainder = None
     return MCNPSections(cells, surfaces, cards, remainder)

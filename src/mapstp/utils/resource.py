@@ -1,6 +1,6 @@
 """Utility methods to access a package data."""
 
-from typing import Callable
+from typing import Callable, cast
 
 import inspect
 
@@ -22,10 +22,10 @@ def filename_resolver(package: str = None) -> Callable[[str], str]:
         callable which appends the argument to the package folder.
     """
     package = _validate_package(package)
-    resource_manager = pkg.ResourceManager()
+    resource_manager = pkg.ResourceManager()  # type: ignore
 
     def func(resource: str) -> str:
-        return resource_manager.resource_filename(package, resource)
+        return cast(str, resource_manager.resource_filename(package, resource))
 
     func.__doc__ = f"Computes file names for resources located in {package}"
 
@@ -57,8 +57,10 @@ def path_resolver(package: str = None) -> Callable[[str], Path]:
     return func
 
 
-def _validate_package(package: str) -> str:
+def _validate_package(package: str = None) -> str:
     if package is None:
         module = inspect.getmodule(inspect.stack()[2][0])
+        if module is None:
+            raise ValueError("Cannot define package.")
         package = module.__name__
     return package
