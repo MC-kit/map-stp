@@ -85,6 +85,14 @@ def install_with_constraints(session: Session, *args: str, **kwargs: Any) -> Non
         session.install(f"--constraint={req_path}", *args, **kwargs)
 
 
+@nox.session(python="3.9")
+def safety(session: Session) -> None:
+    """Scan dependencies for insecure packages."""
+    with collect_dev_requirements(session) as req_path:
+        install_with_constraints(session, "safety")
+        session.run("safety", "check", f"--file={req_path}", "--full-report")
+
+
 @nox.session(python=supported_pythons, venv_backend="venv")
 def tests(session: Session) -> None:
     """Run the test suite."""
@@ -110,40 +118,6 @@ def tests(session: Session) -> None:
         session.run("coverage", "html")
 
 
-@nox.session(python=lint_pythons)
-def lint(session: Session) -> None:
-    """Lint using flake8."""
-    args = session.posargs or locations
-    install_with_constraints(
-        session,
-        "flake8",
-        "flake8-annotations",
-        "flake8-bandit",
-        "flake8-black",
-        "flake8-bugbear",
-        "flake8-docstrings",
-        "flake8-import-order",
-        "darglint",
-    )
-    session.run("flake8", *args)
-
-
-@nox.session(python=black_pythons)
-def black(session: Session) -> None:
-    """Run black code formatter."""
-    args = session.posargs or locations
-    install_with_constraints(session, "black")
-    session.run("black", *args)
-
-
-@nox.session(python="3.9")
-def safety(session: Session) -> None:
-    """Scan dependencies for insecure packages."""
-    with collect_dev_requirements(session) as req_path:
-        install_with_constraints(session, "safety")
-        session.run("safety", "check", f"--file={req_path}", "--full-report")
-
-
 @nox.session(python="3.9")
 def isort(session: Session) -> None:
     """Organize imports."""
@@ -166,6 +140,32 @@ def isort(session: Session) -> None:
         *files_to_process,
         external=True,
     )
+
+
+@nox.session(python=black_pythons)
+def black(session: Session) -> None:
+    """Run black code formatter."""
+    args = session.posargs or locations
+    install_with_constraints(session, "black")
+    session.run("black", *args)
+
+
+@nox.session(python=lint_pythons)
+def lint(session: Session) -> None:
+    """Lint using flake8."""
+    args = session.posargs or locations
+    install_with_constraints(
+        session,
+        "flake8",
+        "flake8-annotations",
+        "flake8-bandit",
+        "flake8-black",
+        "flake8-bugbear",
+        "flake8-docstrings",
+        "flake8-import-order",
+        "darglint",
+    )
+    session.run("flake8", *args)
 
 
 @nox.session(python=mypy_pythons)
@@ -196,7 +196,6 @@ def docs(session: Session) -> None:
         session,
         "sphinx",
         "sphinx-autobuild",
-        "numpydoc",
         "sphinxcontrib-htmlhelp",
         "sphinxcontrib-jsmath",
         "sphinxcontrib-napoleon",

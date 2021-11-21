@@ -101,12 +101,7 @@ class Tree:
             product = self._product_index[dst]
             if product.is_leaf:
                 node = self._node_index[src]
-                path = list(
-                    map(
-                        lambda parent: parent.name,
-                        node.collect_parents(),
-                    )
-                )
+                path = list(map(lambda parent: parent.name, node.collect_parents()))
                 path.append(product.name)
                 # TODO dvp: design flaw: separate indexes for
                 #           Products and LeafProducts to avoid cast
