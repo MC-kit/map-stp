@@ -7,7 +7,12 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from mapstp.cli.runner import VERSION, correct_start_cell_number, mapstp, meta
+from mapstp.cli.runner import (
+    __summary__,
+    __version__,
+    correct_start_cell_number,
+    mapstp,
+)
 from mapstp.utils.io import find_first_cell_number, read_mcnp_sections
 from mapstp.utils.re import CELL_START_PATTERN, MATERIAL_PATTERN
 from numpy.testing import assert_array_equal
@@ -18,14 +23,14 @@ def test_version_command(runner):
     assert result.exit_code == 0, (
         "Should success on '--version' option: " + result.output
     )
-    assert VERSION in result.output, "print version on 'version' command"
+    assert __version__ in result.output, "print version on 'version' command"
 
 
 def test_help_command(runner):
     result = runner.invoke(mapstp, args=["--help"], catch_exceptions=False)
     assert result.exit_code == 0, result.output
     assert "Usage: " in result.output
-    expected = meta.__summary__.replace("\n", "")[:-40]
+    expected = __summary__.replace("\n", "")[:-40]
     actual = result.output.replace("\n", "")
     assert expected in actual
 

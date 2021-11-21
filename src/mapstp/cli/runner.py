@@ -25,9 +25,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import click
-import mapstp.meta as meta
 import pandas as pd
 
+from mapstp import __name__ as package_name
+from mapstp import __summary__, __version__
 from mapstp.excel import create_excel
 from mapstp.extract_info import extract_path_info
 from mapstp.materials import load_materials_map
@@ -50,8 +51,6 @@ def correct_start_cell_number(start_cell_number: Optional[int], mcnp: Optional[s
     return start_cell_number
 
 
-NAME = meta.__title__
-VERSION = meta.__version__
 # LOG_FILE_RETENTION = 3
 # NO_LEVEL_BELOW = 30
 #
@@ -84,7 +83,7 @@ class Config:
 
 
 _USAGE = f"""
-{meta.__summary__}
+{__summary__}
 
 For given STP file creates Excel table with a list
 of STP paths to STP components, corresponding to cells
@@ -102,7 +101,7 @@ to the meta information provided in the STP.
 # @click.group(help=meta.__summary__, name=NAME)
 
 
-@click.command(help=_USAGE, name=NAME)
+@click.command(help=_USAGE, name=package_name)
 # @click_loguru.init_logger()
 # @click_loguru.stash_subcommand()
 @click.option(
@@ -168,7 +167,7 @@ to the meta information provided in the STP.
     type=click.Path(dir_okay=False, exists=True),
     required=False,
 )
-@click.version_option(VERSION, prog_name=NAME)
+@click.version_option(__version__, prog_name=package_name)
 # @logger.catch(reraise=True)
 @click.pass_context
 # ctx, verbose: bool, quiet: bool, logfile: bool, profile_mem: bool, override: bool
