@@ -5,6 +5,7 @@ description = "Transfers meta information from STP to MCNP"
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 homepage = "https://github.com/MC-kit/map-stp"
 repository = "https://github.com/MC-kit/map-stp"
+# documentation = "https://mapstp.readthedocs.io
 license = "MIT"
 keywords = ["STP", "MCNP", "SuperMC"]
 readme = "README.rst"
@@ -25,8 +26,12 @@ classifiers = [
 [tool.poetry.scripts]
 mapstp = "mapstp.cli.runner:mapstp"
 
+# [tool.poetry.urls]
+# Chnagelog = "https://github.com/MC-kit/mapstp/releases
+
+
 [tool.poetry.dependencies]
-python = "3.9"
+python = "^3.8"
 tomli = "^1.2.1"
 click = "^8.0.1"
 click-loguru = "^1.3.7"
@@ -37,39 +42,39 @@ openpyxl = "^3.0.9"
 pytest = "^6.2.5"
 pytest-cache = "^1.0"
 pytest-cov = "^3.0.0"
-# pytest-cov = "^2.12.1"
 coverage = { version = "^6.1.2", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
-# coverage = { version = "^5.5", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
 nox = "^2021.6.12"
 Pygments = "^2.10.0"
 black = "^21.8b0"
 codecov = "^2.1.12"
-darglint = "^1.8.0"
+darglint = "^1.8.1"
 flake8 = "^4.0.1"
-# flake8 = "^3.9.2"
 flake8-annotations = "^2.6.2"
 flake8-bandit = "^2.1.2"
 flake8-bugbear = "^21.4.3"
 flake8-docstrings = "^1.6.0"
 flake8-import-order = "^0.18.1"
 mypy = "^0.910"
-pre-commit = "^2.14.1"
+pre-commit = "^2.15.0"
 pytest-benchmark = "^3.4.1"
 pytest-mock = "^3.6.1"
 safety = "^1.10.3"
+sphinx = "^4.2.0"
 sphinx-autodoc-typehints = "^1.12.0"
+sphinx-autobuild = "^2021.3.14"
 sphinx-autorun = "^1.1.1"
+sphinx-click = "^3.0.2"
 sphinx-rtd-theme = "^1.0.0"
-# sphinx-rtd-theme = "^0.5.2"
 sphinxcontrib-napoleon = "^0.7"
-xdoctest = "^0.15.6"
+xdoctest = {extras = ["colors"], version = "^0.15.10"}
+typeguard = "^2.13.0"
 rstcheck = "^3.3.1"
 isort = "^5.9.3"
 yappi = "^1.3.2"
 types-setuptools = "^57.4.2"
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "wheel"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.isort]
@@ -136,15 +141,18 @@ markers = [
 xfail_strict = true
 
 
-[tool.coverage]
+# [tool.coverage]
+[tool.coverage.paths]
+source = ["src", ".nox/*/site-packages"]
 
 [tool.coverage.run]
-source = ["mapstp"]
-# omit =    *_tab.py
 branch = true
+source = ["mapstp"]
 
 [tool.coverage.report]
-
+show_missing = true
+skip_covered = true
+# fail_under = 100
 # Regexes for lines to exclude from consideration
 exclude_lines = [
     # Have to re-enable the standard pragma

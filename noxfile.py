@@ -23,7 +23,7 @@ nox.options.sessions = (
     "black",
     "lint",
     "mypy",
-    "xdoctest",
+    # "xdoctest",
     "tests",
     # "codecov",
     # "docs",
@@ -184,7 +184,7 @@ def xdoctest(session: Session) -> None:
     """Run examples with xdoctest."""
     args = session.posargs or ["mapstp"]
     session.run("poetry", "install", "--no-dev", external=True)
-    install_with_constraints(session, "xdoctest")
+    install_with_constraints(session, "xdoctest", "pygments")
     session.run("python", "-m", "xdoctest", *args)
 
 
