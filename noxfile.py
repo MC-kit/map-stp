@@ -23,7 +23,7 @@ nox.options.sessions = (
     "black",
     "lint",
     "mypy",
-    # "xdoctest",
+    # "xdoctest",  - TODO dvp: we don't use doctests so far
     "tests",
     # "codecov",
     # "docs",
@@ -93,26 +93,28 @@ def safety(session: Session) -> None:
         session.run("safety", "check", f"--file={req_path}", "--full-report")
 
 
-@nox.session(python=supported_pythons, venv_backend="venv")
+# @nox.session(python=supported_pythons, venv_backend="venv")
+@nox.session(python=supported_pythons)
 def tests(session: Session) -> None:
     """Run the test suite."""
-    path = Path(session.bin).parent
-    args = session.posargs or ["--cov", "-m", "not e2e"]
+    # path = Path(session.bin).parent
+    args = session.posargs or ["--cov"]
     session.run(
         "poetry",
         "install",
         "--no-dev",
         external=True,
     )
-    install_with_constraints(
-        session, "pytest", "pytest-cov", "pytest-mock", "coverage[toml]"
-    )
-    if on_windows:
-        session.bin_paths.insert(
-            0, str(path / "Library/bin")
-        )  # here all the DLLs should be installed
-    session.log(f"Session path: {session.bin_paths}")
-    session.run("pytest", env={"LD_LIBRARY_PATH": str(path / "lib")}, *args)
+    install_with_constraints(session, "pytest", "pytest-mock")
+    if "--cov" in args:
+        install_with_constraints(session, "pytest-cov", "coverage[toml]")
+    # if on_windows:
+    #     session.bin_paths.insert(
+    #         0, str(path / "Library/bin")
+    #     )  # here all the DLLs should be installed
+    # session.log(f"Session path: {session.bin_paths}")
+    # session.run("pytest", env={"LD_LIBRARY_PATH": str(path / "lib")}, *args)
+    session.run("pytest", *args)
     if "--cov" in args:
         session.run("coverage", "report", "--show-missing", "--skip-covered")
         session.run("coverage", "html")
