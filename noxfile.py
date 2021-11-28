@@ -28,13 +28,15 @@ except ImportError:
 
 # TODO dvp: uncomment when code and docs are more mature
 nox.options.sessions = (
+    "pre-commit",
     "safety",
     "isort",
     "black",
     "lint",
     "mypy",
-    # "xdoctest",  - TODO dvp: we don't use doctests so far
+    "xdoctest",
     "tests",
+    "docs-build",
     # "codecov",
     # "docs",
 )
