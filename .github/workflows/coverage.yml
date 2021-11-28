@@ -13,7 +13,7 @@ jobs:
         python-version: '3.9'
         architecture: x64
     - name: Install nox
-      run: pip install --constraint=.github/workflows/constraints.txt nox
+      run: pip install --constraint=.github/workflows/constraints.txt nox nox-poetry
     - name: Install poetry
       run: pip install --constraint=.github/workflows/constraints.txt poetry
     - name: Run pytest, coverage and upload results to codecov
