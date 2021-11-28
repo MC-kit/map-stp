@@ -1,5 +1,4 @@
-"""
-Intercept log messages from the used libraries and pass them to `loguru`.
+"""Intercept log messages from the used libraries and pass them to `loguru`.
 
 See https://github.com/Delgan/loguru
 

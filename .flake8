@@ -27,4 +27,8 @@ per-file-ignores =
     noxfile.py:ANN,DAR101
     tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
 ignore-decorators=click,pytest
+docstring-convention = google
+rst-roles = class,const,func,meth,mod,ref
+rst-directives = deprecated
+
 # vim: set ts=4 sw=0 tw=79 ss=0 ft=ini et ai :

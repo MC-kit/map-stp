@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from mapstp.materials_index import load_materials_index
@@ -12,5 +13,5 @@ def data() -> Path:
 
 
 @pytest.fixture(scope="session")
-def materials():
+def materials() -> pd.DataFrame:
     return load_materials_index()

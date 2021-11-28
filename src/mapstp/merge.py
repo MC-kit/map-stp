@@ -1,5 +1,4 @@
-"""
-The module implements algorithms to transform MCNP model.
+"""The module implements algorithms to transform MCNP model.
 
 Inserts end comments with information about path in STP
 corresponding to a cell and sets materials and densities,
