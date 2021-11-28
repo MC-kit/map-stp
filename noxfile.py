@@ -50,49 +50,78 @@ lint_pythons = "3.9"
 on_windows = platform.system() == "Windows"
 
 
-# @contextmanager
-# def collect_dev_requirements(session: Session) -> Generator[str, None, None]:
-#     """Create file with development requirements.
-#
-#     Remove the file on exit.
-#
-#     Yields:
-#         Temporary file name.
-#     """
-#     req_path = os.path.join(tempfile.gettempdir(), os.urandom(24).hex())
-#     try:
-#         session.run(
-#             "poetry",
-#             "export",
-#             "--dev",
-#             "--without-hashes",
-#             "--format=requirements.txt",
-#             f"--output={req_path}",
-#             external=True,
-#         )
-#         yield req_path
-#     finally:
-#         os.unlink(req_path)
+def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
+    """Activate virtualenv in hooks installed by pre-commit.
+
+    This function patches git hooks installed by pre-commit to activate the
+    session's virtual environment. This allows pre-commit to locate hooks in
+    that environment when invoked from git.
+
+    Args:
+        s: The Session object.
+    """
+    assert s.bin is not None  # noqa: S101
+
+    virtualenv = s.env.get("VIRTUAL_ENV")
+    if virtualenv is None:
+        return
+
+    hook_dir = Path(".git") / "hooks"
+    if not hook_dir.is_dir():
+        return
+
+    for hook in hook_dir.iterdir():
+        if hook.name.endswith(".sample") or not hook.is_file():
+            continue
+
+        text = hook.read_text()
+        bin_dir = repr(s.bin)[1:-1]  # strip quotes
+        if not (
+            Path("A") == Path("a")
+            and bin_dir.lower() in text.lower()
+            or bin_dir in text
+        ):
+            continue
+
+        lines = text.splitlines()
+        if not (lines[0].startswith("#!") and "python" in lines[0].lower()):
+            continue
+
+        header = dedent(
+            f"""\
+            import os
+            os.environ["VIRTUAL_ENV"] = {virtualenv!r}
+            os.environ["PATH"] = os.pathsep.join((
+                {s.bin!r},
+                os.environ.get("PATH", ""),
+            ))
+            """
+        )
+
+        lines.insert(1, header)
+        hook.write_text("\n".join(lines))
 
 
-# # see https://stackoverflow.com/questions/59768651/how-to-use-nox-with-poetry
-# def install_with_constraints(session: Session, *args: str, **kwargs: Any) -> None:
-#     """Install packages constrained by Poetry's lock file.
-#
-#     This function is a wrapper for nox.sessions.Session.install. It
-#     invokes pip to install packages inside of the session's virtualenv.
-#     Additionally, pip is passed a constraints file generated from
-#     Poetry's lock file, to ensure that the packages are pinned to the
-#     versions specified in poetry.lock. This allows you to manage the
-#     packages as Poetry development dependencies.
-#
-#     Arguments:
-#         session: The Session object.
-#         args: Command-line arguments for pip.
-#         kwargs: Additional keyword arguments for Session.install.
-#     """
-#     with collect_dev_requirements(session) as req_path:
-#         session.install(f"--constraint={req_path}", *args, **kwargs)
+@session(name="pre-commit", python="3.10")
+def precommit(s: Session) -> None:
+    """Lint using pre-commit."""
+    args = s.posargs or ["run", "--all-files", "--show-diff-on-failure"]
+    s.install(
+        "black",
+        "darglint",
+        "flake8",
+        "flake8-bandit",
+        "flake8-bugbear",
+        "flake8-docstrings",
+        "flake8-rst-docstrings",
+        "pep8-naming",
+        "pre-commit",
+        "pre-commit-hooks",
+        "reorder-python-imports",
+    )
+    s.run("pre-commit", *args)
+    if args and args[0] == "install":
+        activate_virtualenv_in_precommit_hooks(s)
 
 
 @session(python="3.9")
@@ -103,24 +132,9 @@ def safety(s: Session) -> None:
     s.run("safety", "check", "--full-report", f"--file={requirements}")
 
 
-# @nox.session(python=supported_pythons, venv_backend="venv")
 @session(python=supported_pythons)
 def tests(s: Session) -> None:
     """Run the test suite."""
-    # args = session.posargs or ["--cov"]
-    # session.run(
-    #     "poetry",
-    #     "install",
-    #     "--no-dev",
-    #     external=True,
-    # )
-    # install_with_constraints(session, "pytest", "pytest-mock")
-    # if "--cov" in args:
-    #     install_with_constraints(session, "pytest-cov", "coverage[toml]")
-    # session.run("pytest", *args)
-    # if "--cov" in args:
-    #     session.run("coverage", "report", "--show-missing", "--skip-covered")
-    #     session.run("coverage", "html")
     s.install(".")
     s.install("coverage[toml]", "pytest", "pygments")
     try:
