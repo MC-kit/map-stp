@@ -16,4 +16,3 @@
 (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py -UseBasicParsing).Content | python -
 # recent
 # download and run script https://install.python-poetry.org
-
