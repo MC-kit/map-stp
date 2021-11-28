@@ -120,6 +120,7 @@ def precommit(s: Session) -> None:
         "pre-commit",
         "pre-commit-hooks",
         "isort",
+        "mypy",
     )
     s.run("pre-commit", *args)
     if args and args[0] == "install":
