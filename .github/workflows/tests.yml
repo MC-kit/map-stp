@@ -46,7 +46,7 @@ jobs:
         run: nox -s safety
         if: matrix.python-version == '3.9'  && matrix.os == 'ubuntu-latest'
       - name: Run Code Quality test
-        run: nox -s pre-commit
+        run: nox --sessions pre-commit mypy
         if: matrix.python-version == '3.9'  && matrix.os == 'ubuntu-latest'
       - name: Run nox tests
         run: nox -s tests -p ${{ matrix.python-version }}
