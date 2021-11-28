@@ -226,15 +226,26 @@ def lint(s: Session) -> None:
     s.run("flake8", *args)
 
 
-@session(python=mypy_pythons)
-def mypy(s: Session) -> None:
+@session(python=supported_pythons)
+def mypy(session: Session) -> None:
     """Type-check using mypy."""
-    args = s.posargs or [
-        "src/mapstp",
-        "docs/source/conf.py",
-    ]  # TODO dvp: add other locations
-    s.install("mypy", "types-setuptools")
-    s.run("mypy", *args)
+    args = session.posargs or ["src", "tests", "docs/source/conf.py"]
+    session.install(".")
+    session.install("mypy", "pytest", "types-setuptools")
+    session.run("mypy", *args)
+    if not session.posargs:
+        session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
+
+
+# @session(python=mypy_pythons)
+# def mypy(s: Session) -> None:
+#     """Type-check using mypy."""
+#     args = s.posargs or [
+#         "src/mapstp",
+#         "docs/source/conf.py",
+#     ]  # TODO dvp: add other locations
+#     s.install("mypy", "types-setuptools")
+#     s.run("mypy", *args)
 
 
 @session(python=supported_pythons)
