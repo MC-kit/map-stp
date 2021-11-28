@@ -16,7 +16,7 @@ import nox
 
 # from nox.sessions import Session
 try:
-    from nox_poetry import Session, session
+    from nox_poetry import Session, session  # mypy: ignore
 except ImportError:
     message = f"""\
     Nox failed to import the 'nox-poetry' package.
@@ -227,25 +227,14 @@ def lint(s: Session) -> None:
 
 
 @session(python=supported_pythons)
-def mypy(session: Session) -> None:
+def mypy(s: Session) -> None:
     """Type-check using mypy."""
-    args = session.posargs or ["src", "tests", "docs/source/conf.py"]
-    session.install(".")
-    session.install("mypy", "pytest", "types-setuptools")
-    session.run("mypy", *args)
-    if not session.posargs:
-        session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
-
-
-# @session(python=mypy_pythons)
-# def mypy(s: Session) -> None:
-#     """Type-check using mypy."""
-#     args = s.posargs or [
-#         "src/mapstp",
-#         "docs/source/conf.py",
-#     ]  # TODO dvp: add other locations
-#     s.install("mypy", "types-setuptools")
-#     s.run("mypy", *args)
+    args = s.posargs or ["src", "tests", "docs/source/conf.py"]
+    s.install(".")
+    s.install("mypy", "pytest", "types-setuptools")
+    s.run("mypy", *args)
+    if not s.posargs:
+        s.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
 @session(python=supported_pythons)
