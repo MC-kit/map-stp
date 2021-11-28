@@ -102,7 +102,7 @@ def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
         hook.write_text("\n".join(lines))
 
 
-@session(name="pre-commit", python="3.10")
+@session(name="pre-commit", python="3.9")
 def precommit(s: Session) -> None:
     """Lint using pre-commit."""
     args = s.posargs or ["run", "--all-files", "--show-diff-on-failure"]
@@ -117,7 +117,7 @@ def precommit(s: Session) -> None:
         "pep8-naming",
         "pre-commit",
         "pre-commit-hooks",
-        "reorder-python-imports",
+        "isort",
     )
     s.run("pre-commit", *args)
     if args and args[0] == "install":
