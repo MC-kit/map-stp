@@ -57,8 +57,8 @@ jobs:
       run:  |
         set -e
         python -m ensurepip
-        python -m pip install -U pip wheel
-        pip install poetry==1.1.11
+        python -m pip install --constraint=.github/workflows/constraints.txt pip
+        pip install --constraint=.github/workflows/constraints.txt poetry
     - run: |
         set -e
         poetry version patch
@@ -70,7 +70,7 @@ jobs:
     - name: Build wheel
       run:  poetry build -f wheel
     - name: Build sdist
-      run:  python setup-generated.py sdist --formats=gztar,xztar,zip
+      run:  poetry build -s sdist
       if:   matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
     - name: GitHub Release wheels (deploy)
       if: (github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags'))
