@@ -44,10 +44,10 @@ nox.options.sessions = (
 package = "mapstp"
 locations = f"src/{package}", "tests", "noxfile.py", "docs/source/conf.py"
 
-supported_pythons = ["3.9", "3.8"]  # TODO dvp: add python 3.10
-black_pythons = "3.9"
-mypy_pythons = "3.9"
-lint_pythons = "3.9"
+supported_pythons = ["3.10", "3.9", "3.8"]
+black_pythons = "3.10"
+mypy_pythons = "3.10"
+lint_pythons = "3.10"
 
 on_windows = platform.system() == "Windows"
 
