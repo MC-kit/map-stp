@@ -44,7 +44,7 @@ nox.options.sessions = (
 package = "mapstp"
 locations = f"src/{package}", "tests", "noxfile.py", "docs/source/conf.py"
 
-supported_pythons = ["3.9", "3.8"]  # TODO dvp: add python 3.10
+supported_pythons = ["3.9", "3.8"]
 black_pythons = "3.9"
 mypy_pythons = "3.9"
 lint_pythons = "3.9"
@@ -246,7 +246,7 @@ def xdoctest(s: Session) -> None:
     s.run("python", "-m", "xdoctest", package, *args)
 
 
-@session(name="docs-build", python="3.10")
+@session(name="docs-build", python="3.9")
 def docs_build(s: Session) -> None:
     """Build the documentation."""
     args = s.posargs or ["docs/source", "docs/_build"]
@@ -270,7 +270,7 @@ def docs_build(s: Session) -> None:
     s.run("sphinx-build", *args)
 
 
-@session(python="3.10")
+@session(python="3.9")
 def docs(s: Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
     args = s.posargs or ["--open-browser", "docs/source", "docs/_build"]
