@@ -42,25 +42,25 @@ jobs:
         uses: salsify/action-detect-and-tag-new-version@v2.0.1
         with:
           version-command: |
-            bash -o pipefail -c "poetry version | awk '{ print \$2 }'"
+            poetry version --short
 
       - name: Bump version for developmental release
         if: "! steps.check-version.outputs.tag"
         run: |
           poetry version patch &&
-          version=$(poetry version | awk '{ print $2 }') &&
+          version=$(poetry version --short) &&
           poetry version $version.dev.$(date +%s)
 
       - name: Build package
         run: |
           poetry build --ansi
-
-      - name: Publish package on PyPI
-        if: steps.check-version.outputs.tag
-        uses: pypa/gh-action-pypi-publish@v1.4.2
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_TOKEN }}
+# TODO dvp: return the following and remove TestPyPI
+#      - name: Publish package on PyPI
+#        if: steps.check-version.outputs.tag
+#        uses: pypa/gh-action-pypi-publish@v1.4.2
+#        with:
+#          user: __token__
+#          password: ${{ secrets.PYPI_TOKEN }}
 
       - name: Publish package on TestPyPI
         if: "! steps.check-version.outputs.tag"
