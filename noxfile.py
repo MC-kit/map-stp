@@ -44,10 +44,10 @@ nox.options.sessions = (
 package = "mapstp"
 locations = f"src/{package}", "tests", "noxfile.py", "docs/source/conf.py"
 
-supported_pythons = ["3.9", "3.8"]
-black_pythons = "3.9"
-mypy_pythons = "3.9"
-lint_pythons = "3.9"
+supported_pythons = ["3.8", "3.9", "3.10"]
+black_pythons = "3.10"
+mypy_pythons = "3.10"
+lint_pythons = "3.10"
 
 on_windows = platform.system() == "Windows"
 
@@ -104,7 +104,7 @@ def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
         hook.write_text("\n".join(lines))
 
 
-@session(name="pre-commit", python="3.9")
+@session(name="pre-commit", python="3.10")
 def precommit(s: Session) -> None:
     """Lint using pre-commit."""
     args = s.posargs or ["run", "--all-files", "--show-diff-on-failure"]
@@ -128,7 +128,7 @@ def precommit(s: Session) -> None:
         activate_virtualenv_in_precommit_hooks(s)
 
 
-@session(python="3.9")
+@session(python="3.10")
 def safety(s: Session) -> None:
     """Scan dependencies for insecure packages."""
     requirements = s.poetry.export_requirements()
@@ -176,7 +176,7 @@ def typeguard(s: Session) -> None:
     s.run("pytest", f"--typeguard-packages={package}", *s.posargs)
 
 
-@session(python="3.9")
+@session(python="3.10")
 def isort(s: Session) -> None:
     """Organize imports."""
     s.install("isort")
@@ -246,7 +246,7 @@ def xdoctest(s: Session) -> None:
     s.run("python", "-m", "xdoctest", package, *args)
 
 
-@session(name="docs-build", python="3.9")
+@session(name="docs-build", python="3.10")
 def docs_build(s: Session) -> None:
     """Build the documentation."""
     args = s.posargs or ["docs/source", "docs/_build"]
@@ -270,7 +270,7 @@ def docs_build(s: Session) -> None:
     s.run("sphinx-build", *args)
 
 
-@session(python="3.9")
+@session(python="3.10")
 def docs(s: Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
     args = s.posargs or ["--open-browser", "docs/source", "docs/_build"]
