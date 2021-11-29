@@ -24,20 +24,20 @@ jobs:
           architecture: x64
       # - name: Checkout submodules
         # run: git submodule update --init --recursive --depth=1
-      - name: Install nox
-        run: pip install nox==2021.10.1
-      - name: Install poetry
+      - name: Install pip
         run:  |
           set -e
           python -m ensurepip
-          python -m pip install -U pip wheel
-          pip install poetry==1.1.11
-      - name: Run Safety test
-        run: nox -s safety
+          python -m pip install --constraint=.github/workflows/constraints.txt pip
+      - name: Install nox
+        run: pip install --constraint=.github/workflows/constraints.txt nox nox-poetry
+      - name: Install poetry
+        run: pip install --constraint=.github/workflows/constraints.txt poetry
       - name: Run nox tests
-        run: nox -s tests -p 3.9 -- -m "not slow"
+        run: nox --python 3.9
   build_wheels:
     name: "Python ${{ matrix.python-version }} on ${{ matrix.os }}"
+    needs: lint
     runs-on: "${{ matrix.os }}"
     if: |
       !startsWith(github.event.head_commit.message, 'bump:') &&
@@ -78,7 +78,7 @@ jobs:
       with:
         files: dist/*
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.MCKIT_GITHUB_TOKEN }}
     - name: Publish to TestPyPI
       run: |
         poetry config repositories.testpypi https://test.pypi.org/legacy/

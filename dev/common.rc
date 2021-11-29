@@ -146,14 +146,13 @@ function check_dirs() {
 }
 
 
-function filter_printenv() {
+filter_printenv() {
     local what=$*
     if [[ -z "$what" ]]; then
         what="$(make_list '|^' \
             pyenv \
             poetry \
-            mkl \
-            mckit \
+            mapstp \
         )"
     fi
     local exclude="$(make_list '|^' \
@@ -163,26 +162,20 @@ function filter_printenv() {
         oldpwd \
         original_path \
     )"
-    # echo "include: $what"
-    # echo "exclude: $exclude"
-    (
-        echo "INCLUDE_PATH=$INCLUDE_PATH"
-        echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
-        printenv | grep -i -E "$what" | grep -i -v -E "$exclude"
-    ) | sort -u
+    printenv | grep -i -E "$what" | grep -i -v -E "$exclude" | sort -u
 }
 
 
 #
 # Creates a given directory (if needed) and changes to it.
 #
-function mdcd() {
+mdcd() {
     mkdir -p "$1"  && cd "$1"
 }
 
 
-function show_python_versions_available() {
-    pyenv update > /dev/null && pyenv install --list | egrep -E "^\s*3\.(6|7|8|9|10)\."
+show_python_versions_available() {
+    pyenv update > /dev/null && pyenv install --list | egrep -E "^\s*3\.(6|7|8|9|10|11)\."
 }
 
 #
@@ -190,18 +183,21 @@ function show_python_versions_available() {
 # To fix this we have to change it's config to use an existing environment,
 # i.e. the one which is currently activated by conda or pyenv-win.
 #
-function fix_poetry_config() {
+fix_poetry_config() {
     local python_prefix
     python_prefix="$(python -c 'import sys; print(sys.prefix)')"
     poetry config virtualenvs.path  "${python_prefix}" --local
     poetry config virtualenvs.create  false --local
 }
 
-function poetry_prefix(){
+poetry_prefix(){
     echo "$(poetry env info --path)"
 }
 
 
-function poetry_python() {
+poetry_python() {
     echo "$(poetry run which python)"
 }
+
+
+# vim: set ts=4 sw=4 tw=92 ss=0 ft=sh et ai :

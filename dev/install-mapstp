@@ -1,14 +1,20 @@
 #!/bin/bash
 
-# Remove all the previous installations from the envirohment.
-while [[ -x mapstp ]]; do
-    pip uninstall -q mapstp || break
-done
+# Remove all the previous dist-info folders from the poetry envirohment.
+# Then install the project and rehash pyenv shims.
 
-poetry install
-pyenv rehash
+mydir="$(dirname ${BASH_SOURCE[0]})"
+. $mydir/common.rc
 
+clear_prev_dists() {
+    set -e
+    local packages_dir="$(poetry env info --path)/lib/python3.9/site-packages"
+    rm -fr $packages_dir/mapstp*.dist-info
+    poetry install
+    pyenv rehash
+}
 
+is_main && clear_prev_dists
 
 
 # vim: set ts=4 sw=4 tw=92 ss=0 ft=sh et ai :
