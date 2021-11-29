@@ -24,13 +24,10 @@
 
 .. image:: https://img.shields.io/pypi/pyversions/mapstp
    :alt: PyPI - Python Version
-
 .. image:: https://img.shields.io/pypi/v/mapstp
    :alt: PyPI
-
 .. image:: https://img.shields.io/pypi/wheel/mapstp
    :alt: PyPI - Wheel
-
 .. image:: https://img.shields.io/github/last-commit/MC-kit/map-stp
    :alt: GitHub last commit
 
