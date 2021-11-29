@@ -40,16 +40,14 @@ END
 
     git fetch origin
     git checkout -b devel origin/devel  || git checkout devel
-    git merge master
-    git commit -am "build: merge master -> devel"
+    git merge master -m "build: merge master -> devel"
     nox
     local version="${1:-patch}"
     poetry version $version
     git commit -am "bump: set version=$(poetry version --short)"
     git checkout master
-    git merge --no-ff devel
+    git merge --no-ff devel -m "build: merge devel -> master"
     nox
-    git commit -am "build: merge devel -> master"
     git push origin master
 }
 
