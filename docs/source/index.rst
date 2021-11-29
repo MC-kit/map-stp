@@ -3,13 +3,22 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to mapstp's documentation!
-==================================
+mapstp: a tool to identify MCNP cells from STP
+==============================================
 
 .. toctree::
-   :maxdepth: 2
+   :hidden:
+   :maxdepth: 1
    :caption: Contents:
 
+   license
+   reference
+
+
+The tool allows associate STP model components and cells of the MCNP model generated from the STP
+model with Super MC.
+The association implies properties: material, density correction factor and classification tag.
+A user can use 3D editor to assign properties in 3D model.
 
 
 Indices and tables
@@ -18,3 +27,6 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+

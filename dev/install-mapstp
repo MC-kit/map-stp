@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Remove all the previous installations from the envirohment.
+while [[ -x mapstp ]]; do
+    pip uninstall -q mapstp || break
+done
+
+poetry install
+pyenv rehash
+
+
+
+
+# vim: set ts=4 sw=4 tw=92 ss=0 ft=sh et ai :

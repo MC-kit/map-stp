@@ -29,7 +29,8 @@ Transfer information from STP to MCNP
 A user can add additional information on components directly to STP file component names with a special label.
 The information may contain material, density correction factor, radiation waste checklist classification.
 The package transfers this information to MCNP file (which is generated from this STP with SuperMC):
-* sets materials and densities using information from STP labels and Excel material index file,
-* adds $-comment after each cell denoting its path in STP, with tag "stp\:",
-* creates accompanying Excel file listing the MCNP cells and their properties: material, density, correction factor,
-RWCL classification, STP path. This file can be used on MCNP results postprocessing.
+
+    * sets materials and densities using information from STP labels and Excel material index file,
+    * adds $-comment after each cell denoting its path in STP, with tag "stp:",
+    * creates accompanying Excel file listing the MCNP cells and their properties: material, density, correction factor,
+      RWCL classification, STP path. This file can be used on MCNP results postprocessing.

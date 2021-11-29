@@ -9,12 +9,7 @@ import pandas as pd
 
 # TODO dvp: make meta pattern configurable via command line or configuration file
 
-_META_PATTERN = re.compile(".*\\[(?P<meta>[^]]+)]$")
-
-
-def _create_pair(x: str) -> Tuple[str, str]:
-    a, b = x.split("-", 1)  # type: str, str
-    return a, b
+_META_PATTERN = re.compile(r".*\[(?P<meta>[^]]+)]")
 
 
 @dataclass
@@ -94,3 +89,8 @@ def _extract_meta_info(
     except ValueError as _ex:
         raise ValueError(f"On path {path} part #{i}: {part}") from _ex
     return pars
+
+
+def _create_pair(x: str) -> Tuple[str, str]:
+    a, b = x.split("-", 1)  # type: str, str
+    return a, b

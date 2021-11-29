@@ -4,5 +4,5 @@ from click.testing import CliRunner
 
 
 @pytest.fixture
-def runner():
+def runner() -> CliRunner:
     return CliRunner()
