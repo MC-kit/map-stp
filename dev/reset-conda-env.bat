@@ -62,6 +62,7 @@ goto END
         echo The global poetry won't work in the activated environment.
         call conda install poetry -c conda-forge -q -y
         echo Cache in Windows AppData is out of our control
+        echo So, let's set specific cache for poetry
         mkdir c:\programs\poetry-cache
         call poetry config --local cache-dir c:\programs\poetry-cache
         call poetry config --local virtualenvs.create false
