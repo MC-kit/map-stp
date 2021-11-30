@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# Perform release.
+# dvp2015, 2012-11-28
+
+mydir="$(dirname ${BASH_SOURCE[0]})"
+. $mydir/common.rc
+
+
+run_release() {
+    if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+cat << 'END'
+Usage:
+
+   release [<version>]
+
+Options:
+    -h, --help    - print this help text
+
+Argument:
+    <version>     - version to set (default 'patch')
+
+For details on possible <version> values run
+
+    poetry version --help
+
+Scenario:
+  1: From your project repository, bring in the changes.
+  2: Test locally merge master->devel.
+  3: Bump version
+  4: Merge the changes devel -> master.
+  5: Test locally merge devel->master.
+  6: Update on GitHub.
+
+END
+        return 0
+    fi
+
+    set -e
+
+    git fetch origin
+    git checkout -b devel origin/devel  || git checkout devel
+    git merge master -m "build: merge master -> devel"
+    nox
+    local version="${1:-patch}"
+    poetry version $version
+    git commit -am "bump: set version=$(poetry version --short)"
+    git checkout master
+    git merge --no-ff devel -m "build: merge devel -> master"
+    nox
+    git push origin master
+}
+
+is_main && run_release "$@"
+
+# vim: set ts=4 sw=4 tw=92 ss=0 ft=sh et ai :

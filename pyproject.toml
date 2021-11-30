@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "mapstp"
-version = "0.2.8-alpha.0"
+version = "0.2.11-alpha.0"
 description = "Transfers meta information from STP to MCNP"
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 homepage = "https://github.com/MC-kit/map-stp"
 repository = "https://github.com/MC-kit/map-stp"
 # documentation = "https://mapstp.readthedocs.io
 license = "MIT"
-keywords = ["STP", "MCNP", "SuperMC"]
+keywords = ["STP", "MCNP", "SuperMC", "SpaceClaim"]
 readme = "README.rst"
 packages = [
     { include = "mapstp", from = "src" },
@@ -26,8 +26,8 @@ classifiers = [
 [tool.poetry.scripts]
 mapstp = "mapstp.cli.runner:mapstp"
 
-# [tool.poetry.urls]
-# Chnagelog = "https://github.com/MC-kit/mapstp/releases
+[tool.poetry.urls]
+Chnagelog = "https://github.com/MC-kit/mapstp/releases"
 
 
 [tool.poetry.dependencies]
@@ -45,16 +45,18 @@ pytest-cov = "^3.0.0"
 coverage = { version = "^6.1.2", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
 nox = "^2021.6.12"
 Pygments = "^2.10.0"
-black = "^21.8b0"
+black = "^21.10b0"
 codecov = "^2.1.12"
 darglint = "^1.8.1"
 flake8 = "^4.0.1"
 flake8-annotations = "^2.6.2"
 flake8-bandit = "^2.1.2"
-flake8-bugbear = "^21.4.3"
+flake8-bugbear = "^21.9.2"
 flake8-docstrings = "^1.6.0"
+flake8-rst-docstrings = "^0.2.3"
 flake8-import-order = "^0.18.1"
 mypy = "^0.910"
+pep8-naming = "^0.12.1"
 pre-commit = "^2.15.0"
 pytest-benchmark = "^3.4.1"
 pytest-mock = "^3.6.1"
@@ -72,6 +74,7 @@ rstcheck = "^3.3.1"
 isort = "^5.9.3"
 yappi = "^1.3.2"
 types-setuptools = "^57.4.2"
+nox-poetry = "^0.9.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -175,23 +178,22 @@ sort = "Cover"
 # See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
 [tool.mypy]
 python_version = 3.9
+# strict = true     # TODO dvp: uncomment this to get strict control
 follow_imports = "skip"
+# namespace_packages = true
 warn_return_any = true
 warn_unused_configs = true
 show_error_codes = true
+show_error_context = true
 error_summary = true
 warn_redundant_casts = true
+warn_unreachable = true
 warn_unused_ignores = true
-
-# Needed because of bug in MyPy
-disallow_subclassing_any = false
-
-# mypy_path = mckit
 files = "src/mapstp/**/*.py"
 
 
 [[tool.mypy.overrides]]
 module = [
-    "nox.*", "pandas", "pytest", "click", "click.testing", "loguru", "numpy.testing"
+    "nox", "nox_poetry", "pandas", "pytest", "click", "click.testing", "loguru", "numpy.testing"
 ]
 ignore_missing_imports = true

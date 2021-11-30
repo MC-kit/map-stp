@@ -19,36 +19,24 @@ as end of line comments after corresponding cells with prefix
 "sep:". The material numbers and densities are set according
 to the meta information provided in the STP.
 """
-from typing import Dict, List, Optional
 
 from dataclasses import dataclass
 from pathlib import Path
 
 import click
-import pandas as pd
 
 from mapstp import __name__ as package_name
 from mapstp import __summary__, __version__
 from mapstp.excel import create_excel
-from mapstp.extract_info import extract_path_info
-from mapstp.materials import load_materials_map
-from mapstp.materials_index import load_materials_index
-from mapstp.merge import merge_paths
-from mapstp.stp_parser import parse_path
-from mapstp.tree import create_bodies_paths
-from mapstp.utils.io import can_override, find_first_cell_number, select_output
+from mapstp.materials import get_used_materials, load_materials_map
+from mapstp.merge import correct_start_cell_number, join_paths, merge_paths
+from mapstp.utils.io import can_override, select_output
+
+# TODO dvp: add customized configuring from a configuration toml-file.
+from mapstp.workflow import create_path_info
 
 # from .logging import logger
 # from click_loguru import ClickLoguru
-
-
-def correct_start_cell_number(start_cell_number: Optional[int], mcnp: Optional[str]):
-    if not start_cell_number:
-        if not mcnp:
-            start_cell_number = 1
-        else:
-            start_cell_number = find_first_cell_number(mcnp)
-    return start_cell_number
 
 
 # LOG_FILE_RETENTION = 3
@@ -73,8 +61,6 @@ def correct_start_cell_number(start_cell_number: Optional[int], mcnp: Optional[s
 #     log_dir_parent=".logs",
 #     timer_log_level="info",
 # )
-
-# TODO dvp: add customized configuring from a configuration toml-file.
 
 
 @dataclass
@@ -222,43 +208,14 @@ def mapstp(
     )
     if mcnp:
         _mcnp = Path(mcnp)
-        joined_paths = join_paths(paths, separator)
         with select_output(override, output) as _output:
+            joined_paths = join_paths(paths, separator)
             merge_paths(_output, joined_paths, path_info, _mcnp, used_materials_text)
     if excel:
         start_cell_number = correct_start_cell_number(start_cell_number, mcnp)
         _excel = Path(excel)
         can_override(_excel, override)
         create_excel(_excel, paths, path_info, separator, start_cell_number)
-
-
-def create_path_info(materials_index: str, stp: str):
-    _materials_index = load_materials_index(materials_index)
-    _stp = Path(stp)
-    products, graph = parse_path(_stp)
-    paths = create_bodies_paths(products, graph)
-    path_info = extract_path_info(paths, _materials_index)
-    return paths, path_info
-
-
-def materials_spec_mapper(materials_map: Dict[int, str]):
-    def _func(used_number: int):
-        text = materials_map.get(used_number)
-        if not text:
-            text = f"m{used_number}  $ dummy: is to be replaced manually\n        1.001.31c  1.0"
-        return text
-
-    return _func
-
-
-def get_used_materials(materials_map: Dict[int, str], path_info: pd.DataFrame):
-    used_numbers = sorted(set(path_info["number"].values))
-    used_materials_texts = list(map(materials_spec_mapper(materials_map), used_numbers))
-    return "".join(used_materials_texts)
-
-
-def join_paths(paths: List[List[str]], separator: str = "/") -> List[str]:
-    return list(map(lambda path: separator.join(path), paths))
 
 
 # TODO dvp: add logging

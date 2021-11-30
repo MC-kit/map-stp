@@ -9,7 +9,7 @@ from pathlib import Path
 
 from mapstp.exceptions import FileError, ParseError
 
-# check patterns on https://pythex.org/
+# Hint: check patterns on https://pythex.org/
 
 _NUMBERED = r"^#(?P<digits>\d+)="
 _NAME = r"'(?P<name>(?:''|[^'])+)'"

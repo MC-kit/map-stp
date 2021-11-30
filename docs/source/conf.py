@@ -19,8 +19,8 @@ from typing import List
 # -- Project information -----------------------------------------------------
 
 project = "mapstp"
-copyright = "2021, Dmitry Portnov"
 author = "Dmitry Portnov"
+copyright = f"2021, {author}"
 
 # The full version, including alpha/beta/rc tags
 release = "0.2.7"
@@ -31,7 +31,11 @@ release = "0.2.7"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions: List[str] = []
+extensions: List[str] = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path: List[str] = ["_templates"]
