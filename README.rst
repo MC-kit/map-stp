@@ -27,6 +27,10 @@
 .. image:: https://img.shields.io/pypi/v/mapstp
    :alt: PyPI
 
+.. image:: https://readthedocs.org/projects/mapstp/badge/?version=latest
+   :target: https://mapstp.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
 Transfer information from STP to MCNP
 -------------------------------------
 

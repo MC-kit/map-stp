@@ -27,6 +27,7 @@ classifiers = [
 mapstp = "mapstp.cli.runner:mapstp"
 
 [tool.poetry.urls]
+documentation = "https://mapstp.readthedocs.io"
 Chnagelog = "https://github.com/MC-kit/mapstp/releases"
 
 
