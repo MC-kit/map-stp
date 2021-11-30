@@ -7,7 +7,7 @@
 
 :: defaults
 set conda_env=mapstp
-set python_version=3.10
+set python_version=3.9
 
 
 call :main %*
@@ -53,10 +53,19 @@ goto END
     call conda env remove -n %conda_env% -q -y
     call conda create -n %conda_env% python=%python_version% pip -c conda-forge -q -y
     if "%ERRORLEVEL%" NEQ "0" (
-        echo Probably conda has problems with antivirus,  try delete AppData/Temp pip files.
+        echo Probably conda pip has problems with the Windows AppData cache or temporary files
+        echo Try delete AppData/Temp pip files.
     ) else (
         call conda activate %conda_env%
         python --version
+        echo Install local copy of poetry: this is conda...
+        echo The global poetry won't work in the activated environment.
+        call conda install poetry -c conda-forge -q -y
+        echo Cache in Windows AppData is out of our control
+        mkdir c:\programs\poetry-cache
+        call poetry config --local cache-dir c:\programs\poetry-cache
+        call poetry config --local virtualenvs.create false
+        call poetry install
     )
     goto END
 
