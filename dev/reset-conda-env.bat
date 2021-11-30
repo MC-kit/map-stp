@@ -24,10 +24,12 @@ if "%1"=="--help" (
 set conda_env=%1
 shift
 if "%conda_env%"=="" set conda_env=mapstp-2
+echo  Installing environment %conda_env%
 
 set python_vesion=%1
 shift
-if "%python_vesion%"=="" set python_vesion=3.8
+if "%python_vesion%"=="" set python_vesion=3.9
+echo  Python version %python_version%
 
 call poetry --version > NUL
 if errorlevel 1 (
@@ -43,18 +45,19 @@ echo Installing conda environment %conda_env%
 call conda deactivate
 call conda activate
 call conda env remove -n %conda_env% -q -y
-call conda create -n %conda_env%
-:: python=%python_version% -q -y
+call conda create -n %conda_env% python=%python_version% -q -y
 call conda activate %conda_env%
 python --version
-conda update -q -y pip wheel setuptools
 
 
 ::   this makes poetry to use conda environment and don't create own one
 call poetry config --local virtualenvs.create false
 ::   this creates egg-link in the environment to current project (development install)
+poetry env info --path
 
-goto END
+
+
+::goto END
 
 call poetry install
 
