@@ -1,0 +1,6 @@
+[cmd.exe]
+    gcam=git commit -am %1
+    gl=git pull
+    gp=git push
+    h=doskey /history
+
