@@ -23,7 +23,7 @@ author = "Dmitry Portnov"
 copyright = f"2021, {author}"
 
 # The full version, including alpha/beta/rc tags
-release = "0.2.7"
+release = "0.2.10"
 
 
 # -- General configuration ---------------------------------------------------
@@ -34,8 +34,8 @@ release = "0.2.7"
 extensions: List[str] = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
-    "sphinx_autodoc_typehints",
 ]
+#    "sphinx_autodoc_typehints",
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path: List[str] = ["_templates"]
