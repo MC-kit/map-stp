@@ -1,4 +1,6 @@
 [cmd.exe]
+    gst=git status %*
+    ga=git add %*
     gcam=git commit -am %1
     gl=git pull
     gp=git push
