@@ -5,7 +5,27 @@
 :: dvp, Nov 2021
 ::
 
-if "%1"=="--help" (
+:: defaults
+set conda_env=mapstp
+set python_version=3.9
+
+
+call :main %*
+
+if ""%ERRORLEVEL%"" NEQ "0" (echo SUCCESS.) else (echo FAIL!)
+
+goto END
+
+:main
+    if "%1"=="--help" (
+        call :usage
+    ) else (
+        call :arg_parse %*
+        call :reset_conda
+    )
+    goto END
+
+:usage
     echo.
     echo Usage:
     echo.
@@ -14,113 +34,40 @@ if "%1"=="--help" (
     echo All the parameters are optional.
     echo.
     echo Defaults:
-    echo 	conda_env=mapstp-2
-::    echo   install_tool=pip   another valid value: poetry
-    echo   python_version=3.9
+    echo    conda_env=%conda_env%
+    echo    python_version=%python_version%
     echo.
-    goto END
-)
 
-set conda_env=%1
-shift
-if "%conda_env%"=="" set conda_env=mapstp-2
-
-set python_vesion=%1
-shift
-if "%python_vesion%"=="" set python_vesion=3.8
-
-call poetry --version > NUL
-if errorlevel 1 (
-	echo ERROR\: Poetry is not available
-	echo Run dev\install-poetry.bat
-	echo or see poetry installation instructions: https://python-poetry.org
-	goto END
-
-)
-
-echo Installing conda environment %conda_env%
-
-call conda deactivate
-call conda activate
-call conda env remove -n %conda_env% -q -y
-call conda create -n %conda_env%
-:: python=%python_version% -q -y
-call conda activate %conda_env%
-python --version
-conda update -q -y pip wheel setuptools
-
-
-::   this makes poetry to use conda environment and don't create own one
-call poetry config --local virtualenvs.create false
-::   this creates egg-link in the environment to current project (development install)
-
-goto END
-
-call poetry install
-
-if errorlevel 1  (
-    echo "ERROR: failed to run install with %install_tool%"
-    goto END
-)
-
-mapstp --version
-if errorlevel 1  (
-    echo "ERROR: failed to install mapstp"
-    goto END
-)
-echo.
-echo SUCCESS: mapstp has been installed into conda environment %conda_env%
-echo.
-
-
-pytest -m "not slow"
-if errorlevel 1 (
-    echo ERROR: failed to run tests
-    goto END
-)
-echo.
-echo SUCCESS: pytest is passed OK
-echo.
-
-
-
-if "%install_tool%"=="poetry" (
-    :: verify nox
-    nox --list
-    :: safety first - run this on every dependency addition or update
-    :: test often - who doesn't?
-    nox -s safety -s tests -p %python_version% -- -m "not slow" --cov
-    call poetry build
-    if errorlevel 1 (
-        echo ERROR: failed to run poetry build
-        goto END
+:arg_parse
+    if "%1" NEQ "" (
+        set set conda_env=%1
+        shift
+        if "%1" NEQ "" set python_version=%1
     )
-) else (
-    pip install .
-    if errorlevel 1 (
-        echo ERROR: failed to collect dependencies with pip
-        goto END
-    )
-)
-
-call create-jk %mapstp%
-if errorlevel 1 (
     goto END
-)
 
-echo.
-echo SUCCESS!
-echo --------
-echo.
-echo Usage:
-echo.
-mapstp --help
-echo.
-echo Conda environment %mapstp% is all clear.
-echo Set your IDE to use %CONDA_PREFIX%\python.exe
-echo.
-echo Enjoy!
-echo.
-
+:reset_conda
+    echo Installing environment %conda_env% for Python %python_version%
+    call conda deactivate
+    call conda activate
+    call conda env remove -n %conda_env% -q -y
+    call conda create -n %conda_env% python=%python_version% pip -c conda-forge -q -y
+    if "%ERRORLEVEL%" NEQ "0" (
+        echo Probably conda pip has problems with the Windows AppData cache or temporary files
+        echo Try delete AppData/Temp pip files.
+    ) else (
+        call conda activate %conda_env%
+        python --version
+        echo Install local copy of poetry: this is conda...
+        echo The global poetry won't work in the activated environment.
+        call conda install poetry -c conda-forge -q -y
+        echo Cache in Windows AppData is out of our control
+        echo So, let's set specific cache for poetry
+        mkdir c:\programs\poetry-cache
+        call poetry config --local cache-dir c:\programs\poetry-cache
+        call poetry config --local virtualenvs.create false
+        call poetry install
+    )
+    goto END
 
 :END

@@ -3,11 +3,13 @@
 The map associates material number to its MCNP specification text.
 """
 
-from typing import Dict, Generator, Iterable, TextIO, Union
+from typing import Callable, Dict, Generator, Iterable, TextIO, Union
 
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
+
+import pandas as pd
 
 from mapstp.utils.re import CARD_PATTERN, MATERIAL_PATTERN
 
@@ -111,3 +113,40 @@ def drop_material_cards(lines: Iterable[str]) -> Generator[str, None, None]:
                     in_material_card = False
         if not in_material_card:
             yield line
+
+
+def materials_spec_mapper(materials_map: Dict[int, str]) -> Callable[[int], str]:
+    """Create method to extract a material specification by its number.
+
+    Args:
+        materials_map:  map number -> spec
+
+    Returns:
+        method to be used in map extracting material specification.
+    """
+
+    def _func(used_number: int) -> str:
+        text = materials_map.get(used_number)
+        if not text:
+            text = (
+                f"m{used_number}  $ dummy: is to be replaced manually\n"
+                "        1.001.31c  1.0"
+            )
+        return text
+
+    return _func
+
+
+def get_used_materials(materials_map: Dict[int, str], path_info: pd.DataFrame) -> str:
+    """Collect text of used materials specifications.
+
+    Args:
+        materials_map: map material number -> spec.
+        path_info: dataframe containing column with used material numbers.
+
+    Returns:
+        All the used materials specs to be used as part of MCNP model text.
+    """
+    used_numbers = sorted(set(path_info["number"].values))
+    used_materials_texts = list(map(materials_spec_mapper(materials_map), used_numbers))
+    return "".join(used_materials_texts)

@@ -14,7 +14,6 @@
 .. image:: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
     :target: https://pycqa.github.io/isort/
 
-
 .. image:: https://img.shields.io/github/license/MC-kit/map-stp
    :target: https://github.com/MC-kit/map-stp
 
@@ -28,11 +27,9 @@
 .. image:: https://img.shields.io/pypi/v/mapstp
    :alt: PyPI
 
-.. image:: https://img.shields.io/pypi/wheel/mapstp
-   :alt: PyPI - Wheel
-
-.. image:: https://img.shields.io/github/last-commit/MC-kit/map-stp
-   :alt: GitHub last commit
+.. image:: https://readthedocs.org/projects/mapstp/badge/?version=latest
+   :target: https://mapstp.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
 
 Transfer information from STP to MCNP
 -------------------------------------

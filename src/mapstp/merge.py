@@ -18,7 +18,7 @@ import pandas as pd
 
 from mapstp.exceptions import PathInfoError
 from mapstp.materials import drop_material_cards
-from mapstp.utils.io import read_mcnp_sections
+from mapstp.utils.io import find_first_cell_number, read_mcnp_sections
 from mapstp.utils.re import CELL_START_PATTERN
 
 
@@ -181,7 +181,7 @@ def merge_paths(
     paths: List[str],
     path_info: pd.DataFrame,
     mcnp: Path,
-    used_materials_text: str,
+    used_materials_text: str = None,
 ) -> None:
     """Print to `output` the updated MCNP code.
 
@@ -227,3 +227,39 @@ def merge_paths(
                 print(remainder, file=output, end="")
         else:
             print(used_materials_text, file=output)
+
+
+def join_paths(paths: List[List[str]], separator: str = "/") -> List[str]:
+    """Collect rows of strings to string.
+
+    Args:
+        paths: list of stp paths defined as list of strings
+        separator: character to be used as separator
+
+    Returns:
+        list of joined stp paths
+    """
+    return list(map(lambda path: separator.join(path), paths))
+
+
+def correct_start_cell_number(
+    start_cell_number: Optional[int], mcnp: Optional[str]
+) -> int:
+    """Define cell number to start with on output to accompanying excel.
+
+    Args:
+        start_cell_number: number from command line or configuration, optional.
+        mcnp: MCNP file name, optional
+
+    Returns:
+        If `start_cell_number` is not set, tries to find the first cell number
+        from an MCNP file. If MCNP is also not defined returns 1.
+    """
+    if start_cell_number:
+        return start_cell_number
+
+    if not mcnp:
+        _start_cell_number = 1
+    else:
+        _start_cell_number = find_first_cell_number(mcnp)
+    return _start_cell_number
