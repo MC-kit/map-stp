@@ -21,7 +21,7 @@ def filename_resolver(package: str = None) -> Callable[[str], str]:
     Returns:
         callable which appends the argument to the package folder.
     """
-    package = _validate_package(package)
+    package = _resolve_package(package)
     resource_manager = pkg.ResourceManager()  # type: ignore
 
     def func(resource: str) -> str:
@@ -45,7 +45,7 @@ def path_resolver(package: str = None) -> Callable[[str], Path]:
         callable which appends the argument to the package folder adt returns as Path.
     """
     # Note: we should define package here to have proper offset in callers stack.
-    package = _validate_package(package)
+    package = _resolve_package(package)
     resolver = filename_resolver(package)
 
     def func(resource: str) -> Path:
@@ -57,7 +57,7 @@ def path_resolver(package: str = None) -> Callable[[str], Path]:
     return func
 
 
-def _validate_package(package: str = None) -> str:
+def _resolve_package(package: str = None) -> str:
     if package is None:
         module = inspect.getmodule(inspect.stack()[2][0])
         if module is None:
