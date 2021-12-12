@@ -9,6 +9,7 @@ on:
     paths:
       - "**.py"
       - "**.yml"
+      - "**.toml"
   pull_request:
     branches:
       - "master"
@@ -17,6 +18,7 @@ on:
     paths:
       - "**.py"
       - "**.yml"
+      - "**.toml"
 jobs:
   tests:
     name: "Python ${{ matrix.python-version }} on ${{ matrix.os }}"
