@@ -3,8 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-mapstp: a tool to identify MCNP cells from STP
-==============================================
+====================================================
+**mapstp**: a tool to associate  MCNP and STP models
+====================================================
+
+.. note::
+
+
+    The documentation is under development.
+
 
 .. toctree::
    :hidden:
