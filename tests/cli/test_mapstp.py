@@ -175,12 +175,6 @@ def test_info_assignment(runner, tmp_path, data):
     assert len(first_void_lines) == 2
 
 
-def test_find_first_cell_number(data):
-    mcnp = data / "test-extract-info.i"
-    actual = find_first_cell_number(mcnp)
-    assert actual == 2000
-
-
 @pytest.mark.parametrize(
     "number, mcnp, expected",
     [

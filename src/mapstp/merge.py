@@ -194,7 +194,7 @@ def merge_paths(
         path_info: table with other information on cells:
                   material number, density, density correction factor.
         mcnp:   The input MCNP file name.
-        used_materials_text: The materials specification to add to model.
+        used_materials_text: The specification of materials to add to model.
     """
     mcnp_sections = read_mcnp_sections(mcnp)
     cells = mcnp_sections.cells
