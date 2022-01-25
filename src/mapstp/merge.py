@@ -35,23 +35,13 @@ def is_defined(number: Union[int, float]) -> bool:
     return number is not None and not math.isnan(number)
 
 
-def is_not_defined(number: Union[int, float]) -> bool:
-    """Check if number coming from a DataFrame object cell is None or NaN.
-
-    Args:
-        number: value to check
-
-    Returns:
-        true - if `number` is not defined,
-        false - otherwise
-    """
-    return not is_defined(number)
-
-
 def extract_number_and_density(
     row: int, path_info: pd.DataFrame
 ) -> Optional[Tuple[int, float]]:
     """Extract material number and density from a `path_info` for a given `row`.
+
+    Validate the values: number, if provided, is to be positive, density - not
+    negative.
 
     Args:
         row: point the row in `path_info`
@@ -92,9 +82,6 @@ def extract_number_and_density(
                 "The values in `factor` column cannot be negative.", row, path_info
             )
         density *= factor
-
-    if math.isnan(density):
-        raise PathInfoError("Density is nan.", row, path_info)
 
     return number, density
 
