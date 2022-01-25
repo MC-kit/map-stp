@@ -34,6 +34,7 @@ release = "0.2.10"
 extensions: List[str] = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.duration",  # durations report on generation
 ]
 #    "sphinx_autodoc_typehints",
 

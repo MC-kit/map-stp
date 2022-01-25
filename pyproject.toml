@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mapstp"
-version = "0.3.0"
+version = "0.3.1"
 description = "Transfers meta information from STP to MCNP"
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 homepage = "https://github.com/MC-kit/map-stp"
@@ -35,7 +35,6 @@ Chnagelog = "https://github.com/MC-kit/mapstp/releases"
 python = "^3.8,<3.11"   # TODO dvp: numpy 2.21.4 sets upper limit to 3.11
 tomli = "^1.2.1"
 click = "^8.0.1"
-click-loguru = "^1.3.7"
 pandas = "^1.3.4"
 openpyxl = "^3.0.9"
 numpy = "^1.21.4"
