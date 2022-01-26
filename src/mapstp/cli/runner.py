@@ -31,38 +31,12 @@ from mapstp.excel import create_excel
 from mapstp.materials import get_used_materials, load_materials_map
 from mapstp.merge import correct_start_cell_number, join_paths, merge_paths
 from mapstp.utils.io import can_override, select_output
-
-# TODO dvp: add customized configuring from a configuration toml-file.
 from mapstp.workflow import create_path_info
 
-# from .logging import logger
-# from click_loguru import ClickLoguru
+from .logging import init_logger, logger
 
 
-# LOG_FILE_RETENTION = 3
-# NO_LEVEL_BELOW = 30
-#
-#
-# def stderr_log_format_func(msg_dict):
-#     """Do level-sensitive formatting.
-#
-#     Just a copy from click-loguru so far."""
-#
-#     if msg_dict["level"].no < NO_LEVEL_BELOW:
-#         return "<level>{message}</level>\n"
-#     return "<level>{level}</level>: <level>{message}</level>\n"
-#
-#
-# click_loguru = ClickLoguru(
-#     NAME,
-#     VERSION,
-#     stderr_format_func=stderr_log_format_func,
-#     retention=LOG_FILE_RETENTION,
-#     log_dir_parent=".logs",
-#     timer_log_level="info",
-# )
-
-
+# TODO dvp: add customized configuring from a configuration toml-file.
 @dataclass
 class Config:
     override: bool = False
@@ -83,13 +57,7 @@ to the meta information provided in the STP.
 """
 
 
-# @click_loguru.logging_options
-# @click.group(help=meta.__summary__, name=NAME)
-
-
 @click.command(help=_USAGE, name=package_name)
-# @click_loguru.init_logger()
-# @click_loguru.stash_subcommand()
 @click.option(
     "--override/--no-override",
     default=False,
@@ -154,9 +122,8 @@ to the meta information provided in the STP.
     required=False,
 )
 @click.version_option(__version__, prog_name=package_name)
-# @logger.catch(reraise=True)
+@click.help_option()
 @click.pass_context
-# ctx, verbose: bool, quiet: bool, logfile: bool, profile_mem: bool, override: bool
 def mapstp(
     ctx,
     override: bool,
@@ -190,16 +157,9 @@ def mapstp(
         raise click.UsageError(
             "Nor `excel`, neither `mcnp` parameter is specified - nothing to do"
         )
-    # if quiet:
-    #     logger.level("WARNING")
-    # if verbose:
-    #     logger.level("TRACE")
-    # logger.info("Running {}", NAME)
-    # logger.debug("Working dir {}", Path(".").absolute())
-
-    #
+    init_logger()
+    logger.info("Running mapstp {}", __version__)
     cfg = ctx.ensure_object(Config)
-    # obj["DEBUG"] = debug
     cfg.override = override
     paths, path_info = create_path_info(materials_index, stp)
     materials_map = load_materials_map(materials) if materials else None
@@ -216,9 +176,7 @@ def mapstp(
         _excel = Path(excel)
         can_override(_excel, override)
         create_excel(_excel, paths, path_info, separator, start_cell_number)
-
-
-# TODO dvp: add logging
+    logger.success("mapstp finished")
 
 
 if __name__ == "__main__":
