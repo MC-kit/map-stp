@@ -107,10 +107,10 @@ def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
         mcnp_path.read_text(encoding="cp1251"), maxsplit=4
     )
     sections_len = len(sections)
-    cells = sections[0]
-    surfaces = sections[1] if 1 <= sections_len else None
-    cards = sections[2] if 2 <= sections_len else None
-    if 3 <= sections_len:
+    cells = sections[0].strip()
+    surfaces = sections[1].strip() if 2 <= sections_len else None
+    cards = sections[2].strip() if 3 <= sections_len else None
+    if 4 <= sections_len:
         remainder: Optional[str] = sections[3].strip()
         if remainder == "":
             remainder = None

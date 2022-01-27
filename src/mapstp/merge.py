@@ -185,14 +185,15 @@ def merge_paths(
     """
     mcnp_sections = read_mcnp_sections(mcnp)
     cells = mcnp_sections.cells
-    lines = cells.split("\n")[:-1]  # drop the last empty line
+    lines = cells.split("\n")
 
     for line in _merge_lines(paths, path_info, lines):
         print(line, file=output)
 
+    print(file=output)
+
     surfaces = mcnp_sections.surfaces
     if surfaces:
-        surfaces = surfaces.rstrip()
         print(surfaces, file=output, end="")
         print("\n\n", file=output, end="")
 
@@ -202,7 +203,7 @@ def merge_paths(
             if used_materials_text:
                 used_materials_text = used_materials_text.strip()
                 print(used_materials_text, file=output)
-                cards_lines = cards.split("\n")[:-1]
+                cards_lines = cards.split("\n")
                 for line in drop_material_cards(cards_lines):
                     print(line, file=output)
             else:

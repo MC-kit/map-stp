@@ -66,7 +66,7 @@ MAPSTP_CONSOLE_LOG_FORMAT: Final[str] = env(
     "<level>{message}</level>",
 )
 MAPSTP_FILE_LOG_PATH: Final[Path] = env(
-    "MAPSTP_FILE_LOG_PATH", _type=Path, default="mapstp.log"
+    "MAPSTP_FILE_LOG_PATH", type_=Path, default="mapstp.log"
 )
 
 

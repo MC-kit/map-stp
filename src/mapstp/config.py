@@ -1,18 +1,18 @@
-from typing import Any, Final, Type
+from typing import Any, Type
 
 from os import environ
 
 
-def env(key: str, _type: Type[Any] = str, default=None):
+def env(key: str, type_: Type[Any] = str, default=None):
     if key not in environ:
         return default
 
     val = environ[key]
 
-    if _type == str:
+    if type_ == str:
         return val
 
-    if _type == bool:
+    if type_ == bool:
         val = val.lower()
         if val in ["1", "true", "yes", "y", "ok", "on"]:
             return True
@@ -22,7 +22,7 @@ def env(key: str, _type: Type[Any] = str, default=None):
             f"Invalid environment variable '{key}': expected a boolean, found '{val}'"
         )
 
-    if _type == int:
+    if type_ == int:
         try:
             return int(val)
         except ValueError:
@@ -30,7 +30,7 @@ def env(key: str, _type: Type[Any] = str, default=None):
                 f"Invalid environment variable '{key}': expected an integer, found '{val}'"
             ) from None
 
-    if _type == float:
+    if type_ == float:
         try:
             return float(val)
         except ValueError:
@@ -39,10 +39,10 @@ def env(key: str, _type: Type[Any] = str, default=None):
             ) from None
 
     try:
-        return _type(val)
+        return type_(val)
     except ValueError:
         raise ValueError(
-            f"Invalid environment variable '{key}': conversion {_type.__name__}({val}) failed."
+            f"Invalid environment variable '{key}': conversion {type_.__name__}({val}) failed."
         ) from None
 
 
