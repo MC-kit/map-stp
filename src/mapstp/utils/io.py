@@ -104,7 +104,7 @@ def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
 
     """
     sections = MCNP_SECTIONS_SEPARATOR_PATTERN.split(
-        mcnp_path.read_text(encoding="cp1251"), maxsplit=4
+        mcnp_path.read_text(encoding="cp1251"), maxsplit=3
     )
     sections_len = len(sections)
     cells = sections[0].strip()

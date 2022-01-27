@@ -36,12 +36,27 @@ def test_read_mcnp_sections(data, tmp_path):
     )
 
 
+def test_read_mcnp_sections_with_remainder(data, tmp_path):
+    mcnp = data / "test1.i"
+    text = mcnp.read_text()
+    tmp = tmp_path / "test.i"
+    tmp.parent.mkdir(parents=True, exist_ok=True)
+    tmp.write_text("\n\n".join([text, "remainder\nabc"]))
+    sections = read_mcnp_sections(tmp)
+    assert (
+        sections.cells
+        and sections.surfaces
+        and sections.cards
+        and sections.remainder == "remainder\nabc"
+    )
+
+
 def test_read_mcnp_sections_with_empty_remainder(data, tmp_path):
     mcnp = data / "test1.i"
     text = mcnp.read_text()
     tmp = tmp_path / "test.i"
     tmp.parent.mkdir(parents=True, exist_ok=True)
-    tmp.write_text("\n\n".join([text, "\n" * 3]))
+    tmp.write_text("\n\n".join([text, "\n" * 2]))
     sections = read_mcnp_sections(tmp)
     assert (
         sections.cells
