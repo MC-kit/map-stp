@@ -46,5 +46,22 @@ def test_extract_info(materials, paths, expected, msg):
     assert (actual == _expected).mask(isnull).all(axis=None), msg
 
 
+@pytest.mark.parametrize(
+    "paths, exception, msg",
+    [
+        (
+            [["aaa [m-Unknown]", "bbb", "ccc0"]],
+            KeyError,
+            "Mnemonic 'Unknown' is not specified in the material index. See STP path: aaa [m-Unknown]/bbb/ccc0",
+        ),
+    ],
+)
+def test_extract_info_with_missed_material(materials, paths, exception, msg):
+    with pytest.raises(KeyError) as x:
+        extract_path_info(paths, materials)
+        assert x.type is exception
+        assert x.value == msg
+
+
 if __name__ == "__main__":
     pytest.main()

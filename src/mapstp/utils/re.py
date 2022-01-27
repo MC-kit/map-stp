@@ -12,7 +12,7 @@ Separates sections in MCNP file.
 """
 
 MATERIAL_PATTERN = re.compile(r"^\s{0,4}[mM](?P<material>\d+)")
-"""Start of MCNP with material card title."""
+"""Start of an MCNP card with material specification."""
 
 CARD_PATTERN = re.compile(r"^\s{0,4}(?:(?P<comment>[cC]\s)|(?P<card>\w+))")
 """Start of MCNP line with comment or any card."""

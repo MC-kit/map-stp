@@ -37,13 +37,13 @@ class _MetaInfo:
 
 
 def extract_path_info(
-    paths: List[List[str]], mnemonic_table: pd.DataFrame
+    paths: List[List[str]], material_index: pd.DataFrame
 ) -> pd.DataFrame:
     """Extract meta information from `paths` and associate corresponding data with each path.
 
     Args:
         paths: STP paths
-        mnemonic_table: mnemonic-material-density lookup table
+        material_index: mnemonic-material-density lookup table
 
     Returns:
         Table with material `number`, `density`, applied correction `factor`,
@@ -63,10 +63,16 @@ def extract_path_info(
                     pars = _extract_meta_info(i, match, part, path)
                     meta_info.update(pars)
             if meta_info.mnemonic:
-                number: Optional[int] = int(
-                    mnemonic_table.loc[meta_info.mnemonic]["number"]
-                )  # TODO dvp: check why type of number became float
-                density: Optional[float] = mnemonic_table.loc[meta_info.mnemonic][
+                try:
+                    number: Optional[int] = int(
+                        material_index.loc[meta_info.mnemonic]["number"]
+                    )  # TODO dvp: check why type of number became float
+                except KeyError as x:
+                    raise KeyError(
+                        f"Mnemonic '{meta_info.mnemonic}' is not specified in the material index. "
+                        f"See STP path: {'/'.join(path)}"
+                    ) from None
+                density: Optional[float] = material_index.loc[meta_info.mnemonic][
                     "density"
                 ]
             else:

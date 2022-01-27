@@ -9,13 +9,13 @@ if specified in STP paths.
 from typing import Generator, Iterable, List, Optional, TextIO, Tuple, Union
 
 import math
-import warnings
 
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import pandas as pd
 
+from loguru import logger
 from mapstp.exceptions import PathInfoError
 from mapstp.materials import drop_material_cards
 from mapstp.utils.io import find_first_cell_number, read_mcnp_sections
@@ -149,8 +149,10 @@ class _Merger:
         if self.current_path_idx < self.paths_length:
             yield self.format_comment()
         if self.current_path_idx != self.paths_length:
-            warnings.warn(
-                f"Only {self.current_path_idx} merged," f"expected  {self.paths_length}"
+            logger.warning(
+                "Only {} cells merged, STP specifies {} bodies.",
+                self.current_path_idx,
+                self.paths_length,
             )
 
 
