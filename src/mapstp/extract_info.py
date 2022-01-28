@@ -5,6 +5,7 @@ import re
 
 from dataclasses import dataclass
 
+import numpy as np
 import pandas as pd
 
 # TODO dvp: make meta pattern configurable via command line or configuration file
@@ -67,14 +68,23 @@ def extract_path_info(
                     number: Optional[int] = int(
                         material_index.loc[meta_info.mnemonic]["number"]
                     )  # TODO dvp: check why type of number became float
-                except KeyError as x:
+                except KeyError:
                     raise KeyError(
-                        f"Mnemonic '{meta_info.mnemonic}' is not specified in the material index. "
-                        f"See STP path: {'/'.join(path)}"
+                        f"The mnemonic '{meta_info.mnemonic}' "
+                        "is not specified in the material index. "
+                        f"See the STP path: {'/'.join(path)}"
                     ) from None
-                density: Optional[float] = material_index.loc[meta_info.mnemonic][
-                    "density"
-                ]
+                density = material_index.loc[meta_info.mnemonic]["density"]
+                if np.isnan(density):
+                    raise ValueError(
+                        f"The density for mnemonic '{meta_info.mnemonic}' "
+                        "is not specified in the material index."
+                    )
+                if density < 0.0:
+                    raise ValueError(
+                        f"The density for mnemonic '{meta_info.mnemonic}' "
+                        "in the material index is to be positive."
+                    )
             else:
                 number = density = None
             yield number, density, meta_info.factor, meta_info.rwcl

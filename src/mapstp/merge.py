@@ -61,7 +61,7 @@ def extract_number_and_density(
 
     if not is_defined(density):
         raise PathInfoError(
-            f"The `density` value is not defined for material number {number}.",
+            f"The `density` value is not defined for material number {number}. ",
             row,
             path_info,
         )

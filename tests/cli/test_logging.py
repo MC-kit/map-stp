@@ -16,7 +16,7 @@ def test_when_stderr_is_off(capsys):
     msg = "Test error output"
     getLogger().error(msg)
     err = capsys.readouterr().err
-    assert err == "", f"STD error output should not contain any message"
+    assert err == "", "STD error output should not contain any message"
 
 
 class _Record(LogRecord):

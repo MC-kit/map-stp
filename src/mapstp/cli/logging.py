@@ -74,8 +74,13 @@ def init_logger(
     *,
     stderr_format: Optional[str] = MAPSTP_CONSOLE_LOG_FORMAT,
     log_path: Optional[Path] = MAPSTP_FILE_LOG_PATH,
-):
+) -> None:
+    """Configure logger with given parameters.
 
+    Args:
+        stderr_format: log message format for stderr handler, if None, no stderr logging.
+        log_path: path to file for logging, if None, no file logging.
+    """
     logger.remove()
     if stderr_format:
         logger.add(
