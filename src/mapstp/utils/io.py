@@ -7,6 +7,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 
+from loguru import logger
 from mapstp.utils.re import CELL_START_PATTERN, MCNP_SECTIONS_SEPARATOR_PATTERN
 
 
@@ -74,6 +75,7 @@ def select_output(
         p = Path(output)
         can_override(p, override)
         _output = p.open(mode="w", encoding="cp1251")
+        logger.info("Tagged mcnp will be saved to {}", p)
     else:
         _output = sys.stdout
     try:

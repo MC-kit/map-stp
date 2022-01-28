@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from loguru import logger
 from mapstp.extract_info import extract_path_info
 from mapstp.materials_index import load_materials_index
 from mapstp.stp_parser import parse_path
@@ -30,8 +31,10 @@ def create_path_info(
         table with joined information
     """
     _materials_index = load_materials_index(materials_index)
+    logger.info("Loaded material index from {}", materials_index)
     _stp = Path(stp)
     products, links = parse_path(_stp)
+    logger.info("Loaded STP from {}", stp)
     paths = create_bodies_paths(products, links)
     path_info = extract_path_info(paths, _materials_index)
     return paths, path_info

@@ -168,6 +168,7 @@ def mapstp(
     )
     if mcnp:
         _mcnp = Path(mcnp)
+        logger.info("Tagging model {}", mcnp)
         with select_output(override, output) as _output:
             joined_paths = join_paths(paths, separator)
             merge_paths(_output, joined_paths, path_info, _mcnp, used_materials_text)
@@ -176,6 +177,7 @@ def mapstp(
         _excel = Path(excel)
         can_override(_excel, override)
         create_excel(_excel, paths, path_info, separator, start_cell_number)
+        logger.info("Accompanying excel is saved to {}", _excel)
     logger.success("mapstp finished")
 
 
