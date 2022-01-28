@@ -4,7 +4,7 @@ For given STP file creates Excel table with a list
 of STP paths to STP components, corresponding to cells
 in MCNP model, would it be generated from the STP with SuperMC.
 
-The excel also contains material numbers, densities, correction factors,
+The Excel also contains material numbers, densities, correction factors,
 and RWCL id. The values can be specified in the names of STP
 components as special tags. A tag is denoted with bracket enclosed
 specification at the end of component name: "Component name [<spec>]".
@@ -27,13 +27,12 @@ import click
 
 from mapstp import __name__ as package_name
 from mapstp import __summary__, __version__
+from mapstp.cli.logging import init_logger, logger
 from mapstp.excel import create_excel
 from mapstp.materials import get_used_materials, load_materials_map
 from mapstp.merge import correct_start_cell_number, join_paths, merge_paths
 from mapstp.utils.io import can_override, select_output
 from mapstp.workflow import create_path_info
-
-from .logging import init_logger, logger
 
 
 # TODO dvp: add customized configuring from a configuration toml-file.
