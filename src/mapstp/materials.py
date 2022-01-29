@@ -9,8 +9,10 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
+from loguru import logger
 from mapstp.utils.re import CARD_PATTERN, MATERIAL_PATTERN
 
 MaterialsDict = Dict[int, str]
@@ -71,7 +73,16 @@ def load_materials_map_from_stream(stream: TextIO) -> MaterialsDict:
 
     """
     loader = _Loader(stream)
-    materials_dict = dict((k, "".join(v)) for k, v in loader.materials_dict.items())
+
+    def _restore_material_text(lines: Iterable[str]) -> str:
+        result = "".join(lines)
+        if not result.endswith("\n"):
+            result += "\n"
+        return result
+
+    materials_dict = dict(
+        (k, _restore_material_text(v)) for k, v in loader.materials_dict.items()
+    )
     return materials_dict
 
 
@@ -126,13 +137,22 @@ def materials_spec_mapper(materials_map: Dict[int, str]) -> Callable[[int], str]
     """
 
     def _func(used_number: int) -> str:
-        text = materials_map.get(used_number)
-        if not text:
-            text = (
-                f"m{used_number}  $ dummy: is to be replaced manually\n"
-                "        1.001.31c  1.0"
-            )
-        return text
+        if isinstance(used_number, int) and 0 < used_number:
+            text = materials_map.get(used_number)
+            if not text:
+                logger.warning(
+                    "Material M{} is not found in provided materials specifications. "
+                    "A dummy specification is issued to the tagged model.",
+                    used_number,
+                )
+                text = (
+                    f"m{used_number}  "
+                    "$ dummy: material was not provided to mapstp\n"
+                    "        1.001.31c  1.0\n"
+                )
+            return text
+        else:
+            return ""
 
     return _func
 
@@ -147,6 +167,7 @@ def get_used_materials(materials_map: Dict[int, str], path_info: pd.DataFrame) -
     Returns:
         All the used materials specs to be used as part of MCNP model text.
     """
-    used_numbers = sorted(set(path_info["number"].values))
+    values = path_info["number"].values
+    used_numbers = sorted(set(int(m) for m in values if not np.isnan(m)))
     used_materials_texts = list(map(materials_spec_mapper(materials_map), used_numbers))
     return "".join(used_materials_texts)

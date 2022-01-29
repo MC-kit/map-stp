@@ -16,8 +16,13 @@ def load_materials_index(materials_index: str = None) -> pd.DataFrame:
         materials_index: file name of index to load,
                          if not provided, uses data/default-material-index.xlsx
 
+    Note:
+        Validation of material index input values is postponed to usage of defined mnemonics.
+        The input file may contain 'missed' data for mnemonics in design phase,
+        until the mnemonics are actually used.
+
     Returns:
-        DataFrame with with columns mnemonic, number of material, density
+        DataFrame with columns mnemonic, number of material, density
         with omitted rows, where mnemonic is not specified.
 
     Raises:
@@ -32,6 +37,7 @@ def load_materials_index(materials_index: str = None) -> pd.DataFrame:
         raise FileNotFoundError(p)
     materials = pd.read_excel(
         p,
+        sheet_name=0,  # Use the first sheet, regardless of its name.
         usecols=["mnemonic", "number", "eff.density, g/cm3"],
         converters={"number": int, "eff.density, g/cm3": float},
     )

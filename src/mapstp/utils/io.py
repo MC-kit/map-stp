@@ -7,6 +7,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 
+from loguru import logger
 from mapstp.utils.re import CELL_START_PATTERN, MCNP_SECTIONS_SEPARATOR_PATTERN
 
 
@@ -74,6 +75,7 @@ def select_output(
         p = Path(output)
         can_override(p, override)
         _output = p.open(mode="w", encoding="cp1251")
+        logger.info("Tagged mcnp will be saved to {}", p)
     else:
         _output = sys.stdout
     try:
@@ -104,13 +106,13 @@ def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
 
     """
     sections = MCNP_SECTIONS_SEPARATOR_PATTERN.split(
-        mcnp_path.read_text(encoding="cp1251"), maxsplit=4
+        mcnp_path.read_text(encoding="cp1251"), maxsplit=3
     )
     sections_len = len(sections)
-    cells = sections[0]
-    surfaces = sections[1] if 1 <= sections_len else None
-    cards = sections[2] if 2 <= sections_len else None
-    if 3 <= sections_len:
+    cells = sections[0].strip()
+    surfaces = sections[1].strip() if 2 <= sections_len else None
+    cards = sections[2].strip() if 3 <= sections_len else None
+    if 4 <= sections_len:
         remainder: Optional[str] = sections[3].strip()
         if remainder == "":
             remainder = None

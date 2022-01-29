@@ -284,7 +284,7 @@ def test_export_materials(runner, tmp_path, data):
     sections = read_mcnp_sections(output)
     cell2stp = select_cell_and_stp_lines(sections.cells.split("\n"))
     assert 2004 in cell2stp
-
+    assert sections.cards, f"Control cards should be presented in {output}"
     lines = sections.cards.split("\n")
     material_lines = dict(extract_material_lines(lines))
     assert len(material_lines) == 2, f"There should be two materials in {output}"

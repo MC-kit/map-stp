@@ -5,6 +5,7 @@ import re
 
 from dataclasses import dataclass
 
+import numpy as np
 import pandas as pd
 
 # TODO dvp: make meta pattern configurable via command line or configuration file
@@ -37,13 +38,13 @@ class _MetaInfo:
 
 
 def extract_path_info(
-    paths: List[List[str]], mnemonic_table: pd.DataFrame
+    paths: List[List[str]], material_index: pd.DataFrame
 ) -> pd.DataFrame:
     """Extract meta information from `paths` and associate corresponding data with each path.
 
     Args:
         paths: STP paths
-        mnemonic_table: mnemonic-material-density lookup table
+        material_index: mnemonic-material-density lookup table
 
     Returns:
         Table with material `number`, `density`, applied correction `factor`,
@@ -63,12 +64,27 @@ def extract_path_info(
                     pars = _extract_meta_info(i, match, part, path)
                     meta_info.update(pars)
             if meta_info.mnemonic:
-                number: Optional[int] = int(
-                    mnemonic_table.loc[meta_info.mnemonic]["number"]
-                )  # TODO dvp: check why type of number became float
-                density: Optional[float] = mnemonic_table.loc[meta_info.mnemonic][
-                    "density"
-                ]
+                try:
+                    number: Optional[int] = int(
+                        material_index.loc[meta_info.mnemonic]["number"]
+                    )  # TODO dvp: check why type of number became float
+                except KeyError:
+                    raise KeyError(
+                        f"The mnemonic '{meta_info.mnemonic}' "
+                        "is not specified in the material index. "
+                        f"See the STP path: {'/'.join(path)}"
+                    ) from None
+                density = material_index.loc[meta_info.mnemonic]["density"]
+                if np.isnan(density):
+                    raise ValueError(
+                        f"The density for mnemonic '{meta_info.mnemonic}' "
+                        "is not specified in the material index."
+                    )
+                if density < 0.0:
+                    raise ValueError(
+                        f"The density for mnemonic '{meta_info.mnemonic}' "
+                        "in the material index is to be positive."
+                    )
             else:
                 number = density = None
             yield number, density, meta_info.factor, meta_info.rwcl

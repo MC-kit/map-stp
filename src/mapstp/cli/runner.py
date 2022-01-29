@@ -4,7 +4,7 @@ For given STP file creates Excel table with a list
 of STP paths to STP components, corresponding to cells
 in MCNP model, would it be generated from the STP with SuperMC.
 
-The excel also contains material numbers, densities, correction factors,
+The Excel also contains material numbers, densities, correction factors,
 and RWCL id. The values can be specified in the names of STP
 components as special tags. A tag is denoted with bracket enclosed
 specification at the end of component name: "Component name [<spec>]".
@@ -27,42 +27,15 @@ import click
 
 from mapstp import __name__ as package_name
 from mapstp import __summary__, __version__
+from mapstp.cli.logging import init_logger, logger
 from mapstp.excel import create_excel
 from mapstp.materials import get_used_materials, load_materials_map
 from mapstp.merge import correct_start_cell_number, join_paths, merge_paths
 from mapstp.utils.io import can_override, select_output
-
-# TODO dvp: add customized configuring from a configuration toml-file.
 from mapstp.workflow import create_path_info
 
-# from .logging import logger
-# from click_loguru import ClickLoguru
 
-
-# LOG_FILE_RETENTION = 3
-# NO_LEVEL_BELOW = 30
-#
-#
-# def stderr_log_format_func(msg_dict):
-#     """Do level-sensitive formatting.
-#
-#     Just a copy from click-loguru so far."""
-#
-#     if msg_dict["level"].no < NO_LEVEL_BELOW:
-#         return "<level>{message}</level>\n"
-#     return "<level>{level}</level>: <level>{message}</level>\n"
-#
-#
-# click_loguru = ClickLoguru(
-#     NAME,
-#     VERSION,
-#     stderr_format_func=stderr_log_format_func,
-#     retention=LOG_FILE_RETENTION,
-#     log_dir_parent=".logs",
-#     timer_log_level="info",
-# )
-
-
+# TODO dvp: add customized configuring from a configuration toml-file.
 @dataclass
 class Config:
     override: bool = False
@@ -83,13 +56,7 @@ to the meta information provided in the STP.
 """
 
 
-# @click_loguru.logging_options
-# @click.group(help=meta.__summary__, name=NAME)
-
-
 @click.command(help=_USAGE, name=package_name)
-# @click_loguru.init_logger()
-# @click_loguru.stash_subcommand()
 @click.option(
     "--override/--no-override",
     default=False,
@@ -154,9 +121,8 @@ to the meta information provided in the STP.
     required=False,
 )
 @click.version_option(__version__, prog_name=package_name)
-# @logger.catch(reraise=True)
+@click.help_option()
 @click.pass_context
-# ctx, verbose: bool, quiet: bool, logfile: bool, profile_mem: bool, override: bool
 def mapstp(
     ctx,
     override: bool,
@@ -190,16 +156,9 @@ def mapstp(
         raise click.UsageError(
             "Nor `excel`, neither `mcnp` parameter is specified - nothing to do"
         )
-    # if quiet:
-    #     logger.level("WARNING")
-    # if verbose:
-    #     logger.level("TRACE")
-    # logger.info("Running {}", NAME)
-    # logger.debug("Working dir {}", Path(".").absolute())
-
-    #
+    init_logger()
+    logger.info("Running mapstp {}", __version__)
     cfg = ctx.ensure_object(Config)
-    # obj["DEBUG"] = debug
     cfg.override = override
     paths, path_info = create_path_info(materials_index, stp)
     materials_map = load_materials_map(materials) if materials else None
@@ -208,6 +167,7 @@ def mapstp(
     )
     if mcnp:
         _mcnp = Path(mcnp)
+        logger.info("Tagging model {}", mcnp)
         with select_output(override, output) as _output:
             joined_paths = join_paths(paths, separator)
             merge_paths(_output, joined_paths, path_info, _mcnp, used_materials_text)
@@ -216,9 +176,8 @@ def mapstp(
         _excel = Path(excel)
         can_override(_excel, override)
         create_excel(_excel, paths, path_info, separator, start_cell_number)
-
-
-# TODO dvp: add logging
+        logger.info("Accompanying excel is saved to {}", _excel)
+    logger.success("mapstp finished")
 
 
 if __name__ == "__main__":

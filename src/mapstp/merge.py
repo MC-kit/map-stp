@@ -9,13 +9,13 @@ if specified in STP paths.
 from typing import Generator, Iterable, List, Optional, TextIO, Tuple, Union
 
 import math
-import warnings
 
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import pandas as pd
 
+from loguru import logger
 from mapstp.exceptions import PathInfoError
 from mapstp.materials import drop_material_cards
 from mapstp.utils.io import find_first_cell_number, read_mcnp_sections
@@ -61,7 +61,7 @@ def extract_number_and_density(
 
     if not is_defined(density):
         raise PathInfoError(
-            f"The `density` value is not defined for material number {number}.",
+            f"The `density` value is not defined for material number {number}. ",
             row,
             path_info,
         )
@@ -149,8 +149,10 @@ class _Merger:
         if self.current_path_idx < self.paths_length:
             yield self.format_comment()
         if self.current_path_idx != self.paths_length:
-            warnings.warn(
-                f"Only {self.current_path_idx} merged," f"expected  {self.paths_length}"
+            logger.warning(
+                "Only {} cells merged, STP specifies {} bodies.",
+                self.current_path_idx,
+                self.paths_length,
             )
 
 
@@ -185,14 +187,15 @@ def merge_paths(
     """
     mcnp_sections = read_mcnp_sections(mcnp)
     cells = mcnp_sections.cells
-    lines = cells.split("\n")[:-1]  # drop the last empty line
+    lines = cells.split("\n")
 
     for line in _merge_lines(paths, path_info, lines):
         print(line, file=output)
 
+    print(file=output)
+
     surfaces = mcnp_sections.surfaces
     if surfaces:
-        surfaces = surfaces.rstrip()
         print(surfaces, file=output, end="")
         print("\n\n", file=output, end="")
 
@@ -202,7 +205,7 @@ def merge_paths(
             if used_materials_text:
                 used_materials_text = used_materials_text.strip()
                 print(used_materials_text, file=output)
-                cards_lines = cards.split("\n")[:-1]
+                cards_lines = cards.split("\n")
                 for line in drop_material_cards(cards_lines):
                     print(line, file=output)
             else:

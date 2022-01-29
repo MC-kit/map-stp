@@ -1,9 +1,9 @@
 #!/bin/bash
 
-set -exu
+# set -exu
 
 pyenv virtualenv-delete -f  mapstp
-pyenv virtualenv 3.9.7 mapstp
+pyenv virtualenv 3.10.0 mapstp
 poetry install
 pyenv rehash
 mapstp --version
