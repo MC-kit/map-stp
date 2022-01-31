@@ -33,27 +33,27 @@ Chnagelog = "https://github.com/MC-kit/mapstp/releases"
 
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"   # TODO dvp: numpy 2.21.4 sets upper limit to 3.11
-tomli = "^1.2.1"
+tomli = "^2.0.0"
 click = "^8.0.1"
 pandas = "^1.3.4"
 openpyxl = "^3.0.9"
 numpy = "^1.21.4"
-loguru = "^0.5.3"
+loguru = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
 pytest-cache = "^1.0"
 pytest-cov = "^3.0.0"
 coverage = { version = "^6.1.2", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
-nox = "^2021.6.12"
+nox = "^2022.1.7"
 Pygments = "^2.10.0"
-black = "^21.10b0"
+black = "^22.1.0"
 codecov = "^2.1.12"
 darglint = "^1.8.1"
 flake8 = "^4.0.1"
 flake8-annotations = "^2.6.2"
 flake8-bandit = "^2.1.2"
-flake8-bugbear = "^21.9.2"
+flake8-bugbear = "^22.1.11"
 flake8-docstrings = "^1.6.0"
 flake8-rst-docstrings = "^0.2.3"
 flake8-import-order = "^0.18.1"
