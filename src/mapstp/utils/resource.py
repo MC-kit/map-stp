@@ -61,6 +61,6 @@ def _resolve_package(package: str = None) -> str:
     if package is None:
         module = inspect.getmodule(inspect.stack()[2][0])
         if module is None:
-            raise ValueError("Cannot define package.")
+            raise ValueError("Cannot define package.")  # pragma: no cover
         package = module.__name__
     return package

@@ -32,7 +32,7 @@ def is_defined(number: Union[int, float]) -> bool:
         true - if `number` is a valid number,
         false - otherwise
     """
-    return number is not None and not math.isnan(number)
+    return number is not None and number is not pd.NA and not math.isnan(number)
 
 
 def extract_number_and_density(
