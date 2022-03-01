@@ -41,7 +41,7 @@ numpy = "^1.21.4"
 loguru = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
+pytest = "^7.0.1"
 pytest-cache = "^1.0"
 pytest-cov = "^3.0.0"
 coverage = { version = "^6.1.2", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
