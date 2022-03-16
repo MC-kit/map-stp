@@ -74,7 +74,7 @@ def select_output(
     if output:
         p = Path(output)
         can_override(p, override)
-        _output = p.open(mode="w", encoding="cp1251")
+        _output: TextIO = p.open(mode="w", encoding="cp1251")
         logger.info("Tagged mcnp will be saved to {}", p)
     else:
         _output = sys.stdout
