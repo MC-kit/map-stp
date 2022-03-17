@@ -164,9 +164,6 @@ def coverage(s: Session) -> None:
 
     s.run("coverage", *args)
 
-    # if "html" not in args:
-    #     session.run("coverage", "html")
-
 
 @session(python=supported_pythons)
 def typeguard(s: Session) -> None:

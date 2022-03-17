@@ -19,10 +19,13 @@ def get_packages_dir() -> Path:
     if system == "Windows":
         site_packages = Path("Lib", "site-packages")
     else:
-        site_packages = Path("lib", f"python{sys.version[0:3]}", "site-packages")
+        python = f"python{sys.version_info.major}.{sys.version_info.minor}"
+        site_packages = Path("lib", python, "site-packages")
     result = Path(sys.prefix, site_packages)
     if not result.is_dir():
-        raise ValueError(f"Cannot find site package for system {system}")
+        raise ValueError(
+            f"Cannot find site package for system {system} in folder {result}"
+        )
     return result
 
 
