@@ -47,7 +47,7 @@ codecov = "^2.1.12"
 coverage = { version = "^6.3.2", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
 darglint = "^1.8.1"
 flake8 = "^4.0.1"
-flake8-annotations = "^2.6.2"
+flake8-annotations = "^2.8.0"
 flake8-bandit = "^3.0.0"
 flake8-bugbear = "^22.1.11"
 flake8-docstrings = "^1.6.0"
