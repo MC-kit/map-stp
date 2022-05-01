@@ -986,7 +986,7 @@ test = ["pytest", "pytest-cov"]
 
 [[package]]
 name = "sphinx-autodoc-typehints"
-version = "1.17.0"
+version = "1.17.1"
 description = "Type hints (PEP 484) support for the Sphinx autodoc extension"
 category = "dev"
 optional = false
@@ -996,7 +996,7 @@ python-versions = ">=3.7"
 Sphinx = ">=4"
 
 [package.extras]
-testing = ["covdefaults (>=2)", "coverage (>=6)", "diff-cover (>=6.4)", "nptyping (>=1)", "pytest (>=6)", "pytest-cov (>=3)", "sphobjinv (>=2)", "typing-extensions (>=3.5)"]
+testing = ["covdefaults (>=2)", "coverage (>=6)", "diff-cover (>=6.4)", "nptyping (>=1,<2)", "pytest (>=6)", "pytest-cov (>=3)", "sphobjinv (>=2)", "typing-extensions (>=3.5)"]
 type_comments = ["typed-ast (>=1.4.0)"]
 
 [[package]]
@@ -1279,8 +1279,8 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.8,<3.11"   # TODO dvp: numpy 1.21.4 sets upper limit to 3.11
-content-hash = "9bd04a11f59f9abb6b661ffb1dd43293435d7377cbcf7e088b32029c1f924146"
+python-versions = "^3.8,<3.11"
+content-hash = "c1bd5ac27bbe9481537b6c2335d863f2aa68664a38706837e4a7db23c266b23d"
 
 [metadata.files]
 alabaster = [
@@ -1799,8 +1799,8 @@ sphinx-autobuild = [
     {file = "sphinx_autobuild-2021.3.14-py3-none-any.whl", hash = "sha256:8fe8cbfdb75db04475232f05187c776f46f6e9e04cacf1e49ce81bdac649ccac"},
 ]
 sphinx-autodoc-typehints = [
-    {file = "sphinx_autodoc_typehints-1.17.0-py3-none-any.whl", hash = "sha256:081daf53077b4ae1c28347d6d858e13e63aefe3b4aacef79fd717dd60687b470"},
-    {file = "sphinx_autodoc_typehints-1.17.0.tar.gz", hash = "sha256:51c7b3f5cb9ccd15d0b52088c62df3094f1abd9612930340365c26def8629a14"},
+    {file = "sphinx_autodoc_typehints-1.17.1-py3-none-any.whl", hash = "sha256:f16491cad05a13f4825ecdf9ee4ff02925d9a3b1cf103d4d02f2f81802cce653"},
+    {file = "sphinx_autodoc_typehints-1.17.1.tar.gz", hash = "sha256:844d7237d3f6280b0416f5375d9556cfd84df1945356fcc34b82e8aaacab40f3"},
 ]
 sphinx-autorun = [
     {file = "sphinx-autorun-1.1.1.tar.gz", hash = "sha256:61a39b604487c6dbfd601b3814443bb554532617abd39563e8d603c01ccc711a"},
