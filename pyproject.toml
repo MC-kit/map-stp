@@ -41,7 +41,7 @@ pandas = "^1.4.1"
 tomli = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
-Pygments = "^2.10.0"
+Pygments = "^2.12.0"
 black = "^22.1.0"
 codecov = "^2.1.12"
 coverage = { version = "^6.3.2", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
