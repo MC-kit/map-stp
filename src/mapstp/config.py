@@ -1,8 +1,11 @@
 """Configuration tools."""
+from __future__ import annotations
 
-from typing import Any, Type
+from typing import Type, TypeVar
 
 from os import environ
+
+_T = TypeVar("_T")
 
 
 def _make_bool(key: str, val: str) -> bool:
@@ -34,7 +37,7 @@ def _make_float(key: str, val: str) -> float:
         ) from None
 
 
-def env(key: str, type_: Type[Any] = str, default: Any = None) -> Any:
+def env(key: str, type_: Type[_T] = str, default: _T = None) -> _T:
     """Retrieve environment variable and convert to specified type with proper diagnostics.
 
     Args:
@@ -71,6 +74,3 @@ def env(key: str, type_: Type[Any] = str, default: Any = None) -> Any:
         raise ValueError(
             f"Invalid environment variable '{key}': conversion {type_.__name__}({val}) failed."
         ) from None
-
-
-# MAPSTP_AUTOINIT: Final[bool] = env("MAPSTP_AUTOINIT", bool, True)
