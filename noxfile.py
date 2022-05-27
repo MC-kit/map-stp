@@ -14,7 +14,6 @@ from textwrap import dedent
 
 import nox
 
-# from nox.sessions import Session
 try:
     from nox_poetry import Session, session  # mypy: ignore
 except ImportError:
@@ -26,19 +25,16 @@ except ImportError:
     {sys.executable} -m pip install nox-poetry"""
     raise SystemExit(dedent(message)) from None
 
-# TODO dvp: uncomment when code and docs are more mature
 nox.options.sessions = (
     "pre-commit",
     "safety",
-    "isort",
-    "black",
+    # "isort",
+    # "black",
     "lint",
     "mypy",
     "xdoctest",
     "tests",
     "docs-build",
-    # "codecov",
-    # "docs",
 )
 
 package = "mapstp"
@@ -62,8 +58,6 @@ def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
     Args:
         s: The Session object.
     """
-    assert s.bin is not None  # noqa: S101
-
     virtualenv = s.env.get("VIRTUAL_ENV")
     if virtualenv is None:
         return
@@ -223,7 +217,7 @@ def lint(s: Session) -> None:
     s.run("flake8", *args)
 
 
-@session(python=supported_pythons)
+@session(python=mypy_pythons)
 def mypy(s: Session) -> None:
     """Type-check using mypy."""
     args = s.posargs or ["src", "tests", "docs/source/conf.py"]
