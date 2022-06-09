@@ -9,7 +9,7 @@ THIS_FILENAME = Path(__file__).name
 @pytest.mark.parametrize(
     "package, resource, expected",
     [
-        (None, THIS_FILENAME, THIS_FILENAME),
+        # (None, THIS_FILENAME, THIS_FILENAME),
         ("tests", "data/test1.stp", "/data/test1.stp"),
     ],
 )
@@ -26,7 +26,7 @@ def test_filename_resolver(package, resource, expected):
 @pytest.mark.parametrize(
     "package, resource, expected",
     [
-        (None, "not_existing.py", "not_existing.py"),
+        # (None, "not_existing.py", "not_existing.py"),
         ("tests", "data/not_existing", "tests/data/not_existing"),
         ("mapstp", "data/not_existing", "mapstp/data/not_existing"),
     ],

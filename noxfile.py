@@ -38,7 +38,7 @@ nox.options.sessions = (
 )
 
 package = "mapstp"
-locations = f"src/{package}", "tests", "noxfile.py", "docs/source/conf.py"
+locations = f"src/{package}", "src/tests", "noxfile.py", "docs/source/conf.py"
 
 supported_pythons = ["3.8", "3.9", "3.10"]
 black_pythons = "3.10"
@@ -222,7 +222,7 @@ def lint(s: Session) -> None:
 @session(python=mypy_pythons)
 def mypy(s: Session) -> None:
     """Type-check using mypy."""
-    args = s.posargs or ["src", "tests", "docs/source/conf.py"]
+    args = s.posargs or ["src", "docs/source/conf.py"]
     s.install(".")
     s.install("mypy", "pytest", "types-setuptools")
     s.run("mypy", *args)
