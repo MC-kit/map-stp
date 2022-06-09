@@ -8,7 +8,6 @@ import pandas as pd
 import pytest
 
 from mapstp.cli.runner import __summary__, __version__, mapstp
-from mapstp.merge import correct_start_cell_number
 from mapstp.utils.io import find_first_cell_number, read_mcnp_sections
 from mapstp.utils.re import CELL_START_PATTERN, MATERIAL_PATTERN
 from numpy.testing import assert_array_equal
@@ -176,18 +175,15 @@ def test_info_assignment(runner, tmp_path, data):
 
 
 @pytest.mark.parametrize(
-    "number, mcnp, expected",
+    "mcnp, expected",
     [
-        (None, None, 1),
-        (None, "test-extract-info.i", 2000),
-        (0, "test-extract-info.i", 2000),
-        (10, "test-extract-info.i", 10),
+        ("test-extract-info.i", 2000),
     ],
 )
-def test_correct_start_cell_number(data, number, mcnp, expected):
+def test_correct_start_cell_number(data, mcnp, expected):
     if mcnp:
         mcnp = data / mcnp
-    actual = correct_start_cell_number(number, mcnp)
+    actual = find_first_cell_number(mcnp)
     assert actual == expected
 
 

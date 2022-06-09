@@ -46,7 +46,7 @@ def setval():
 def test_env(setval, value, type_, default, expected, msg):
     setval(value)
     actual = env(TEST_VALUE, type_, default)
-    assert actual == expected
+    assert actual is None and expected is None or actual == expected
 
 
 @pytest.mark.parametrize(
