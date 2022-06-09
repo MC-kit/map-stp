@@ -7,7 +7,7 @@ jobs:
       !startsWith(github.event.head_commit.message, 'bump:') &&
       !contains(github.event.head_commit.message, '[skip_ci]')
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
       with:
         python-version: '3.9'
