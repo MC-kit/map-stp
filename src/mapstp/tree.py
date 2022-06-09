@@ -1,6 +1,6 @@
 """Data structures and algorithms to store and process STP nodes and their links."""
 
-from typing import Any, Dict, Generator, Iterable, List, Optional, cast
+from typing import Dict, Iterable, Iterator, List, Optional, cast
 
 from dataclasses import dataclass
 
@@ -21,7 +21,7 @@ class Node:
     product: Product
     parent: Optional["Node"] = None
 
-    def collect_parents(self) -> Generator[Product, Any, Any]:
+    def collect_parents(self) -> Iterator[Product]:
         """Iterate through the parents of the node from root parent to this node.
 
         Yields:
@@ -47,7 +47,7 @@ class Tree:
             links: pairs denoting links between the products.
 
         Raises:
-            ParseError: if the information is screwed.
+            STPParserError: if the information is screwed.
         """
         self._product_index: Dict[int, Product] = make_index(products)
         self._node_index: Dict[int, Node] = dict()
@@ -101,7 +101,12 @@ class Tree:
             product = self._product_index[dst]
             if product.is_leaf:
                 node = self._node_index[src]
-                path = list(map(lambda parent: parent.name, node.collect_parents()))
+                path = list(
+                    map(
+                        lambda parent: parent.name,
+                        node.collect_parents(),
+                    )
+                )
                 path.append(product.name)
                 # TODO dvp: design flaw: separate indexes for
                 #           Products and LeafProducts to avoid cast

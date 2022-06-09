@@ -200,3 +200,10 @@ module = [
     "nox", "nox_poetry", "pandas", "pytest", "click", "click.testing", "loguru", "numpy.testing"
 ]
 ignore_missing_imports = true
+
+
+[tool.tryceratops]
+include = ["src/mapstp", "tests"]
+exclude = [".nox"]
+#ignore = ["TC002", "TC200", "TC300"]
+experimental = true

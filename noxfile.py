@@ -116,6 +116,7 @@ def precommit(s: Session) -> None:
         "isort",
         "mypy",
         "types-setuptools",
+        "tryceratops",
     )
     s.run("pre-commit", *args)
     if args and args[0] == "install":
@@ -213,6 +214,7 @@ def lint(s: Session) -> None:
         "flake8-rst-docstrings",
         "flake8-import-order",
         "darglint",
+        "tryceratops",
     )
     s.run("flake8", *args)
 

@@ -57,10 +57,17 @@ def path_resolver(package: str = None) -> Callable[[str], Path]:
     return func
 
 
+class PackageNotFoundError(ValueError):
+    """Error when package is not specified and cannot be found."""
+
+    def __init__(self) -> None:
+        super().__init__(self, "Cannot define package.")
+
+
 def _resolve_package(package: str = None) -> str:
     if package is None:
         module = inspect.getmodule(inspect.stack()[2][0])
         if module is None:
-            raise ValueError("Cannot define package.")  # pragma: no cover
+            raise PackageNotFoundError()  # pragma: no cover
         package = module.__name__
     return package

@@ -58,7 +58,7 @@ class Product(Numbered):
             New product with given number and name.
 
         Raises:
-            ParseError: if `text` doesn't match 'PRODUCT_DEFINITION' statement format.
+            STPParserError: if `text` doesn't match 'PRODUCT_DEFINITION' statement format.
 
         """
         match = _PRODUCT_PATTERN.search(text)
@@ -145,7 +145,7 @@ class Link(Numbered):
             new `Link` object.
 
         Raises:
-            ParseError: on invalid input
+            STPParserError: on invalid input
         """
         match = _LINK_PATTERN.search(text)
         if not match:
@@ -175,7 +175,7 @@ class Body(Numbered):
             The new Body object.
 
         Raises:
-            ParseError: on invalid input
+            STPParserError: on invalid input
         """
         match = _BODY_PATTERN.search(text)
         if not match:
@@ -215,9 +215,8 @@ def parse(inp: TextIO) -> ParseResult:
                 if group == "solid":
                     body = Body.from_string(line)
                     if not products:
-                        raise STPParserError(
-                            "At least one product is to be loaded at this step"
-                        )
+                        msg = "At least one product is to be loaded at this step"
+                        raise STPParserError(msg)
                     last_product = products[-1]
                     if not last_product.is_leaf:
                         products[-1] = last_product = LeafProduct(
@@ -231,7 +230,8 @@ def parse(inp: TextIO) -> ParseResult:
                     product = Product.from_string(line)
                     products.append(product)
                 else:
-                    raise STPParserError("Shouldn't be here, check _SELECT_PATTERN")
+                    msg = "Shouldn't be here, check _SELECT_PATTERN"
+                    raise STPParserError(msg)
         except STPParserError as exception:
             raise FileError(f"Error in line {line_no_minus_3 + 3}") from exception
     return products, links

@@ -1,7 +1,7 @@
 """Configuration tools."""
 from __future__ import annotations
 
-from typing import Callable, Optional, TypeVar
+from typing import TypeVar
 
 from os import environ
 
@@ -37,7 +37,7 @@ def _make_float(key: str, val: str) -> float:
         ) from None
 
 
-def env(key: str, converter=str, default=None):
+def env(key, converter=str, default=None):
     """Retrieve environment variable and convert to specified type with proper diagnostics.
 
     Args:

@@ -30,8 +30,8 @@ from mapstp import __summary__, __version__
 from mapstp.cli.logging import init_logger, logger
 from mapstp.excel import create_excel
 from mapstp.materials import get_used_materials, load_materials_map
-from mapstp.merge import correct_start_cell_number, join_paths, merge_paths
-from mapstp.utils.io import can_override, select_output
+from mapstp.merge import join_paths, merge_paths
+from mapstp.utils.io import can_override, find_first_cell_number, select_output
 from mapstp.workflow import create_path_info
 
 
@@ -172,7 +172,9 @@ def mapstp(
             joined_paths = join_paths(paths, separator)
             merge_paths(_output, joined_paths, path_info, _mcnp, used_materials_text)
     if excel:
-        start_cell_number = correct_start_cell_number(start_cell_number, mcnp)
+        start_cell_number = start_cell_number or (
+            find_first_cell_number(mcnp) if mcnp else 1
+        )
         _excel = Path(excel)
         can_override(_excel, override)
         create_excel(_excel, paths, path_info, separator, start_cell_number)
