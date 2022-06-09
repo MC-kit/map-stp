@@ -10,8 +10,16 @@ class FileError(MyError):
     """STP parser file format error."""
 
 
-class ParseError(MyError):
+class STPParserError(MyError):
     """STP parser syntax error."""
+
+    def __init__(self, msg: str = "The STP is invalid"):
+        """Create STP parsing specific exception.
+
+        Args:
+            msg: message
+        """
+        super().__init__(self, msg)
 
 
 class PathInfoError(MyError):

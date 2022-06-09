@@ -4,7 +4,7 @@ from typing import Any, Dict, Generator, Iterable, List, Optional, cast
 
 from dataclasses import dataclass
 
-from mapstp.exceptions import ParseError
+from mapstp.exceptions import STPParserError
 from mapstp.stp_parser import LeafProduct, LinksList, Product, make_index
 
 
@@ -69,7 +69,7 @@ class Tree:
                     self.__create_node(product, parent)
                 else:
                     if node.parent is not None:
-                        raise ParseError("Tree hierarchy in STP is invalid")
+                        raise STPParserError()
                     node.parent = parent
 
     def __create_node(self, product: Product, parent: Node = None) -> Node:

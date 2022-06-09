@@ -7,7 +7,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from mapstp.exceptions import FileError, ParseError
+from mapstp.exceptions import FileError, STPParserError
 
 # Hint: check patterns on https://pythex.org/
 
@@ -63,7 +63,7 @@ class Product(Numbered):
         """
         match = _PRODUCT_PATTERN.search(text)
         if not match:
-            raise ParseError(f"not a 'Product' line: '{text}'")
+            raise STPParserError(f"not a 'Product' line: '{text}'")
         number = int(match["digits"])
         name = match["name"]
         return cls(number, name)
@@ -149,7 +149,7 @@ class Link(Numbered):
         """
         match = _LINK_PATTERN.search(text)
         if not match:
-            raise ParseError(f"not a 'Next assembly usage' line: '{text}'")
+            raise STPParserError(f"not a 'Next assembly usage' line: '{text}'")
         number = int(match["digits"])
         name = match["name"]
         src = int(match["src"])
@@ -179,7 +179,7 @@ class Body(Numbered):
         """
         match = _BODY_PATTERN.search(text)
         if not match:
-            raise ParseError(f"not a 'solid brep' line: '{text}'")
+            raise STPParserError(f"not a 'solid brep' line: '{text}'")
         number = int(match["digits"])
         name = match["name"]
         return cls(number, name)
@@ -215,7 +215,7 @@ def parse(inp: TextIO) -> ParseResult:
                 if group == "solid":
                     body = Body.from_string(line)
                     if not products:
-                        raise ParseError(
+                        raise STPParserError(
                             "At least one product is to be loaded at this step"
                         )
                     last_product = products[-1]
@@ -231,8 +231,8 @@ def parse(inp: TextIO) -> ParseResult:
                     product = Product.from_string(line)
                     products.append(product)
                 else:
-                    raise ParseError("Shouldn't be here, check _SELECT_PATTERN")
-        except ParseError as exception:
+                    raise STPParserError("Shouldn't be here, check _SELECT_PATTERN")
+        except STPParserError as exception:
             raise FileError(f"Error in line {line_no_minus_3 + 3}") from exception
     return products, links
 

@@ -1,7 +1,7 @@
 """Configuration tools."""
 from __future__ import annotations
 
-from typing import Type, TypeVar
+from typing import Callable, Optional, TypeVar
 
 from os import environ
 
@@ -37,12 +37,12 @@ def _make_float(key: str, val: str) -> float:
         ) from None
 
 
-def env(key: str, type_: Type[_T] = str, default: _T = None) -> _T:
+def env(key: str, converter=str, default=None):
     """Retrieve environment variable and convert to specified type with proper diagnostics.
 
     Args:
         key: environment variable name
-        type_: type to convert to
+        converter: type to convert to
         default: value to use, if there are no variable with the name `key`
 
     Returns:
@@ -56,21 +56,22 @@ def env(key: str, type_: Type[_T] = str, default: _T = None) -> _T:
 
     val = environ[key]
 
-    if type_ == str:
+    if converter is None or converter == str:
         return val
 
-    if type_ == bool:
+    if converter == bool:
         return _make_bool(key, val)
 
-    if type_ == int:
+    if converter == int:
         return _make_int(key, val)
 
-    if type_ == float:
+    if converter == float:
         return _make_float(key, val)
 
     try:
-        return type_(val)
+        return converter(val)
     except ValueError:
         raise ValueError(
-            f"Invalid environment variable '{key}': conversion {type_.__name__}({val}) failed."
+            f"Invalid environment variable '{key}': "
+            f"conversion {converter.__name__}({val}) failed."
         ) from None
