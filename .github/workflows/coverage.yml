@@ -8,7 +8,7 @@ jobs:
       !contains(github.event.head_commit.message, '[skip_ci]')
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v4
       with:
         python-version: '3.9'
         architecture: x64
