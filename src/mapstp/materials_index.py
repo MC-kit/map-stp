@@ -40,6 +40,7 @@ def load_materials_index(materials_index: str = None) -> pd.DataFrame:
         sheet_name=0,  # Use the first sheet, regardless of its name.
         usecols=["mnemonic", "number", "eff.density, g/cm3"],
         converters={"number": int, "eff.density, g/cm3": float},
+        engine="openpyxl",
     )
     materials = materials.loc[materials["mnemonic"].notnull()]
     materials.rename(columns={"eff.density, g/cm3": "density"}, inplace=True)
