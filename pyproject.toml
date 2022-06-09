@@ -44,7 +44,7 @@ tomli = ">=2.0.1"
 Pygments = "^2.10.0"
 black = "^22.1.0"
 codecov = "^2.1.12"
-coverage = { version = "^6.3.2", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
+coverage = { version = "^6.4.1", extras = ["toml"] }   # TODO dvp: poetry doesn't find new version
 darglint = "^1.8.1"
 flake8 = "^4.0.1"
 flake8-annotations = "^2.6.2"
