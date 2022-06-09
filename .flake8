@@ -30,7 +30,7 @@ exclude=
 per-file-ignores =
     noxfile.py:ANN,DAR101
     config.py:ANN001,ANN201
-    tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
+    src/tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
 ignore-decorators=click,pytest
 docstring-convention = google
 rst-roles = class,const,func,meth,mod,ref
