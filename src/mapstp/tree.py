@@ -72,7 +72,7 @@ class Tree:
                         raise STPParserError()
                     node.parent = parent
 
-    def __create_node(self, product: Product, parent: Node = None) -> Node:
+    def __create_node(self, product: Product, parent: Optional[Node] = None) -> Node:
         """Create and register a node.
 
         Args:

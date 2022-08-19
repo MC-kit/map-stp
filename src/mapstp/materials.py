@@ -3,7 +3,7 @@
 The map associates material number to its MCNP specification text.
 """
 
-from typing import Callable, Dict, Generator, Iterable, TextIO, Union
+from typing import Callable, Dict, Generator, Iterable, List, TextIO, Union
 
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -23,7 +23,9 @@ MaterialsDict = Dict[int, str]
 class _Loader:
     stream: TextIO
     material_no: int = field(default=-1, init=False)
-    materials_dict: dict = field(default_factory=lambda: defaultdict(list), init=False)
+    materials_dict: Dict[int, List[str]] = field(
+        default_factory=lambda: defaultdict(list), init=False
+    )
 
     @property
     def _in_material_card(self) -> bool:

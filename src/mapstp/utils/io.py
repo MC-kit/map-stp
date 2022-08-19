@@ -1,6 +1,7 @@
 """Input/output utility methods."""
 from typing import Generator, Optional, TextIO, Union
 
+import os
 import sys
 
 from contextlib import contextmanager
@@ -9,6 +10,8 @@ from pathlib import Path
 
 from loguru import logger
 from mapstp.utils.re import CELL_START_PATTERN, MCNP_SECTIONS_SEPARATOR_PATTERN
+
+PathLike = Union[str, Path, os.PathLike]
 
 
 def can_override(path: Path, override: bool) -> Path:
@@ -56,7 +59,8 @@ def find_first_cell_number(mcnp: Union[str, Path]) -> int:
 
 @contextmanager
 def select_output(
-    override: bool, output: Union[str, Path] = None
+    override: bool,
+    output: Optional[PathLike] = None,
 ) -> Generator[TextIO, None, None]:
     """Select stream for output.
 

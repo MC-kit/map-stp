@@ -37,7 +37,7 @@ def _make_float(key: str, val: str) -> float:
         ) from None
 
 
-def env(key, converter=str, default=None):
+def env(key, converter=str, default=None):  # type: ignore
     """Retrieve environment variable and convert to specified type with proper diagnostics.
 
     Args:
@@ -46,7 +46,7 @@ def env(key, converter=str, default=None):
         default: value to use, if there are no variable with the name `key`
 
     Returns:
-        Loaded value converted to `type_` or default.
+        Loaded value converted with `converter` or default.
 
     Raises:
         ValueError: if conversion is not possible.

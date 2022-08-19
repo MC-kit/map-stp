@@ -164,7 +164,7 @@ def merge_paths(
     paths: List[str],
     path_info: pd.DataFrame,
     mcnp: Path,
-    used_materials_text: str = None,
+    used_materials_text: Optional[str] = None,
 ) -> None:
     """Print to `output` the updated MCNP code.
 
