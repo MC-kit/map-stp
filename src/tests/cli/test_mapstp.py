@@ -247,7 +247,7 @@ def select_cell_and_stp_lines(lines: Iterable[str]) -> Dict[int, str]:
     selected = list(
         filter(lambda x: re.search(r"^\s{0,5}\d+\s+\d", x) or "$ stp: " in x, lines)
     )
-    res = dict()
+    res = {}
     for i, line in enumerate(selected):
         if "$ stp: " in line:
             cell = int(selected[i - 1].split(maxsplit=2)[0])

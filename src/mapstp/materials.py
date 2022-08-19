@@ -82,9 +82,10 @@ def load_materials_map_from_stream(stream: TextIO) -> MaterialsDict:
             result += "\n"
         return result
 
-    materials_dict = dict(
-        (k, _restore_material_text(v)) for k, v in loader.materials_dict.items()
-    )
+    materials_dict = {
+        k: _restore_material_text(v) for k, v in loader.materials_dict.items()
+    }
+
     return materials_dict
 
 
@@ -170,6 +171,6 @@ def get_used_materials(materials_map: Dict[int, str], path_info: pd.DataFrame) -
         All the used materials specs to be used as part of MCNP model text.
     """
     values = path_info["number"].values
-    used_numbers = sorted(set(int(m) for m in values if not np.isnan(m)))
+    used_numbers = sorted({int(m) for m in values if not np.isnan(m)})
     used_materials_texts = list(map(materials_spec_mapper(materials_map), used_numbers))
     return "".join(used_materials_texts)

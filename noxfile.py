@@ -30,7 +30,7 @@ nox.options.sessions = (
     "safety",
     # "isort",
     # "black",
-    "lint",
+    # "lint",
     "mypy",
     "xdoctest",
     "tests",
@@ -181,7 +181,7 @@ def isort(s: Session) -> None:
         #        "adhoc/*.py",
     ]
     files_to_process: List[str] = sum(
-        map(lambda p: glob(p, recursive=True), search_patterns), []
+        (glob(p, recursive=True) for p in search_patterns), []
     )
     s.run(
         "isort",
@@ -207,13 +207,21 @@ def lint(s: Session) -> None:
     s.install(
         "flake8",
         "flake8-annotations",
-        "flake8-bandit",
-        "flake8-black",
+        # TODO dvp: versions 3.0.0 and older don't work with recent flake8, check on update
+        #  "flake8-bandit",
         "flake8-bugbear",
+        "flake8-builtins",
+        "flake8-colors",
+        "flake8-commas",
+        "flake8-comprehensions",
         "flake8-docstrings",
-        "flake8-rst-docstrings",
         "flake8-import-order",
-        "darglint",
+        "flake8-print",
+        "flake8-rst-docstrings",
+        "flake8-use-fstring",
+        "mccabe",
+        "pep8-naming",
+        "pydocstyle",
         "tryceratops",
     )
     s.run("flake8", *args)

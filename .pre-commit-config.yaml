@@ -50,11 +50,11 @@ repos:
         entry: poetry run black
         language: system
         types: [python]
-#    -   id: flake8
-#        name: flake8
-#        entry: poetry run flake8
-#        language: system
-#        types: [python]
+    -   id: flake8
+        name: flake8
+        entry: poetry run flake8 noxfile.py src
+        language: system
+        types: [python]
 # Also code format the docs
 #    -   id: blacken-docs
 #        name: blacken-docs

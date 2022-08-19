@@ -72,6 +72,10 @@ Contributing
    :target: https://github.com/guilatrova/tryceratops
    :alt: try/except style: tryceratops
 
+.. .. image:: https://img.shields.io/badge/security-bandit-yellow.svg
+    :target: https://github.com/PyCQA/bandit
+    :alt: Security Status
+
 .. Substitutions
 
 .. |Maintained| image:: https://img.shields.io/badge/Maintained%3F-yes-green.svg

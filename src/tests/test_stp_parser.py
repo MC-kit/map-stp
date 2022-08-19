@@ -157,8 +157,8 @@ class _ParserTestResult:
 )
 def test_stp_parser1(data, stp, expected):
     products, links = parse_path(data / stp)
-    components = list(map(lambda x: x.name, products))
-    numbers = list(map(lambda x: x.number, products))
+    components = [x.name for x in products]
+    numbers = [x.number for x in products]
     expected.check(components, numbers, links)
 
 

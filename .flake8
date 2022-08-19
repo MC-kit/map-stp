@@ -1,5 +1,5 @@
 [flake8]
-# select=ANN,B,B9,BLK,C,D,DAR,E,F,I,S,W
+# select=ANN,B,B9,BLK,C,D,DAR,E,F,TC,I,S,W
 select=ANN,B,B9,BLK,C,D,DAR,E,F,TC,S,W
 max-complexity=10
 max-line-length=88
@@ -8,6 +8,8 @@ ignore=
     ANN101
     # ANN102 Missing type annotation for cls in classmethod
     ANN102
+    # C812 Missing trailing comma: black compatibility
+    C812
     # Missing docstring in __init__
     D107
     # E203: Whitespace before ‘:'
@@ -18,15 +20,20 @@ ignore=
     W503
 exclude=
     .git
-    noxfile.py
+    # noxfile.py
     __pycache__
     src/mapstp/cli/runner.py
+    tools/install-poetry.py
     docs/source/conf.py
     adhoc
     wrk
     build
     dist
     tools
+    *.pyc
+    *.egg-info
+    .cache
+    .eggs
 per-file-ignores =
     noxfile.py:ANN,DAR101
     config.py:ANN001,ANN201

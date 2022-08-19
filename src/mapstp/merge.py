@@ -223,4 +223,4 @@ def join_paths(paths: List[List[str]], separator: str = "/") -> List[str]:
     Returns:
         list of joined stp paths
     """
-    return list(map(lambda path: separator.join(path), paths))
+    return [separator.join(path) for path in paths]
