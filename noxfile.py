@@ -47,6 +47,27 @@ lint_pythons = "3.10"
 
 on_windows = platform.system() == "Windows"
 
+FLAKE8_DEPS = [
+    "flake8",
+    "flake8-annotations",
+    # TODO dvp: versions 3.0.0 and older don't work with recent flake8, check on update
+    #  "flake8-bandit",
+    "flake8-bugbear",
+    "flake8-builtins",
+    "flake8-colors",
+    "flake8-commas",
+    "flake8-comprehensions",
+    "flake8-docstrings",
+    "flake8-import-order",
+    "flake8-print",
+    "flake8-rst-docstrings",
+    "flake8-use-fstring",
+    "mccabe",
+    "pep8-naming",
+    "pydocstyle",
+    "tryceratops",
+]
+
 
 def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
     """Activate virtualenv in hooks installed by pre-commit.
@@ -105,18 +126,12 @@ def precommit(s: Session) -> None:
     s.install(
         "black",
         "darglint",
-        "flake8",
-        "flake8-bandit",
-        "flake8-bugbear",
-        "flake8-docstrings",
-        "flake8-rst-docstrings",
-        "pep8-naming",
         "pre-commit",
         "pre-commit-hooks",
         "isort",
         "mypy",
         "types-setuptools",
-        "tryceratops",
+        *FLAKE8_DEPS,
     )
     s.run("pre-commit", *args)
     if args and args[0] == "install":
@@ -204,26 +219,7 @@ def black(s: Session) -> None:
 def lint(s: Session) -> None:
     """Lint using flake8."""
     args = s.posargs or locations
-    s.install(
-        "flake8",
-        "flake8-annotations",
-        # TODO dvp: versions 3.0.0 and older don't work with recent flake8, check on update
-        #  "flake8-bandit",
-        "flake8-bugbear",
-        "flake8-builtins",
-        "flake8-colors",
-        "flake8-commas",
-        "flake8-comprehensions",
-        "flake8-docstrings",
-        "flake8-import-order",
-        "flake8-print",
-        "flake8-rst-docstrings",
-        "flake8-use-fstring",
-        "mccabe",
-        "pep8-naming",
-        "pydocstyle",
-        "tryceratops",
-    )
+    s.install(*FLAKE8_DEPS)
     s.run("flake8", *args)
 
 
