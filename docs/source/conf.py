@@ -35,6 +35,7 @@ extensions: List[str] = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.duration",  # durations report on generation
+    "sphinx.ext.todo",
 ]
 #    "sphinx_autodoc_typehints",
 
@@ -58,3 +59,6 @@ html_theme = "alabaster"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path: List[str] = ["_static"]
+
+# https://www.sphinx-doc.org/en/master/usage/extensions/todo.html#confval-todo_include_todos
+todo_include_todos: bool = True

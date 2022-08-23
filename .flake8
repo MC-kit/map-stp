@@ -20,16 +20,14 @@ ignore=
     W503
 exclude=
     .git
-    # noxfile.py
     __pycache__
     src/mapstp/cli/runner.py
-    tools/install-poetry.py
     docs/source/conf.py
     adhoc
     wrk
     build
     dist
-    tools
+    tools/install-poetry.py
     *.pyc
     *.egg-info
     .cache

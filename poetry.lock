@@ -945,6 +945,7 @@ python-versions = ">=3.7,<4.0"
 docutils = ">=0.7,<0.19"
 pydantic = ">=1.2,<2.0"
 rstcheck-core = ">=1.0.2,<2.0.0"
+sphinx = {version = "*", optional = true, markers = "extra == \"sphinx\" or extra == \"docs\""}
 typer = {version = ">=0.4.1,<0.7", extras = ["all"]}
 types-docutils = ">=0.18,<0.19"
 
@@ -1412,7 +1413,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"   # TODO dvp: numpy 1.21.4 sets upper limit to 3.11
-content-hash = "308ddfcb96da2fe11bfd84da61f8201b96e74e32cd91181eb80a8421b31074cb"
+content-hash = "60aeff044fd25a2551763e57c503bd20f66120e86bff70164ded94c4f15ef7d4"
 
 [metadata.files]
 alabaster = [

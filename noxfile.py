@@ -4,7 +4,6 @@ See `Cjolowicz's article <https://cjolowicz.github.io/posts/hypermodern-python-0
 """
 from typing import List
 
-import platform
 import shutil
 import sys
 
@@ -39,13 +38,10 @@ nox.options.sessions = (
 
 package = "mapstp"
 locations = f"src/{package}", "src/tests", "noxfile.py", "docs/source/conf.py"
-
-supported_pythons = ["3.8", "3.9", "3.10"]
+supported_pythons = "3.8", "3.9", "3.10"
 black_pythons = "3.10"
 mypy_pythons = "3.10"
 lint_pythons = "3.10"
-
-on_windows = platform.system() == "Windows"
 
 FLAKE8_DEPS = [
     "flake8",
@@ -143,14 +139,19 @@ def safety(s: Session) -> None:
     """Scan dependencies for insecure packages."""
     requirements = s.poetry.export_requirements()
     s.install("safety")
-    s.run("safety", "check", "--full-report", f"--file={requirements}")
+    s.run("safety", "check", "--full-report", f"--file={requirements}", *s.posargs)
 
 
 @session(python=supported_pythons)
 def tests(s: Session) -> None:
     """Run the test suite."""
-    s.install(".")
-    s.install("coverage[toml]", "pytest", "pygments")
+    s.run(
+        "poetry",
+        "install",
+        "--no-dev",
+        external=True,
+    )
+    s.install("pytest", "pygments", "coverage[toml]")
     try:
         s.run("coverage", "run", "--parallel", "-m", "pytest", *s.posargs)
     finally:
@@ -178,7 +179,12 @@ def coverage(s: Session) -> None:
 @session(python=supported_pythons)
 def typeguard(s: Session) -> None:
     """Runtime type checking using Typeguard."""
-    s.install(".")
+    s.run(
+        "poetry",
+        "install",
+        "--no-dev",
+        external=True,
+    )
     s.install("pytest", "typeguard", "pygments")
     s.run("pytest", f"--typeguard-packages={package}", *s.posargs)
 
@@ -189,11 +195,10 @@ def isort(s: Session) -> None:
     s.install("isort")
     search_patterns = [
         "*.py",
-        "mapstp/*.py",
-        "tests/*.py",
+        f"src/{package}/*.py",
+        "src/tests/*.py",
         "benchmarks/*.py",
         "profiles/*.py",
-        #        "adhoc/*.py",
     ]
     files_to_process: List[str] = sum(
         (glob(p, recursive=True) for p in search_patterns), []
@@ -227,7 +232,12 @@ def lint(s: Session) -> None:
 def mypy(s: Session) -> None:
     """Type-check using mypy."""
     args = s.posargs or ["src", "docs/source/conf.py"]
-    s.install(".")
+    s.run(
+        "poetry",
+        "install",
+        "--no-dev",
+        external=True,
+    )
     s.install("mypy", "pytest", "types-setuptools")
     s.run("mypy", *args)
     if not s.posargs:
@@ -238,17 +248,26 @@ def mypy(s: Session) -> None:
 def xdoctest(s: Session) -> None:
     """Run examples with xdoctest."""
     args = s.posargs or ["all"]
-    s.install(".")
+    s.run(
+        "poetry",
+        "install",
+        "--no-dev",
+        external=True,
+    )
     s.install("xdoctest[colors]")
     s.run("python", "-m", "xdoctest", package, *args)
 
 
-# TODO dvp: readthedocs limit python version to 3.8, check later. See .readthedocs.yaml
-@session(name="docs-build", python="3.8")
+@session(name="docs-build", python="3.9")
 def docs_build(s: Session) -> None:
     """Build the documentation."""
     args = s.posargs or ["docs/source", "docs/_build"]
-    s.install(".")
+    s.run(
+        "poetry",
+        "install",
+        "--no-dev",
+        external=True,
+    )
     s.install(
         "sphinx",
         "sphinx-click",
@@ -272,7 +291,12 @@ def docs_build(s: Session) -> None:
 def docs(s: Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
     args = s.posargs or ["--open-browser", "docs/source", "docs/_build"]
-    s.install(".")
+    s.run(
+        "poetry",
+        "install",
+        "--no-dev",
+        external=True,
+    )
     s.install(
         "sphinx",
         "sphinx-autobuild",

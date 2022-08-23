@@ -63,7 +63,6 @@ pytest-benchmark = ">=3.4.1"
 pytest-cache = ">=1.0"
 pytest-cov = ">=3.0.0"
 pytest-mock = ">=3.6.1"
-rstcheck = ">=5.0.0"
 safety = ">=1.10.3"
 sphinx = ">=5.0.0"
 sphinx-autobuild = ">=2021.3.14"
@@ -84,6 +83,7 @@ flake8-comprehensions = "^3.10.0"
 flake8-print = "^5.0.0"
 flake8-use-fstring = "^1.4"
 pydocstyle = "^6.1.1"
+rstcheck = {version = "^6.1.0", extras = ["sphinx"]}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
