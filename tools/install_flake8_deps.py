@@ -40,11 +40,9 @@ deps = [
     "flake8-print",
     "flake8-rst-docstrings",
     "flake8-use-fstring",
-    "mccabe",
     "pep8-naming",
     "pydocstyle",
     "tryceratops",
 ]
 
 subprocess.run(["poetry", "add", "--dev", *deps])
-subprocess.run(["poetry", "show", *deps])
