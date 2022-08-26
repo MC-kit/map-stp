@@ -28,11 +28,11 @@ jobs:
         run:  |
           set -e
           python -m ensurepip
-          python -m pip install --constraint=.github/workflows/constraints.txt pip
+          python -m pip install --constraint=.github/constraints.txt pip
       - name: Install nox
-        run: pip install --constraint=.github/workflows/constraints.txt nox nox-poetry
+        run: pip install --constraint=.github/constraints.txt nox nox-poetry
       - name: Install poetry
-        run: pip install --constraint=.github/workflows/constraints.txt poetry
+        run: pip install --constraint=.github/constraints.txt poetry
       - name: Run nox tests
         run: nox --python 3.10
   build_wheels:
@@ -56,8 +56,8 @@ jobs:
       run:  |
         set -e
         python -m ensurepip
-        python -m pip install --constraint=.github/workflows/constraints.txt pip
-        pip install --constraint=.github/workflows/constraints.txt poetry
+        python -m pip install --constraint=.github/constraints.txt pip
+        pip install --constraint=.github/constraints.txt poetry
     - run: |
         set -e
         poetry version patch

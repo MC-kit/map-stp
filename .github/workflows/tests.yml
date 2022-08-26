@@ -48,9 +48,9 @@ jobs:
       - name: Checkout submodules
         run: git submodule update --init --recursive --depth=1
       - name: Install nox and nox-poetry
-        run: pip install --constraint=.github/workflows/constraints.txt nox nox-poetry
+        run: pip install --constraint=.github/constraints.txt nox nox-poetry
       - name: Install poetry
-        run: pip install --constraint=.github/workflows/constraints.txt poetry
+        run: pip install --constraint=.github/constraints.txt poetry
       - name: Run nox tests
         run: nox  --force-color --python ${{ matrix.python-version }}
       - name: Upload coverage data
@@ -80,18 +80,18 @@ jobs:
 
       - name: Upgrade pip
         run: |
-          pip install --constraint=.github/workflows/constraints.txt pip
+          pip install --constraint=.github/constraints.txt pip
           pip --version
 
       - name: Install Poetry
         run: |
-          pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry
+          pipx install --pip-args=--constraint=.github/constraints.txt poetry
           poetry --version
 
       - name: Install Nox
         run: |
-          pipx install --pip-args=--constraint=.github/workflows/constraints.txt nox
-          pipx inject --pip-args=--constraint=.github/workflows/constraints.txt nox nox-poetry
+          pipx install --pip-args=--constraint=.github/constraints.txt nox
+          pipx inject --pip-args=--constraint=.github/constraints.txt nox nox-poetry
           nox --version
 
       - name: Download coverage data
