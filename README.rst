@@ -57,7 +57,7 @@ Contributing
 ------------
 
 .. image:: https://github.com/MC-kit/map-stp/workflows/Tests/badge.svg
-   :target: https://github.com/MC-kit/map-stp/actions?query=workflow%3ATests
+   :target: https://github.com/MC-kit/map-stp/actions
    :alt: Tests
 .. image:: https://codecov.io/gh/MC-kit/map-stp/branch/master/graph/badge.svg?token=wlqoa368k8
   :target: https://codecov.io/gh/MC-kit/map-stp
