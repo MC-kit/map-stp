@@ -46,8 +46,7 @@ lint_pythons = "3.10"
 FLAKE8_DEPS = [
     "flake8",
     "flake8-annotations",
-    # TODO dvp: versions 3.0.0 and older don't work with recent flake8, check on update
-    #  "flake8-bandit",
+    "flake8-bandit",
     "flake8-bugbear",
     "flake8-builtins",
     "flake8-colors",
