@@ -50,7 +50,7 @@ class Tree:
             STPParserError: if the information is screwed.
         """
         self._product_index: Dict[int, Product] = make_index(products)
-        self._node_index: Dict[int, Node] = dict()
+        self._node_index: Dict[int, Node] = {}
         self._body_links = []
         for link in links:
             src, dst = link
@@ -72,7 +72,7 @@ class Tree:
                         raise STPParserError()
                     node.parent = parent
 
-    def __create_node(self, product: Product, parent: Node = None) -> Node:
+    def __create_node(self, product: Product, parent: Optional[Node] = None) -> Node:
         """Create and register a node.
 
         Args:
@@ -101,12 +101,7 @@ class Tree:
             product = self._product_index[dst]
             if product.is_leaf:
                 node = self._node_index[src]
-                path = list(
-                    map(
-                        lambda parent: parent.name,
-                        node.collect_parents(),
-                    )
-                )
+                path = [parent.name for parent in node.collect_parents()]
                 path.append(product.name)
                 # TODO dvp: design flaw: separate indexes for
                 #           Products and LeafProducts to avoid cast

@@ -46,7 +46,7 @@ def env(key, converter=str, default=None):
         default: value to use, if there are no variable with the name `key`
 
     Returns:
-        Loaded value converted to `type_` or default.
+        Loaded value converted with `converter` or default.
 
     Raises:
         ValueError: if conversion is not possible.

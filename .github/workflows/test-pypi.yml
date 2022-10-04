@@ -5,15 +5,15 @@ defaults:
     shell: bash
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+#  push:
+#    branches:
+#      - master
 jobs:
   lint:
     name: "Code quality check"
     runs-on: ubuntu-latest
     if: |
-      !startsWith(github.event.head_commit.message, 'bump:') &&
       !contains(github.event.head_commit.message, '[skip_ci]')
     steps:
       - name: Checkout repository
@@ -28,25 +28,24 @@ jobs:
         run:  |
           set -e
           python -m ensurepip
-          python -m pip install --constraint=.github/workflows/constraints.txt pip
+          python -m pip install --constraint=.github/constraints.txt pip
       - name: Install nox
-        run: pip install --constraint=.github/workflows/constraints.txt nox nox-poetry
+        run: pip install --constraint=.github/constraints.txt nox nox-poetry
       - name: Install poetry
-        run: pip install --constraint=.github/workflows/constraints.txt poetry
+        run: pip install --constraint=.github/constraints.txt poetry
       - name: Run nox tests
-        run: nox --python 3.9
+        run: nox --python 3.10
   build_wheels:
     name: "Python ${{ matrix.python-version }} on ${{ matrix.os }}"
     needs: lint
     runs-on: "${{ matrix.os }}"
     if: |
-      !startsWith(github.event.head_commit.message, 'bump:') &&
       !contains(github.event.head_commit.message, '[skip_ci]')
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest] # , macos-latest, windows-latest]
-        python-version: ['3.9']
+        python-version: ['3.10']
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
@@ -57,8 +56,8 @@ jobs:
       run:  |
         set -e
         python -m ensurepip
-        python -m pip install --constraint=.github/workflows/constraints.txt pip
-        pip install --constraint=.github/workflows/constraints.txt poetry
+        python -m pip install --constraint=.github/constraints.txt pip
+        pip install --constraint=.github/constraints.txt poetry
     - run: |
         set -e
         poetry version patch
@@ -71,7 +70,7 @@ jobs:
       run:  poetry build -f wheel
     - name: Build sdist
       run:  poetry build -s sdist
-      if:   matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
+      if:   matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10'
     - name: GitHub Release wheels (deploy)
       if: (github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags'))
       uses: softprops/action-gh-release@v1

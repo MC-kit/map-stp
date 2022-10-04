@@ -32,7 +32,7 @@ def test_product_from_string(text, expected):
     "text, expected",
     [
         (
-            "#79=NEXT_ASSEMBLY_USAGE_OCCURRENCE('Component1','Component1','Component1',#69,#80,$);",  # noqa
+            "#79=NEXT_ASSEMBLY_USAGE_OCCURRENCE('Component1','Component1','Component1',#69,#80,$);",
             Link(79, "Component1", 69, 80),
         ),
     ],
@@ -157,8 +157,8 @@ class _ParserTestResult:
 )
 def test_stp_parser1(data, stp, expected):
     products, links = parse_path(data / stp)
-    components = list(map(lambda x: x.name, products))
-    numbers = list(map(lambda x: x.number, products))
+    components = [x.name for x in products]
+    numbers = [x.number for x in products]
     expected.check(components, numbers, links)
 
 

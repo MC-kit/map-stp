@@ -286,4 +286,4 @@ def make_index(products: Iterable[Product]) -> Dict[int, Product]:
     Returns:
         Dictionary product id -> product.
     """
-    return dict((p.number, p) for p in products)
+    return {p.number: p for p in products}

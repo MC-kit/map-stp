@@ -3,7 +3,7 @@
 The map associates material number to its MCNP specification text.
 """
 
-from typing import Callable, Dict, Generator, Iterable, TextIO, Union
+from typing import Callable, Dict, Generator, Iterable, List, TextIO, Union
 
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -23,7 +23,9 @@ MaterialsDict = Dict[int, str]
 class _Loader:
     stream: TextIO
     material_no: int = field(default=-1, init=False)
-    materials_dict: dict = field(default_factory=lambda: defaultdict(list), init=False)
+    materials_dict: Dict[int, List[str]] = field(
+        default_factory=lambda: defaultdict(list), init=False
+    )
 
     @property
     def _in_material_card(self) -> bool:
@@ -80,9 +82,10 @@ def load_materials_map_from_stream(stream: TextIO) -> MaterialsDict:
             result += "\n"
         return result
 
-    materials_dict = dict(
-        (k, _restore_material_text(v)) for k, v in loader.materials_dict.items()
-    )
+    materials_dict = {
+        k: _restore_material_text(v) for k, v in loader.materials_dict.items()
+    }
+
     return materials_dict
 
 
@@ -168,6 +171,6 @@ def get_used_materials(materials_map: Dict[int, str], path_info: pd.DataFrame) -
         All the used materials specs to be used as part of MCNP model text.
     """
     values = path_info["number"].values
-    used_numbers = sorted(set(int(m) for m in values if not np.isnan(m)))
+    used_numbers = sorted({int(m) for m in values if not np.isnan(m)})
     used_materials_texts = list(map(materials_spec_mapper(materials_map), used_numbers))
     return "".join(used_materials_texts)

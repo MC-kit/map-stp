@@ -57,7 +57,7 @@ Contributing
 ------------
 
 .. image:: https://github.com/MC-kit/map-stp/workflows/Tests/badge.svg
-   :target: https://github.com/MC-kit/map-stp/actions?query=workflow%3ATests
+   :target: https://github.com/MC-kit/map-stp/actions
    :alt: Tests
 .. image:: https://codecov.io/gh/MC-kit/map-stp/branch/master/graph/badge.svg?token=wlqoa368k8
   :target: https://codecov.io/gh/MC-kit/map-stp
@@ -71,6 +71,10 @@ Contributing
 .. image:: https://img.shields.io/badge/try%2Fexcept%20style-tryceratops%20%F0%9F%A6%96%E2%9C%A8-black
    :target: https://github.com/guilatrova/tryceratops
    :alt: try/except style: tryceratops
+
+.. .. image:: https://img.shields.io/badge/security-bandit-yellow.svg
+    :target: https://github.com/PyCQA/bandit
+    :alt: Security Status
 
 .. Substitutions
 

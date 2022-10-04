@@ -79,9 +79,7 @@ Or the command-line interface:
 Windows
 ~~~~~~~
 
-.. TODO::
-
-    Add installation and development scripts.
+.. todo::   Add installation and development scripts.
 
 
 How to test the project
@@ -130,8 +128,7 @@ Your pull request needs to meet the following guidelines for acceptance:
 - Include unit tests. This project maintains 100% code coverage.
 - If your changes add functionality, update the documentation accordingly.
 
-.. TODO::
-    Make sure 100% coverage is achieved.
+.. todo::    Make sure 100% coverage is achieved.
 
 Feel free to submit early, though—we can always iterate on this.
 
@@ -144,6 +141,9 @@ To run linting and code formatting checks before committing your change, you can
 It is recommended to open an issue before starting work on anything.
 This will allow a chance to talk it over with the owners and validate your approach.
 
-.. _pull request: https://github.com/cjolowicz/hypermodern-python/pulls
+.. _pull request: https://github.com/MC-kit/map-stp/pulls
 .. github-only
 .. _Code of Conduct: CODE_OF_CONDUCT.rst
+
+
+.. todolist::
