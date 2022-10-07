@@ -36,7 +36,7 @@ jobs:
       !contains(github.event.head_commit.message, '[skip_ci]')
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4.2.0
@@ -50,12 +50,12 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pipx install --pip-args=--constraint=.github/constraints.txt poetry
+          pip install --constraint=.github/constraints.txt poetry
           poetry --version
 
       - name: Install Nox
         run: |
-          pipx install --pip-args=--constraint=.github/constraints.txt nox
+          pip install --constraint=.github/constraints.txt nox
           nox --version
 
 #      - name: Run safety session
@@ -65,7 +65,6 @@ jobs:
       - name: Run pre commit checks
         run: |
           nox --force-color --session=pre-commit
-          # this includes pycln, isort, black, flake8 checks
 
       - name: Run mypy static type checks
         run: |
@@ -76,12 +75,12 @@ jobs:
     needs: lint
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
 
-      - name: Set up Python 3.10
+      - name: Set up Python 3.9  # TODO dvp: switch to 3.10 when sphinxcontrib.napoleon allows
         uses: actions/setup-python@v4.2.0
         with:
-          python-version: '3.10'
+          python-version: '3.9'
 
       - name: Upgrade pip
         run: |
@@ -90,12 +89,12 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pipx install --pip-args=--constraint=.github/constraints.txt poetry
+          pip install --constraint=.github/constraints.txt poetry
           poetry --version
 
       - name: Install Nox
         run: |
-          pipx install --pip-args=--constraint=.github/constraints.txt nox
+          pip install --constraint=.github/constraints.txt nox
           nox --version
 
       - name: Build documentation
@@ -115,17 +114,27 @@ jobs:
         python-version: ['3.8', '3.9', '3.10']
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 1
+#      - name: Checkout submodules
+#        run: git submodule update --init --recursive --depth=1
       - uses: actions/setup-python@v4.2.0
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
-#      - name: Checkout submodules
-#        run: git submodule update --init --recursive --depth=1
+      - name: Use frozen pip version
+        run: |
+          pip install --constraint=.github/constraints.txt pip virtualenv
+          pip --version
       - name: Install nox
-        run: pip install --constraint=.github/constraints.txt nox
+        run: |
+          pip install --constraint=.github/constraints.txt nox
+          nox --version
       - name: Install poetry
-        run: pip install --constraint=.github/constraints.txt poetry
+        run: |
+          pip install --constraint=.github/constraints.txt poetry
+          poetry --version
       - name: Run nox tests
         run: nox  --force-color --session tests --python ${{ matrix.python-version }}
       - name: Upload coverage data
@@ -139,26 +148,26 @@ jobs:
     needs: tests
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4.2.0
         with:
           python-version: '3.10'
 
-      - name: Upgrade pip
+      - name: Use frozen pip version
         run: |
           pip install --constraint=.github/constraints.txt pip
           pip --version
 
       - name: Install Poetry
         run: |
-          pipx install --pip-args=--constraint=.github/constraints.txt poetry
+          pip install --constraint=.github/constraints.txt poetry
           poetry --version
 
       - name: Install Nox
         run: |
-          pipx install --pip-args=--constraint=.github/constraints.txt nox
+          pip install --constraint=.github/constraints.txt nox
           nox --version
 
       - name: Download coverage data
@@ -175,4 +184,4 @@ jobs:
           nox --force-color --session=coverage -- xml
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v3.1.0
+        uses: codecov/codecov-action@v3.1.1

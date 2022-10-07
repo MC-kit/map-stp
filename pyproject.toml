@@ -253,5 +253,5 @@ include = ["src"]
 experimental = true
 
 [tool.pycln]
-path = ["src", "tools"]
+path = "src"
 #silence = true

@@ -60,7 +60,7 @@ repos:
     -   id: pycln
         name: pycln
         exclude: tools|\.idea|\.cache
-        entry: poetry run pycln
+        entry: poetry run pycln --config pyproject.toml
         language: system
         types: [python]
     # Nicely sort imports
