@@ -28,7 +28,7 @@ nox.options.sessions = (
 )
 
 
-NAME_RGX = re.compile(r'name\s*=\s*"(?P<package>[-_a-zA-Z]+)"')
+NAME_RGX = re.compile(r'name\s*=\s*"(?P<package>[-_a-zA-Z0-9]+)"')
 
 
 def find_my_name() -> str:
@@ -58,7 +58,7 @@ def find_my_name() -> str:
 
 
 package: Final = find_my_name()
-locations: Final = f"src/{package}", "src/tests", "noxfile.py", "docs/source/conf.py"
+locations: Final = f"src/{package}", "src/tests", "./noxfile.py", "docs/source/conf.py"
 
 supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
 black_pythons: Final = "3.10"
@@ -240,6 +240,7 @@ def black(s: Session) -> None:
     s.run(
         "poetry",
         "install",
+        "--no-root",
         "--only",
         "black",
         external=True,
@@ -254,6 +255,7 @@ def lint(s: Session) -> None:
     s.run(
         "poetry",
         "install",
+        "--no-root",
         "--only",
         "flake8",
         external=True,
