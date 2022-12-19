@@ -4,7 +4,10 @@
 
 pyenv virtualenv-delete -f  mapstp
 pyenv virtualenv 3.11.1 mapstp
+eval "$(pyenv init -)"
+pyenv shell mapstp  # poetry should see mapstp env
 poetry install
+pyenv shell --unset
 pyenv rehash
 mapstp --version
 
