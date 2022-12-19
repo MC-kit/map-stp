@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Install selected flake8 plugins to current poetry environment.
+"""Install selected flake8 plugins to the current poetry controlled python project.
 
 Descriptions
 ------------
@@ -21,15 +21,14 @@ Partially borrowed from:
 
 - https://cthoyt.com/2020/04/25/how-to-code-with-me-flake8.html
 
-"""  # noqa: ignore B950
+"""
 
 import subprocess
 
 deps = [
     "flake8",
     "flake8-annotations",
-    # TODO dvp: versions 3.0.0 and older don't work with recent flake8, check on update
-    #  "flake8-bandit",
+    "flake8-bandit",
     "flake8-bugbear",
     "flake8-builtins",
     "flake8-colors",
@@ -45,4 +44,4 @@ deps = [
     "tryceratops",
 ]
 
-subprocess.run(["poetry", "add", "--dev", *deps])
+subprocess.run(["poetry", "add", "--group", "flake8", *deps])

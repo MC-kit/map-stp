@@ -1,5 +1,37 @@
 #!/bin/bash
 
+# This can be used for readthedocs post_create_environment
+# https://docs.readthedocs.io/en/latest/build-customization.html
+#
+#build:
+#  os: "ubuntu-22.04"
+#  tools:
+#    python: "3.10"
+#  jobs:
+#    post_create_environment:
+#      # Install poetry
+#      # https://python-poetry.org/docs/#osx--linux--bashonwindows-install-instructions
+#      - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+#      ... the following is better (?):
+#      - tools/install-poetry
+#      # Tell poetry to not use a virtual environment
+#      - $HOME/.poetry/bin/poetry config virtualenvs.create false
+#      # Install project's dependencies
+#      - $HOME/.poetry/bin/poetry install
+#
+# Then build can be customized:
+#version: 2
+#build:
+#  os: "ubuntu-22.04"
+#  tools:
+#    python: "3.10"
+#  commands:
+#    - nox -s docs-build
+#
+# However, readthedocs works fine without this, and results are actually not differ from nox build
+# Check if this gets worse with document development.
+#
+
 curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
 
 poetry --version

@@ -30,36 +30,6 @@ repos:
     - id: requirements-txt-fixer
     - id: trailing-whitespace
       exclude:  data|.ipynb$
-# TODO dvp: return rstcheck, fix docs files for that
-#-   repo: https://github.com/rstcheck/rstcheck
-#    rev: v6.1.0
-#    hooks:
-#    -   id: rstcheck
--   repo: local
-    hooks:
-    # Nicely sort includes
-    -   id: isort
-        name: isort
-        exclude: dev|\.idea|\.cache
-        entry: poetry run isort
-        language: system
-        types: [python]
-    # Black, the code formatter, natively supports pre-commit
-    -   id: black
-        name: black
-        entry: poetry run black
-        language: system
-        types: [python]
-    -   id: flake8
-        name: flake8
-        entry: poetry run flake8 noxfile.py src
-        language: system
-        types: [python]
-# Also code format the docs
-#    -   id: blacken-docs
-#        name: blacken-docs
-#        entry: poetry run blacken-docs
-#        language: system
 
 # Changes tabs to spaces
 - repo: https://github.com/Lucas-C/pre-commit-hooks
@@ -73,13 +43,56 @@ repos:
 #  - id: fix-ligatures
 #  - id: fix-smartquotes
 
-# Autoremoves unused imports
-- repo: https://github.com/hadialqattan/pycln
-  rev: "v2.1.1"
+# Automatically remove noqa that are not used
+- repo: https://github.com/asottile/yesqa
+  rev: "v1.4.0"
   hooks:
-  - id: pycln
-    additional_dependencies: [click<8.1]  # TODO Unpin when typer updates
-    stages: [manual]
+  - id: yesqa
+
+# TODO dvp: return rstcheck, fix docs files for that
+#-   repo: https://github.com/rstcheck/rstcheck
+#    rev: v6.1.0
+#    hooks:
+#    -   id: rstcheck
+-   repo: local
+    hooks:
+    # Remove unused imports
+    -   id: pycln
+        name: pycln
+        exclude: tools|\.idea|\.cache
+        entry: poetry run pycln --config pyproject.toml
+        language: system
+        types: [python]
+    # Nicely sort imports
+    -   id: isort
+        name: isort
+        exclude: tools|\.idea|\.cache
+        entry: poetry run isort
+        language: system
+        types: [python]
+    # Black, the code formatter, natively supports pre-commit
+    -   id: black
+        name: black
+        entry: poetry run black
+        language: system
+        types: [python]
+    -   id: flake8
+        name: flake8
+        entry: poetry run flake8
+        language: system
+        types: [python]
+# Also code format the docs
+#    -   id: blacken-docs
+#        name: blacken-docs
+#        entry: poetry run blacken-docs
+#        language: system
+
+#- repo: https://github.com/sirosen/texthooks
+#  rev: "0.3.1"
+#  hooks:
+#  - id: fix-ligatures
+#  - id: fix-smartquotes
+
 
 # Checking for common mistakes
 #- repo: https://github.com/pre-commit/pygrep-hooks
@@ -92,23 +105,6 @@ repos:
 #  - id: rst-backticks
 #  - id: rst-directive-colons
 #  - id: rst-inline-touching-normal
-
-# Automatically remove noqa that are not used
-- repo: https://github.com/asottile/yesqa
-  rev: "v1.4.0"
-  hooks:
-  - id: yesqa
-    additional_dependencies: &flake8_dependencies
-    - flake8-bugbear
-    - pep8-naming
-
-# Flake8 also supports pre-commit natively (same author)
-#- repo: https://github.com/PyCQA/flake8
-#  rev: "4.0.1"
-#  hooks:
-#  - id: flake8
-#    exclude: ^(docs/.*|tools/.*)$
-#    additional_dependencies: *flake8_dependencies
 
 # PyLint has native support - not always usable, but works for us
 #- repo: https://github.com/PyCQA/pylint

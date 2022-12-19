@@ -32,7 +32,7 @@ def test_product_from_string(text, expected):
     "text, expected",
     [
         (
-            "#79=NEXT_ASSEMBLY_USAGE_OCCURRENCE('Component1','Component1','Component1',#69,#80,$);",  # noqa
+            "#79=NEXT_ASSEMBLY_USAGE_OCCURRENCE('Component1','Component1','Component1',#69,#80,$);",
             Link(79, "Component1", 69, 80),
         ),
     ],
