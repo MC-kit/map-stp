@@ -232,6 +232,7 @@ warn_return_any = true
 warn_unused_configs = true
 show_error_codes = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+disable_error_code = ["annotation-unchecked"]
 show_error_context = true
 error_summary = true
 warn_redundant_casts = true

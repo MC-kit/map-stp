@@ -14,4 +14,4 @@ from mapstp.utils.re import CARD_PATTERN
 )
 def test_test_card_pattern(text, expected):
     match = CARD_PATTERN.search(text)
-    assert match.lastgroup == expected
+    assert match is not None and match.lastgroup == expected

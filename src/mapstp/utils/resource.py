@@ -20,7 +20,7 @@ def filename_resolver(package: str) -> Callable[[str], str]:
         callable which appends the argument to the package folder.
     """
     # package = _resolve_package(package)
-    resource_manager = pkg.ResourceManager()  # type: ignore
+    resource_manager = pkg.ResourceManager()  # type: ignore[attr-defined]
 
     def func(resource: str) -> str:
         return cast(str, resource_manager.resource_filename(package, resource))
