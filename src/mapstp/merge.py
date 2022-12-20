@@ -5,7 +5,6 @@ corresponding to a cell and sets materials and densities,
 if specified in STP paths.
 
 """
-
 from typing import Generator, Iterable, List, Optional, TextIO, Tuple, Union
 
 import math
@@ -22,7 +21,7 @@ from mapstp.utils.io import read_mcnp_sections
 from mapstp.utils.re import CELL_START_PATTERN
 
 
-def is_defined(number: Union[int, float]) -> bool:
+def is_defined(number: Union[int, float, None]) -> bool:
     """Check if number coming from a DataFrame object cell is not None or NaN.
 
     Args:

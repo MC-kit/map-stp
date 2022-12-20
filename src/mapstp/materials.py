@@ -140,7 +140,7 @@ def materials_spec_mapper(materials_map: Dict[int, str]) -> Callable[[int], str]
     """
 
     def _func(used_number: int) -> str:
-        if isinstance(used_number, int) and 0 < used_number:
+        if 0 < used_number:
             text = materials_map.get(used_number)
             if not text:
                 logger.warning(

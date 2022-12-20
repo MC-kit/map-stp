@@ -28,7 +28,7 @@ nox.options.sessions = (
 )
 
 
-NAME_RGX = re.compile(r'name\s*=\s*"(?P<package>[-_a-zA-Z]+)"')
+NAME_RGX = re.compile(r'name\s*=\s*"(?P<package>[-_a-zA-Z0-9]+)"')
 
 
 def find_my_name() -> str:
@@ -58,11 +58,11 @@ def find_my_name() -> str:
 
 
 package: Final = find_my_name()
-locations: Final = f"src/{package}", "src/tests", "noxfile.py", "docs/source/conf.py"
+locations: Final = f"src/{package}", "src/tests", "./noxfile.py", "docs/source/conf.py"
 
 supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
-black_pythons: Final = "3.10"
-lint_pythons: Final = "3.10"
+black_pythons: Final = "3.11"
+lint_pythons: Final = "3.11"
 
 
 def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
@@ -115,7 +115,7 @@ def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
         hook.write_text("\n".join(lines))
 
 
-@session(name="pre-commit", python="3.10")
+@session(name="pre-commit", python="3.11")
 def precommit(s: Session) -> None:
     """Lint using pre-commit."""
     args = s.posargs or ["run", "--all-files", "--show-diff-on-failure"]
@@ -195,7 +195,7 @@ def typeguard(s: Session) -> None:
     s.run("pytest", f"--typeguard-packages={package}", *s.posargs)
 
 
-@session(python="3.10")
+@session(python="3.11")
 def isort(s: Session) -> None:
     """Organize imports."""
     search_patterns = [
@@ -240,6 +240,7 @@ def black(s: Session) -> None:
     s.run(
         "poetry",
         "install",
+        "--no-root",
         "--only",
         "black",
         external=True,
@@ -254,6 +255,7 @@ def lint(s: Session) -> None:
     s.run(
         "poetry",
         "install",
+        "--no-root",
         "--only",
         "flake8",
         external=True,
@@ -261,7 +263,7 @@ def lint(s: Session) -> None:
     s.run("flake8", *args)
 
 
-@session(python="3.10")
+@session(python="3.11")
 def mypy(s: Session) -> None:
     """Type-check using mypy."""
     args = s.posargs or ["src", "docs/source/conf.py"]
@@ -278,10 +280,10 @@ def mypy(s: Session) -> None:
         s.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
-@session(python="3.10")
+@session(python="3.11")
 def xdoctest(s: Session) -> None:
     """Run examples with xdoctest."""
-    args = s.posargs or ["--quiet", "-m", package]
+    args = s.posargs or ["--quiet", "-m", f"src/{package}"]
     s.run(
         "poetry",
         "install",
@@ -293,16 +295,13 @@ def xdoctest(s: Session) -> None:
     s.run("python", "-m", "xdoctest", *args)
 
 
-# TODO dvp: sphinxcontib.napoleon <= 0.7.0 is not compatible with Python3.10
-#           check compatibility on updates and shift python version when possible
-@session(name="docs-build", python="3.9")
+@session(name="docs-build", python="3.11")
 def docs_build(s: Session) -> None:
     """Build the documentation."""
     args = s.posargs or ["docs/source", "docs/_build"]
     s.run(
         "poetry",
         "install",
-        "--no-root",
         "--only",
         "docs",
         external=True,
@@ -314,14 +313,13 @@ def docs_build(s: Session) -> None:
     s.run("sphinx-build", *args)
 
 
-@session(python="3.9")
+@session(python="3.11")
 def docs(s: Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
     args = s.posargs or ["--open-browser", "docs/source", "docs/_build"]
     s.run(
         "poetry",
         "install",
-        "--no-root",
         "--only",
         "docs,docs_auto",
         external=True,
