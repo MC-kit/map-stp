@@ -38,10 +38,10 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3.1.0
 
-      - name: Set up Python 3.10
+      - name: Set up Python 3.11
         uses: actions/setup-python@v4.2.0
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: Upgrade pip
         run: |
@@ -77,10 +77,10 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3.1.0
 
-      - name: Set up Python 3.9  # TODO dvp: switch to 3.10 when sphinxcontrib.napoleon allows
+      - name: Set up Python 3.11
         uses: actions/setup-python@v4.2.0
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Upgrade pip
         run: |
@@ -111,7 +111,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.8', '3.9', '3.10']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3.1.0
@@ -150,10 +150,10 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3.1.0
 
-      - name: Set up Python 3.10
+      - name: Set up Python 3.11
         uses: actions/setup-python@v4.2.0
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: Use frozen pip version
         run: |
