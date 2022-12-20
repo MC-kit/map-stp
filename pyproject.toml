@@ -110,7 +110,7 @@ tryceratops = ">=1.0.1"
 sphinx = ">=5.3.0"
 sphinx-autodoc-typehints = ">=1.19.5"
 sphinx-autorun = ">=1.1.1"
-sphinx-click = ">=4.0.3"
+sphinx-click = ">=4.4.0"
 sphinx-rtd-theme = ">=1.1.1"
 sphinxcontrib-napoleon = ">=0.7"
 
@@ -223,6 +223,7 @@ sort = "Cover"
 
 # MyPy config
 # See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
+#     https://dev.to/tusharsadhwani/the-comprehensive-guide-to-mypy-561m
 [tool.mypy]
 python_version = "3.10"
 # strict = true     # TODO dvp: uncomment this to get strict control
@@ -252,8 +253,18 @@ module = [
     "pandas",
     "pytest",
     "scipy.constants",
+    "tomllib",
+    "tomli"
 ]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "tomllib",
+    "tomli"
+]
+allow_redefinition = true
+disable_error_code = "no-redef"
 
 [tool.check-manifest]
 ignore = [

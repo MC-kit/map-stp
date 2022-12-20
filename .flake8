@@ -11,6 +11,8 @@ ignore=
     ANN102
     #ANN204 Missing return type annotation for special method
     ANN204
+    # zip() without `strict` parameter, pythons <3.10 don't have this keyword
+    B905
     # C812 Missing trailing comma: black compatibility
     C812
     # D105 Missing docstring in magic method (__hash__, __eq__)

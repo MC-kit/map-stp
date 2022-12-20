@@ -63,6 +63,7 @@ locations: Final = f"src/{package}", "src/tests", "./noxfile.py", "docs/source/c
 supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
 black_pythons: Final = "3.11"
 lint_pythons: Final = "3.11"
+mypy_pythons: Final = "3.11"
 
 
 def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
@@ -263,7 +264,7 @@ def lint(s: Session) -> None:
     s.run("flake8", *args)
 
 
-@session(python="3.11")
+@session(python=mypy_pythons)
 def mypy(s: Session) -> None:
     """Type-check using mypy."""
     args = s.posargs or ["src", "docs/source/conf.py"]
