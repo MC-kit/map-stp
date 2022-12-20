@@ -165,7 +165,7 @@ exclude = '''
   | dist
   | data
   | htmlcov
-  | .egg-info
+  | \.egg-info
   | notebooks
   | wrk
 )
