@@ -49,7 +49,7 @@ per-file-ignores =
     tools/clear-prev-dist-info.py:S404,S603,S607
     tools/install_flake8_deps.py:S404,S603,S607,B950
     config.py:ANN001,ANN201
-    src/tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
+    tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
 ignore-decorators=click,pytest
 docstring-convention = google
 rst-roles = class,const,func,meth,mod,ref

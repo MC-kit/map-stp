@@ -6,7 +6,7 @@ from mapstp import __version__
 
 
 def find_version_from_project_toml():
-    toml_path = Path(__file__).parent.parent.parent / "pyproject.toml"
+    toml_path = Path(__file__).parent.parent / "pyproject.toml"
     assert toml_path.exists()
     with toml_path.open() as stream:
         for line in stream:
