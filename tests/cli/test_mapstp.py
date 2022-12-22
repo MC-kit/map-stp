@@ -8,6 +8,7 @@ import pandas as pd
 import pytest
 
 from mapstp.cli.runner import __summary__, __version__, mapstp
+from mapstp.materials import load_materials_map
 from mapstp.utils.io import find_first_cell_number, read_mcnp_sections
 from mapstp.utils.re import CELL_START_PATTERN, MATERIAL_PATTERN
 from numpy.testing import assert_array_equal
@@ -39,7 +40,7 @@ def extract_stp_comment_lines(lines):
             yield line
 
 
-def extract_material_lines(lines):
+def _extract_material_first_lines(lines):
     for line in lines:
         match = MATERIAL_PATTERN.search(line)
         if match:
@@ -282,12 +283,57 @@ def test_export_materials(runner, tmp_path, data):
     assert 2004 in cell2stp
     assert sections.cards, f"Control cards should be presented in {output}"
     lines = sections.cards.split("\n")
-    material_lines = dict(extract_material_lines(lines))
+    material_lines = dict(_extract_material_first_lines(lines))
     assert len(material_lines) == 2, f"There should be two materials in {output}"
     assert (
         material_lines[111]
         == "m111    24050.31c   6.88386e-004 $CR 50 WEIGHT(%) 17.2500 AB(%)  4.34"
     )
+
+
+def test_tnes(runner, tmp_path, data):
+    """STP without components."""
+    output: Path = tmp_path / "test-tnes.i"
+    excel: Path = tmp_path / "test-tnes.xlsx"
+    stp = data / "tnes.stp"
+    mcnp = data / "tnes.i"
+    material_index = data / "tnes-mi-22-12-19.xlsx"
+    materials = data / "tnes-materials.txt"
+    result = runner.invoke(
+        mapstp,
+        args=[
+            "--output",
+            str(output),
+            "--excel",
+            excel,
+            "--materials-index",
+            str(material_index),
+            "--materials",
+            str(materials),
+            str(stp),
+            str(mcnp),
+        ],
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 0, result.output
+    assert output.exists(), f"Should create output file {output}"
+    sections = read_mcnp_sections(output)
+    cell2stp = select_cell_and_stp_lines(sections.cells.split("\n"))
+    assert 1 in cell2stp
+    assert sections.cards, f"Control cards should be presented in {output}"
+    materials_dict = load_materials_map(materials)
+    assert len(materials_dict) == 3, f"There should be fore materials in {materials}"
+    for i in range(1, 4):
+        assert i in materials_dict
+    assert materials_dict[1].split("\n")[1].strip().startswith("5010.31d")
+    materials_dict = load_materials_map(output)
+    assert len(materials_dict) == 4, f"There should be fore materials in {output}"
+    for i in range(1, 5):
+        assert i in materials_dict
+    assert materials_dict[1].split("\n")[1].strip().startswith("5010.31d")
+    df = pd.read_excel(excel, index_col="cell")
+    path = df.loc[1]["STP path"]
+    assert "[m-reflector]" in path
 
 
 if __name__ == "__main__":

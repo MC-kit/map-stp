@@ -207,6 +207,9 @@ def parse(inp: TextIO) -> ParseResult:
     products: List[Product] = []
     links: LinksList = []
     check_header(inp)
+    # normal stp has links and components,
+    # but in q 'simple' case there are bodies only and one product
+    may_have_components = True
     for line_no_minus_3, line in enumerate(inp):
         try:
             match = _SELECT_PATTERN.search(line)
@@ -215,8 +218,12 @@ def parse(inp: TextIO) -> ParseResult:
                 if group == "solid":
                     body = Body.from_string(line)
                     if not products:
-                        msg = "At least one product is to be loaded at this step"
-                        raise STPParserError(msg)
+                        # msg = "At least one product is to be loaded at this step"
+                        # raise STPParserError(msg)
+
+                        # Case for STP without components, just bodies
+                        products.append(LeafProduct(0, "dummy"))
+                        may_have_components = False
                     last_product = products[-1]
                     if not last_product.is_leaf:
                         products[-1] = last_product = LeafProduct(
@@ -224,11 +231,15 @@ def parse(inp: TextIO) -> ParseResult:
                         )
                     last_product.append(body)
                 elif group == "link":
+                    if not may_have_components:
+                        msg = "Unexpected `link` is found in `simple` STP"
+                        raise STPParserError(msg)
                     link = Link.from_string(line)
                     links.append((link.src, link.dst))
                 elif group == "product":
-                    product = Product.from_string(line)
-                    products.append(product)
+                    if may_have_components:
+                        product = Product.from_string(line)
+                        products.append(product)
                 else:
                     msg = "Shouldn't be here, check _SELECT_PATTERN"
                     raise STPParserError(msg)

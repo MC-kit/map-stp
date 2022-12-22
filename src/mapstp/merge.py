@@ -10,15 +10,17 @@ from typing import Generator, Iterable, List, Optional, TextIO, Tuple, Union
 import math
 
 from dataclasses import dataclass, field
+from logging import getLogger
 from pathlib import Path
 
 import pandas as pd
 
-from loguru import logger
 from mapstp.exceptions import PathInfoError
 from mapstp.materials import drop_material_cards
 from mapstp.utils.io import read_mcnp_sections
 from mapstp.utils.re import CELL_START_PATTERN
+
+logger = getLogger()
 
 
 def is_defined(number: Union[int, float, None]) -> bool:
@@ -143,9 +145,8 @@ class _Merger:
             yield self.format_comment()
         if self.current_path_idx != self.paths_length:
             logger.warning(
-                "Only {} cells merged, STP specifies {} bodies.",
-                self.current_path_idx,
-                self.paths_length,
+                f"Only {self.current_path_idx} cells merged, "
+                f"STP specifies {self.paths_length} bodies."
             )
 
 
@@ -210,6 +211,11 @@ def merge_paths(
                 print(remainder, file=output, end="")
         else:
             print(used_materials_text, file=output)
+    else:
+        logger.warning(
+            "There are no surfaces in model, "
+            "skipping surfaces and data cards including materials"
+        )
 
 
 def join_paths(paths: List[List[str]], separator: str = "/") -> List[str]:

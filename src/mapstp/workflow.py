@@ -6,11 +6,11 @@ Check the methods defined here as templates for other workflows.
 """
 from typing import List, Tuple
 
+from logging import getLogger
 from pathlib import Path
 
 import pandas as pd
 
-from loguru import logger
 from mapstp.extract_info import extract_path_info
 from mapstp.materials_index import load_materials_index
 from mapstp.stp_parser import parse_path
@@ -30,6 +30,7 @@ def create_path_info(
         collected paths from the stp file
         table with joined information
     """
+    logger = getLogger()
     _materials_index = load_materials_index(materials_index)
     logger.info("Loaded material index from {}", materials_index)
     _stp = Path(stp)
