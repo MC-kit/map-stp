@@ -26,7 +26,7 @@ def create_excel(
         start_cell_number: number to start cell numbering in the excel
     """
     df = path_info.copy()
-    df["STP path"] = [lambda x: separator.join(x) for x in paths]
+    df["STP path"] = [separator.join(x) for x in paths]
     df["cell"] = list(range(start_cell_number, len(paths) + start_cell_number))
     df.set_index(keys="cell", inplace=True)
     with pd.ExcelWriter(excel) as xlsx:

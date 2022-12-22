@@ -2,6 +2,8 @@
 
 See `Cjolowicz's article <https://cjolowicz.github.io/posts/hypermodern-python-03-linting>`_
 """
+from __future__ import annotations
+
 from typing import Final, List
 
 import re
@@ -26,7 +28,7 @@ nox.options.sessions = (
 )
 
 
-NAME_RGX = re.compile(r'name\s*=\s*"(?P<package>[-_a-zA-Z]+)"')
+NAME_RGX = re.compile(r'name\s*=\s*"(?P<package>[-_a-zA-Z0-9]+)"')
 
 
 def find_my_name() -> str:
@@ -56,12 +58,12 @@ def find_my_name() -> str:
 
 
 package: Final = find_my_name()
-locations: Final = f"src/{package}", "src/tests", "noxfile.py", "docs/source/conf.py"
+locations: Final = f"src/{package}", "src/tests", "./noxfile.py", "docs/source/conf.py"
 
 supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
-black_pythons: Final = "3.10"
-mypy_pythons: Final = "3.10"
-lint_pythons: Final = "3.10"
+black_pythons: Final = "3.11"
+lint_pythons: Final = "3.11"
+mypy_pythons: Final = "3.11"
 
 
 def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
@@ -107,20 +109,21 @@ def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
                 {s.bin!r},
                 os.environ.get("PATH", ""),
             ))
-            """
+            """,
         )
 
         lines.insert(1, header)
         hook.write_text("\n".join(lines))
 
 
-@session(name="pre-commit", python="3.10")
+@session(name="pre-commit", python="3.11")
 def precommit(s: Session) -> None:
     """Lint using pre-commit."""
     args = s.posargs or ["run", "--all-files", "--show-diff-on-failure"]
     s.run(
         "poetry",
         "install",
+        "--no-root",
         "--only",
         "pre_commit,style,isort,black,flake8",
         external=True,
@@ -167,6 +170,7 @@ def coverage(s: Session) -> None:
     s.run(
         "poetry",
         "install",
+        "--no-root",
         "--only",
         "coverage",
         external=True,
@@ -192,7 +196,7 @@ def typeguard(s: Session) -> None:
     s.run("pytest", f"--typeguard-packages={package}", *s.posargs)
 
 
-@session(python="3.10")
+@session(python="3.11")
 def isort(s: Session) -> None:
     """Organize imports."""
     search_patterns = [
@@ -209,6 +213,7 @@ def isort(s: Session) -> None:
         s.run(
             "poetry",
             "install",
+            "--no-root",
             "--only",
             "isort",
             external=True,
@@ -236,6 +241,7 @@ def black(s: Session) -> None:
     s.run(
         "poetry",
         "install",
+        "--no-root",
         "--only",
         "black",
         external=True,
@@ -250,6 +256,7 @@ def lint(s: Session) -> None:
     s.run(
         "poetry",
         "install",
+        "--no-root",
         "--only",
         "flake8",
         external=True,
@@ -264,6 +271,7 @@ def mypy(s: Session) -> None:
     s.run(
         "poetry",
         "install",
+        "--no-root",
         "--only",
         "main,mypy",
         external=True,
@@ -273,13 +281,14 @@ def mypy(s: Session) -> None:
         s.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
-@session(python="3.10")
+@session(python="3.11")
 def xdoctest(s: Session) -> None:
     """Run examples with xdoctest."""
-    args = s.posargs or ["--quiet", "-m", package]
+    args = s.posargs or ["--quiet", "-m", f"src/{package}"]
     s.run(
         "poetry",
         "install",
+        "--no-root",
         "--only",
         "main,xdoctest",
         external=True,
@@ -287,7 +296,7 @@ def xdoctest(s: Session) -> None:
     s.run("python", "-m", "xdoctest", *args)
 
 
-@session(name="docs-build", python="3.10")
+@session(name="docs-build", python="3.11")
 def docs_build(s: Session) -> None:
     """Build the documentation."""
     args = s.posargs or ["docs/source", "docs/_build"]
@@ -295,7 +304,7 @@ def docs_build(s: Session) -> None:
         "poetry",
         "install",
         "--only",
-        "main,docs",
+        "docs",
         external=True,
     )
     build_dir = Path("docs", "_build")
@@ -305,7 +314,7 @@ def docs_build(s: Session) -> None:
     s.run("sphinx-build", *args)
 
 
-@session(python="3.10")
+@session(python="3.11")
 def docs(s: Session) -> None:
     """Build and serve the documentation with live reloading on file changes."""
     args = s.posargs or ["--open-browser", "docs/source", "docs/_build"]
@@ -313,7 +322,7 @@ def docs(s: Session) -> None:
         "poetry",
         "install",
         "--only",
-        "main,docs,docs_auto",
+        "docs,docs_auto",
         external=True,
     )
     build_dir = Path("docs", "_build")

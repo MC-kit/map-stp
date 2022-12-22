@@ -7,16 +7,18 @@ from typing import Callable, Dict, Generator, Iterable, List, TextIO, Union
 
 from collections import defaultdict
 from dataclasses import dataclass, field
+from logging import getLogger
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from loguru import logger
 from mapstp.utils.re import CARD_PATTERN, MATERIAL_PATTERN
 
 MaterialsDict = Dict[int, str]
 """Mapping material number -> material MCNP text"""
+
+logger = getLogger()
 
 
 @dataclass
@@ -140,13 +142,13 @@ def materials_spec_mapper(materials_map: Dict[int, str]) -> Callable[[int], str]
     """
 
     def _func(used_number: int) -> str:
-        if isinstance(used_number, int) and 0 < used_number:
+        if 0 < used_number:
             text = materials_map.get(used_number)
             if not text:
                 logger.warning(
-                    "Material M{} is not found in provided materials specifications. "
+                    f"Material M{used_number} is not found "
+                    "in provided materials specifications. "
                     "A dummy specification is issued to the tagged model.",
-                    used_number,
                 )
                 text = (
                     f"m{used_number}  "

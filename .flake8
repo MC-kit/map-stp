@@ -1,15 +1,22 @@
 [flake8]
-# select=ANN,B,B9,BLK,C,D,DAR,E,F,TC,I,S,W
-select=ANN,B,B9,BLK,C,D,DAR,E,F,TC,S,W
-max-complexity=10
+select=ANN,B,B9,BLK,C,D,DAR,E,F,I,TC,S,W
+max-complexity=12
 max-line-length=88
 ignore=
+    # ANN001 Missing type annotation for function argument
+    ANN001
     # ANN101 Missing type annotation for self in method
     ANN101
     # ANN102 Missing type annotation for cls in classmethod
     ANN102
+    #ANN204 Missing return type annotation for special method
+    ANN204
+    # zip() without `strict` parameter, pythons <3.10 don't have this keyword
+    B905
     # C812 Missing trailing comma: black compatibility
     C812
+    # D105 Missing docstring in magic method (__hash__, __eq__)
+    D105
     # Missing docstring in __init__
     D107
     # E203: Whitespace before ‘:'
@@ -18,6 +25,11 @@ ignore=
     E501
     # W503: Line break before binary operator: for compatibility with black settings
     W503
+    # import is controlled by isort
+    I100
+    I101
+    I201
+    I202
 exclude=
     .git
     __pycache__
@@ -37,7 +49,7 @@ per-file-ignores =
     tools/clear-prev-dist-info.py:S404,S603,S607
     tools/install_flake8_deps.py:S404,S603,S607,B950
     config.py:ANN001,ANN201
-    src/tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
+    tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
 ignore-decorators=click,pytest
 docstring-convention = google
 rst-roles = class,const,func,meth,mod,ref

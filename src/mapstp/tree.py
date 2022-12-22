@@ -68,7 +68,7 @@ class Tree:
                 if node is None:
                     self.__create_node(product, parent)
                 else:
-                    if node.parent is not None:
+                    if node.parent is not None:  # pragma: no cover
                         raise STPParserError()
                     node.parent = parent
 
@@ -126,6 +126,22 @@ def create_bodies_paths(
 
     Returns:
         The list of paths.
+
+    Raises:
+        ValueError: if more then one product is found in STP without components
     """
-    tree = Tree(products, links)
-    return tree.create_bodies_paths()
+    if links:
+        tree = Tree(products, links)
+        return tree.create_bodies_paths()
+    else:  # `simple` STP case
+        ps = list(products)
+        if 1 != len(ps):  # pragma: no cover
+            msg = "Only one product is expected for `simple` stp"
+            raise ValueError(msg)
+        product = cast(LeafProduct, ps[0])
+        bodies_paths = []
+        for b in product.bodies:
+            bodies_paths.append(
+                [b.name]
+            )  # TODO dvp: add transliteration for Russian names
+        return bodies_paths

@@ -1,6 +1,8 @@
+from pathlib import Path
+
 import pytest
 
-from mapstp.utils.resource import Path, filename_resolver, path_resolver
+from mapstp.utils.resource import filename_resolver, path_resolver
 
 THIS_FILENAME = Path(__file__).name
 
@@ -46,18 +48,16 @@ def test_filename_resolver_when_package_doesnt_exist():
 
 
 def test_path_resolver():
-    resolver = path_resolver()
-    actual = resolver(THIS_FILENAME)
+    resolver = path_resolver("tests")
+    actual = resolver("utils/" + THIS_FILENAME)
     assert isinstance(actual, Path)
     assert actual.name == THIS_FILENAME
     assert actual.exists(), f"The file '{THIS_FILENAME}' should be available"
 
 
 def test_path_resolver_in_own_package_with_separate_file():
-    resolver = path_resolver()
-    assert resolver(
-        "__init__.py"
-    ).exists(), "Should find __init__.py in the current package"
+    resolver = path_resolver("tests")
+    assert resolver("data").exists(), "Should find 'data' in the 'tests' package"
 
 
 if __name__ == "__main__":
