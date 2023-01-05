@@ -1,16 +1,22 @@
 [flake8]
-select=ANN,B,B9,BLK,C,D,DAR,E,F,I,TC,S,W
+select=ANN,B,B9,BLK,C,D,DAR,E,F,I,N,PD,R,TC,S,W
 max-complexity=10
-max-line-length=88
+max-line-length=90
 ignore=
-    # ANN001 Missing type annotation for function argument
+    # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
     ANN001
+    # ANN002 Missing type annotation for *drop_items: ... as above
+    ANN002
     # ANN101 Missing type annotation for self in method
     ANN101
     # ANN102 Missing type annotation for cls in classmethod
     ANN102
+    # ANN202 Missing return type annotation for protected function: ... dispatching
+    ANN202
     #ANN204 Missing return type annotation for special method
     ANN204
+    # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.8, 3.9
+    B905
     # C812 Missing trailing comma: black compatibility
     C812
     # D105 Missing docstring in magic method (__hash__, __eq__)
@@ -23,11 +29,19 @@ ignore=
     E501
     # W503: Line break before binary operator: for compatibility with black settings
     W503
-    # import is controlled by isort
+
+    # import order is controlled by isort
     I100
     I101
     I201
     I202
+
+    # ignore some questionable pandas-vet warnings
+    # We use at() to access single values
+    PD008
+    # And we use iat()
+    PD009
+
 exclude=
     .git
     __pycache__
@@ -52,5 +66,9 @@ ignore-decorators=click,pytest
 docstring-convention = google
 rst-roles = class,const,func,meth,mod,ref
 rst-directives = deprecated
+extend-ignore =
+    # Google Python style is not RST until after processed by Napoleon
+    # See https://github.com/peterjc/flake8-rst-docstrings/issues/17
+    RST201,RST203,RST301,
 
 # vim: set ts=4 sw=0 tw=79 ss=0 ft=ini et ai :
