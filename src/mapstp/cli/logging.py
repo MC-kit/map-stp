@@ -13,14 +13,6 @@ from pathlib import Path
 from loguru import logger
 from mapstp.config import env
 
-# class PropagateHandler(logging.Handler):
-#     """Send events from loguru to standard logging"""
-#     def emit(self, record):
-#         logging.getLogger(record.name).handle(record)
-#
-#
-# logger.add(PropagateHandler(), format="{message}")
-
 
 class InterceptHandler(logging.Handler):
     """Send events from standard logging to loguru."""
@@ -50,14 +42,9 @@ class InterceptHandler(logging.Handler):
 
 
 log = logging.getLogger()
-# log.setLevel(0)
 log.addHandler(InterceptHandler())
-# logging.basicConfig(handlers=[InterceptHandler()], level=0, style='{')
 
 # from loguru._defaults.py
-# "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | "
-# "<level>{level: <8}</level> | "
-# "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
 
 MAPSTP_CONSOLE_LOG_FORMAT: Final[str] = env(
     "MAPSTP_CONSOLE_LOG_FORMAT",

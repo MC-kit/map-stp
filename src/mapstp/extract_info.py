@@ -48,52 +48,67 @@ def extract_path_info(
 
     Returns:
         Table with material `number`, `density`, applied correction `factor`,
-        and `rwcl label corresponding to every path in paths
+        and `rwcl` label corresponding to every path in paths
     """
-
-    def _records() -> Generator[
-        Tuple[Optional[int], Optional[float], Optional[float], Optional[str]],
-        None,
-        None,
-    ]:
-        for path in paths:
-            meta_info = _MetaInfo()
-            for i, part in enumerate(path):
-                match = _META_PATTERN.match(part)
-                if match:
-                    pars = _extract_meta_info(i, match, part, path)
-                    meta_info.update(pars)
-            if meta_info.mnemonic:
-                try:
-                    number: Optional[int] = int(
-                        material_index.loc[meta_info.mnemonic]["number"]
-                    )  # TODO dvp: check why type of number became float
-                except KeyError:
-                    raise KeyError(
-                        f"The mnemonic '{meta_info.mnemonic}' "
-                        "is not specified in the material index. "
-                        f"See the STP path: {'/'.join(path)}"
-                    ) from None
-                density = material_index.loc[meta_info.mnemonic]["density"]
-                if np.isnan(density):
-                    raise ValueError(
-                        f"The density for mnemonic '{meta_info.mnemonic}' "
-                        "is not specified in the material index."
-                    )
-                if density < 0.0:
-                    raise ValueError(
-                        f"The density for mnemonic '{meta_info.mnemonic}' "
-                        "in the material index is to be positive."
-                    )
-            else:
-                number = density = None
-            yield number, density, meta_info.factor, meta_info.rwcl
-
-    df = pd.DataFrame.from_records(
-        _records(),
-        columns="number density factor rwcl".split(),
+    return pd.DataFrame.from_records(
+        _records(paths, material_index),
+        columns=["number", "density", "factor", "rwcl"],
     )
-    return df
+
+
+def _records(
+    paths, material_index
+) -> Generator[
+    Tuple[Optional[int], Optional[float], Optional[float], Optional[str]],
+    None,
+    None,
+]:
+    for path in paths:
+        meta_info = _extract_meta_info_from_path(path)
+        if meta_info.mnemonic:
+            density, number = _define_material_number_and_density(
+                material_index, meta_info, path
+            )
+        else:
+            number = density = None
+        yield number, density, meta_info.factor, meta_info.rwcl
+
+
+def _define_material_number_and_density(
+    material_index, meta_info, path
+) -> Tuple[float, int]:
+    try:
+        number: Optional[int] = int(
+            material_index.loc[meta_info.mnemonic]["number"]
+        )  # TODO dvp: check why type of number became float
+    except KeyError:
+        raise KeyError(
+            f"The mnemonic '{meta_info.mnemonic}' "
+            "is not specified in the material index. "
+            f"See the STP path: {'/'.join(path)}"
+        ) from None
+    density = material_index.loc[meta_info.mnemonic]["density"]
+    if np.isnan(density):
+        raise ValueError(
+            f"The density for mnemonic '{meta_info.mnemonic}' "
+            "is not specified in the material index."
+        )
+    if density < 0.0:
+        raise ValueError(
+            f"The density for mnemonic '{meta_info.mnemonic}' "
+            "in the material index is to be positive."
+        )
+    return density, number
+
+
+def _extract_meta_info_from_path(path) -> _MetaInfo:
+    meta_info = _MetaInfo()
+    for i, part in enumerate(path):
+        match = _META_PATTERN.match(part)
+        if match:
+            pars = _extract_meta_info(i, match, part, path)
+            meta_info.update(pars)
+    return meta_info
 
 
 def _extract_meta_info(

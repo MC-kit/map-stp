@@ -38,12 +38,11 @@ def load_materials_index(materials_index: Optional[str] = None) -> pd.DataFrame:
         raise FileNotFoundError(p)
     materials = pd.read_excel(
         p,
-        sheet_name=0,  # Use the first sheet, regardless of its name.
         usecols=["mnemonic", "number", "eff.density, g/cm3"],
         converters={"number": int, "eff.density, g/cm3": float},
         engine="openpyxl",
     )
-    materials = materials.loc[materials["mnemonic"].notnull()]
-    materials.rename(columns={"eff.density, g/cm3": "density"}, inplace=True)
-    materials.set_index(keys="mnemonic", inplace=True)
+    materials = materials.loc[materials["mnemonic"].notna()]
+    materials = materials.rename(columns={"eff.density, g/cm3": "density"})
+    materials = materials.set_index(keys="mnemonic")
     return materials

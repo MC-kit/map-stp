@@ -22,7 +22,7 @@ def can_override(path: Path, override: bool) -> Path:
         override: permission to override flag
 
     Returns:
-        The input `path`to facilitate chaining in mapping in code.
+        The input `path` to facilitate chaining in mapping in code.
 
     Raises:
         FileExistsError: if file exists, but override is not allowed.
@@ -52,7 +52,8 @@ def find_first_cell_number(mcnp: Union[str, Path]) -> int:
         for line in stream:
             match = CELL_START_PATTERN.search(line)
             if match:
-                cell_number = int(line[: match.end()].split()[0])
+                cell_start = line[: match.end()]
+                cell_number = int(cell_start.split()[0])
                 return cell_number
     raise ValueError(f"Cells with material 0 are not found in {mcnp}. Is it MCNP file?")
 

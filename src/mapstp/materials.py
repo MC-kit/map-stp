@@ -29,9 +29,24 @@ class _Loader:
         default_factory=lambda: defaultdict(list), init=False
     )
 
+    def __post_init__(self) -> None:
+        for line in self.stream:
+            self._process_line(line)
+
     @property
     def _in_material_card(self) -> bool:
         return 0 < self.material_no
+
+    def _process_line(self, line) -> None:
+        if self._in_material_card:
+            match = CARD_PATTERN.search(line)
+            if not match:
+                self._append(line)
+                return
+            if match.lastgroup != "comment" and not self._check_if_material_line(line):
+                self.material_no = -1
+        else:
+            self._check_if_material_line(line)
 
     def _append(self, line: str) -> None:
         if 0 < self.material_no:
@@ -49,21 +64,6 @@ class _Loader:
             return True
         else:
             return False  # skipping other cards and prepending text
-
-    def __post_init__(self) -> None:
-        for line in self.stream:
-            if self._in_material_card:
-                match = CARD_PATTERN.search(line)
-                if match:
-                    if match.lastgroup == "comment":
-                        pass  # skipping comment line
-                    else:
-                        if not self._check_if_material_line(line):
-                            self.material_no = -1
-                else:
-                    self._append(line)
-            else:
-                self._check_if_material_line(line)
 
 
 def load_materials_map_from_stream(stream: TextIO) -> MaterialsDict:
@@ -120,13 +120,8 @@ def drop_material_cards(lines: Iterable[str]) -> Generator[str, None, None]:
     in_material_card = False
     for line in lines:
         match = CARD_PATTERN.search(line)
-        if match:
-            if match.lastgroup == "card":
-                match = MATERIAL_PATTERN.search(line)
-                if match:
-                    in_material_card = True
-                else:
-                    in_material_card = False
+        if match and match.lastgroup == "card":
+            in_material_card = MATERIAL_PATTERN.search(line) is not None
         if not in_material_card:
             yield line
 
@@ -172,7 +167,7 @@ def get_used_materials(materials_map: Dict[int, str], path_info: pd.DataFrame) -
     Returns:
         All the used materials specs to be used as part of MCNP model text.
     """
-    values = path_info["number"].values
+    values = path_info["number"].to_numpy()
     used_numbers = sorted({int(m) for m in values if not np.isnan(m)})
     used_materials_texts = list(map(materials_spec_mapper(materials_map), used_numbers))
     return "".join(used_materials_texts)

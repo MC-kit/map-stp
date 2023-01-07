@@ -122,23 +122,7 @@ class _Merger:
         for line in self.mcnp_lines:
             match = CELL_START_PATTERN.match(line)
             if match:
-                if self.first_cell:
-                    line = _correct_first_line(
-                        line, match.end(), self.current_path_idx, self.path_info
-                    )
-                    self.first_cell = False
-                else:
-                    first_cell_line_info_row = self.current_path_idx + 1
-                    if first_cell_line_info_row < self.paths_length:
-                        line = _correct_first_line(
-                            line,
-                            match.end(),
-                            first_cell_line_info_row,
-                            self.path_info,
-                        )
-                    if self.current_path_idx < self.paths_length:
-                        yield self.format_comment()
-                yield line
+                yield from self._on_cell_start(line, match)
             else:
                 yield line
         if self.current_path_idx < self.paths_length:
@@ -148,6 +132,33 @@ class _Merger:
                 f"Only {self.current_path_idx} cells merged, "
                 f"STP specifies {self.paths_length} bodies."
             )
+
+    def _on_cell_start(self, line, match) -> Generator[str, None, None]:
+        if self.first_cell:
+            line = self._on_first_cell(line, match)
+        else:
+            line = self._on_next_cell(line, match)
+            if self.current_path_idx < self.paths_length:
+                yield self.format_comment()
+        yield line
+
+    def _on_next_cell(self, line, match) -> str:
+        first_cell_line_info_row = self.current_path_idx + 1
+        if first_cell_line_info_row < self.paths_length:
+            line = _correct_first_line(
+                line,
+                match.end(),
+                first_cell_line_info_row,
+                self.path_info,
+            )
+        return line
+
+    def _on_first_cell(self, line, match) -> str:
+        line = _correct_first_line(
+            line, match.end(), self.current_path_idx, self.path_info
+        )
+        self.first_cell = False
+        return line
 
 
 def _merge_lines(
@@ -188,6 +199,10 @@ def merge_paths(
 
     print(file=output)
 
+    _print_other_sections(mcnp_sections, output, used_materials_text)
+
+
+def _print_other_sections(mcnp_sections, output, used_materials_text) -> None:
     surfaces = mcnp_sections.surfaces
     if surfaces:
         print(surfaces, file=output, end="")
@@ -195,20 +210,9 @@ def merge_paths(
 
         cards = mcnp_sections.cards
         if cards:
-            cards = cards.strip()
-            if used_materials_text:
-                used_materials_text = used_materials_text.strip()
-                print(used_materials_text, file=output)
-                cards_lines = cards.split("\n")
-                for line in drop_material_cards(cards_lines):
-                    print(line, file=output)
-            else:
-                print(cards, file=output, end="")
-            print("\n\n", file=output)
-
-            remainder = mcnp_sections.remainder
-            if remainder:
-                print(remainder, file=output, end="")
+            _print_control_cards_with_used_materials(
+                cards, mcnp_sections, output, used_materials_text
+            )
         else:
             print(used_materials_text, file=output)
     else:
@@ -216,6 +220,23 @@ def merge_paths(
             "There are no surfaces in model, "
             "skipping surfaces and data cards including materials"
         )
+
+
+def _print_control_cards_with_used_materials(
+    cards, mcnp_sections, output, used_materials_text
+) -> None:
+    if used_materials_text:
+        used_materials_text = used_materials_text.strip()
+        print(used_materials_text, file=output)
+        cards_lines = cards.strip().split("\n")
+        for line in drop_material_cards(cards_lines):
+            print(line, file=output)
+    else:
+        print(cards, file=output, end="")
+    print("\n\n", file=output)
+    remainder = mcnp_sections.remainder
+    if remainder:
+        print(remainder, file=output, end="")
 
 
 def join_paths(paths: List[List[str]], separator: str = "/") -> List[str]:

@@ -1,5 +1,5 @@
 [flake8]
-select=ANN,B,B9,BLK,C,D,DAR,E,F,I,N,PD,R,TC,S,W
+select=ANN,B,B9,BLK,C,D,DAR,E,F,I,N,PD,R,TC,TR,S,W
 max-complexity=10
 max-line-length=90
 ignore=
@@ -56,6 +56,7 @@ per-file-ignores =
     tools/clear-prev-dist-info.py:S404,S603,S607
     tools/install_flake8_deps.py:S404,S603,S607,B950
     config.py:ANN001,ANN201
+    src/mapstp/cli/logging.py:PD005
     tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
 ignore-decorators=click,pytest
 docstring-convention = google

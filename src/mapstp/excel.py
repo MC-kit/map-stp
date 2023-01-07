@@ -25,9 +25,9 @@ def create_excel(
         separator: character to separate STP path parts
         start_cell_number: number to start cell numbering in the excel
     """
-    df = path_info.copy()
-    df["STP path"] = [separator.join(x) for x in paths]
-    df["cell"] = list(range(start_cell_number, len(paths) + start_cell_number))
-    df.set_index(keys="cell", inplace=True)
+    temp_df = path_info.copy()
+    temp_df["STP path"] = [separator.join(x) for x in paths]
+    temp_df["cell"] = list(range(start_cell_number, len(paths) + start_cell_number))
+    temp_df = temp_df.set_index(keys="cell")
     with pd.ExcelWriter(excel) as xlsx:
-        df.to_excel(xlsx, sheet_name="Cells")
+        temp_df.to_excel(xlsx, sheet_name="Cells")

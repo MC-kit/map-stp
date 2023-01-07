@@ -47,6 +47,17 @@ class Product(Numbered):
 
     name: str
 
+    @property
+    def is_leaf(self) -> bool:
+        """Tell if this product is the last in an STP path.
+
+        The Leaf products may have bodies and can be shared between multiple paths in STP.
+
+        Returns:
+            False always for non LeafProducts.
+        """
+        return False
+
     @classmethod
     def from_string(cls, text: str) -> "Product":
         """Create Product from a text string.
@@ -81,17 +92,6 @@ class Product(Numbered):
         """
         raise NotImplementedError(f"Cannot add a Body object to {self}")
 
-    @property
-    def is_leaf(self) -> bool:
-        """Tell if this product is the last in an STP path.
-
-        The Leaf products may have bodies and can be shared between multiple paths in STP.
-
-        Returns:
-            False always for non LeafProducts.
-        """
-        return False
-
 
 # noinspection PyClassHasNoInit
 @dataclass
@@ -99,17 +99,6 @@ class LeafProduct(Product):
     """The class to append bodies to "Product definitions"."""
 
     bodies: List["Body"] = field(default_factory=list)
-
-    def append(self, body: "Body") -> None:
-        """Append body to this product.
-
-        Only applicable to LeafProduct.
-
-        Args:
-            body: what to append
-
-        """
-        self.bodies.append(body)
 
     @property
     def is_leaf(self) -> bool:
@@ -121,6 +110,17 @@ class LeafProduct(Product):
             True always for LeafProducts
         """
         return True
+
+    def append(self, body: "Body") -> None:
+        """Append body to this product.
+
+        Only applicable to LeafProduct.
+
+        Args:
+            body: what to append
+
+        """
+        self.bodies.append(body)
 
 
 # noinspection PyClassHasNoInit
@@ -202,7 +202,7 @@ def parse(inp: TextIO) -> ParseResult:
         Tuple containing list of products and list of links between them.
 
     Raises:
-        FileError: on invalid file header and if STP protocol is not AP214
+        FileError: with line number where parsing failed
     """
     products: List[Product] = []
     links: LinksList = []
@@ -211,41 +211,50 @@ def parse(inp: TextIO) -> ParseResult:
     # but in q 'simple' case there are bodies only and one product
     may_have_components = True
     for line_no_minus_3, line in enumerate(inp):
-        try:
-            match = _SELECT_PATTERN.search(line)
-            if match:
-                group = match.lastgroup
-                if group == "solid":
-                    body = Body.from_string(line)
-                    if not products:
-                        # msg = "At least one product is to be loaded at this step"
-                        # raise STPParserError(msg)
-
-                        # Case for STP without components, just bodies
-                        products.append(LeafProduct(0, "dummy"))
-                        may_have_components = False
-                    last_product = products[-1]
-                    if not last_product.is_leaf:
-                        products[-1] = last_product = LeafProduct(
-                            last_product.number, last_product.name
-                        )
-                    last_product.append(body)
-                elif group == "link":
-                    if not may_have_components:
-                        msg = "Unexpected `link` is found in `simple` STP"
-                        raise STPParserError(msg)
-                    link = Link.from_string(line)
-                    links.append((link.src, link.dst))
-                elif group == "product":
-                    if may_have_components:
-                        product = Product.from_string(line)
-                        products.append(product)
-                else:
-                    msg = "Shouldn't be here, check _SELECT_PATTERN"
-                    raise STPParserError(msg)
-        except STPParserError as exception:
-            raise FileError(f"Error in line {line_no_minus_3 + 3}") from exception
+        match = _SELECT_PATTERN.search(line)
+        if match:
+            try:
+                may_have_components = _process_line(
+                    match, line, links, may_have_components, products
+                )
+            except STPParserError as exception:
+                raise FileError(f"Error in line {line_no_minus_3 + 3}") from exception
     return products, links
+
+
+def _process_line(match, line, links, may_have_components, products) -> bool:
+    group = match.lastgroup
+    if group == "solid":
+        may_have_components = _process_body(line, may_have_components, products)
+    elif group == "link":
+        if not may_have_components:
+            msg = "Unexpected `link` is found in `simple` STP"
+            raise STPParserError(msg)
+        link = Link.from_string(line)
+        links.append((link.src, link.dst))
+    elif group == "product":
+        if may_have_components:
+            product = Product.from_string(line)
+            products.append(product)
+    else:
+        msg = "Shouldn't be here, check _SELECT_PATTERN"
+        raise STPParserError(msg)
+    return may_have_components
+
+
+def _process_body(line, may_have_components, products) -> bool:
+    body = Body.from_string(line)
+    if not products:
+        # Case for STP without components, just bodies
+        products.append(LeafProduct(0, "dummy"))
+        may_have_components = False
+    last_product = products[-1]
+    if not last_product.is_leaf:
+        products[-1] = last_product = LeafProduct(
+            last_product.number, last_product.name
+        )
+    last_product.append(body)
+    return may_have_components
 
 
 def check_header(inp: TextIO) -> None:
