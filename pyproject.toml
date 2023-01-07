@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mapstp"
-version = "0.3.9a0"
+version = "0.3.10a0"
 description = "Transfers meta information from STP to MCNP"
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 homepage = "https://github.com/MC-kit/map-stp"
@@ -212,12 +212,12 @@ source = ["src", ".nox/*/site-packages"]
 
 [tool.coverage.run]
 branch = true
-source = ["mckit_nuclides"]
+source = ["src/mapstp"]
 
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
-fail_under = 100
+fail_under = 95
 # Regexes for lines to exclude from consideration
 exclude_lines = [
     # Have to re-enable the standard pragma

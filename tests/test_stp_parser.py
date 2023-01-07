@@ -4,7 +4,14 @@ from dataclasses import dataclass
 
 import pytest
 
-from mapstp.stp_parser import Body, LeafProduct, Link, Product, parse_path
+from mapstp.stp_parser import (
+    Body,
+    LeafProduct,
+    Link,
+    Product,
+    STPParserError,
+    parse_path,
+)
 from mapstp.tree import create_bodies_paths
 
 
@@ -26,6 +33,15 @@ def test_product():
 def test_product_from_string(text, expected):
     actual = Product.from_string(text)
     assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["#69=PRODUCT_DEFINITION('','',#136,#1);"],
+)
+def test_exception(text):
+    with pytest.raises(STPParserError):
+        Product.from_string(text)
 
 
 @pytest.mark.parametrize(
@@ -221,8 +237,6 @@ def test_create_bodies_paths(data, stp, expected):
     products, links = parse_path(data / stp)
     paths = create_bodies_paths(products, links)
     expected.check(stp, paths)
-    # assert len(bodies_paths) == 3
-    # assert bodies_paths[0][-1] == "Body1"
 
 
 def test_file_with_wrong_header(tmp_path):

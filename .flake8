@@ -3,19 +3,15 @@ select=ANN,B,B9,BLK,C,D,DAR,E,F,I,N,PD,R,TC,S,W
 max-complexity=10
 max-line-length=90
 ignore=
-    # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
+    # ANN001 Missing type annotation for function argument
     ANN001
-    # ANN002 Missing type annotation for *drop_items: ... as above
-    ANN002
     # ANN101 Missing type annotation for self in method
     ANN101
     # ANN102 Missing type annotation for cls in classmethod
     ANN102
-    # ANN202 Missing return type annotation for protected function: ... dispatching
-    ANN202
     #ANN204 Missing return type annotation for special method
     ANN204
-    # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.8, 3.9
+    # zip() without `strict` parameter, pythons <3.10 don't have this keyword
     B905
     # C812 Missing trailing comma: black compatibility
     C812
@@ -29,8 +25,7 @@ ignore=
     E501
     # W503: Line break before binary operator: for compatibility with black settings
     W503
-
-    # import order is controlled by isort
+    # import is controlled by isort
     I100
     I101
     I201
@@ -61,7 +56,7 @@ per-file-ignores =
     tools/clear-prev-dist-info.py:S404,S603,S607
     tools/install_flake8_deps.py:S404,S603,S607,B950
     config.py:ANN001,ANN201
-    src/tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
+    tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
 ignore-decorators=click,pytest
 docstring-convention = google
 rst-roles = class,const,func,meth,mod,ref
