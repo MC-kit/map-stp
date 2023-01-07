@@ -14,6 +14,7 @@ from mapstp.utils.re import CELL_START_PATTERN, MATERIAL_PATTERN
 from numpy.testing import assert_array_equal
 
 
+# noinspection PyTypeChecker
 def test_version_command(runner):
     result = runner.invoke(mapstp, args=["--version"], catch_exceptions=False)
     assert result.exit_code == 0, (
@@ -22,6 +23,7 @@ def test_version_command(runner):
     assert __version__ in result.output, "print version on 'version' command"
 
 
+# noinspection PyTypeChecker
 def test_help_command(runner):
     result = runner.invoke(mapstp, args=["--help"], catch_exceptions=False)
     assert result.exit_code == 0, result.output
@@ -98,8 +100,10 @@ def test_commenting1_with_excel(runner, tmp_path, data):
     )
     assert result.exit_code == 0, result.output
     assert excel.exists(), f"Should create Excel file {excel}"
-    df = pd.read_excel(excel, engine="openpyxl", sheet_name="Cells", index_col="cell")
-    assert_array_equal(df.index.values, [100, 101, 102])
+    path_info_df = pd.read_excel(
+        excel, engine="openpyxl", sheet_name="Cells", index_col="cell"
+    )
+    assert_array_equal(path_info_df.index.to_numpy(), [100, 101, 102])
 
 
 @pytest.mark.parametrize(
@@ -321,19 +325,22 @@ def test_tnes(runner, tmp_path, data):
     cell2stp = select_cell_and_stp_lines(sections.cells.split("\n"))
     assert 1 in cell2stp
     assert sections.cards, f"Control cards should be presented in {output}"
+    check_materials(materials, 3)
+    check_materials(output, 4)
+    path_info_df = pd.read_excel(excel, index_col="cell")
+    path = path_info_df.loc[1]["STP path"]
+    assert "[m-reflector]" in path
+
+
+def check_materials(materials, number_of_materials):
     materials_dict = load_materials_map(materials)
-    assert len(materials_dict) == 3, f"There should be fore materials in {materials}"
+    assert (
+        len(materials_dict) == number_of_materials
+    ), f"There should be {number_of_materials} materials in {materials}"
     for i in range(1, 4):
         assert i in materials_dict
-    assert materials_dict[1].split("\n")[1].strip().startswith("5010.31d")
-    materials_dict = load_materials_map(output)
-    assert len(materials_dict) == 4, f"There should be fore materials in {output}"
-    for i in range(1, 5):
-        assert i in materials_dict
-    assert materials_dict[1].split("\n")[1].strip().startswith("5010.31d")
-    df = pd.read_excel(excel, index_col="cell")
-    path = df.loc[1]["STP path"]
-    assert "[m-reflector]" in path
+    material_1_first_row = materials_dict[1].split("\n")[1].strip()
+    assert material_1_first_row.startswith("5010.31d")
 
 
 if __name__ == "__main__":

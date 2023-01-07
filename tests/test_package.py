@@ -1,6 +1,7 @@
 import re
 
 from pathlib import Path
+from re import sub as substitute
 
 from mapstp import __version__
 
@@ -21,7 +22,7 @@ _VERSION_NORM_PATTERN = re.compile(r"-(?P<letter>.)[^.]*\.(?P<prepatch>.*)$")
 
 
 def normalize_version(version: str):
-    return re.sub(_VERSION_NORM_PATTERN, r"\1\2", version)
+    return substitute(_VERSION_NORM_PATTERN, r"\1\2", version)
 
 
 def test_package():

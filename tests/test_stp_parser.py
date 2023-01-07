@@ -17,8 +17,8 @@ from mapstp.tree import create_bodies_paths
 
 def test_product():
     actual = Product(2, "test")
-    assert 2 == actual.number
-    assert "test" == actual.name
+    assert actual.number == 2
+    assert actual.name == "test"
     assert not actual.is_leaf
     actual2 = LeafProduct(actual.number, actual.name)
     assert actual2.is_leaf
