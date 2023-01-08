@@ -76,7 +76,7 @@ def _records(
 
 def _define_material_number_and_density(
     material_index, meta_info, path
-) -> Tuple[float, int]:
+) -> Tuple[Optional[float], Optional[int]]:
     try:
         number: Optional[int] = int(
             material_index.loc[meta_info.mnemonic]["number"]

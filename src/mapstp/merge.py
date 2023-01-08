@@ -142,7 +142,7 @@ class _Merger:
                 yield self.format_comment()
         yield line
 
-    def _on_next_cell(self, line, match) -> str:
+    def _on_next_cell(self, line: str, match) -> str:
         first_cell_line_info_row = self.current_path_idx + 1
         if first_cell_line_info_row < self.paths_length:
             line = _correct_first_line(
@@ -153,7 +153,7 @@ class _Merger:
             )
         return line
 
-    def _on_first_cell(self, line, match) -> str:
+    def _on_first_cell(self, line: str, match) -> str:
         line = _correct_first_line(
             line, match.end(), self.current_path_idx, self.path_info
         )

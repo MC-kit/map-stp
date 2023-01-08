@@ -222,7 +222,7 @@ def parse(inp: TextIO) -> ParseResult:
     return products, links
 
 
-def _process_line(match, line, links, may_have_components, products) -> bool:
+def _process_line(match, line, links, may_have_components: bool, products) -> bool:
     group = match.lastgroup
     if group == "solid":
         may_have_components = _process_body(line, may_have_components, products)
@@ -242,7 +242,7 @@ def _process_line(match, line, links, may_have_components, products) -> bool:
     return may_have_components
 
 
-def _process_body(line, may_have_components, products) -> bool:
+def _process_body(line: str, may_have_components: bool, products) -> bool:
     body = Body.from_string(line)
     if not products:
         # Case for STP without components, just bodies
