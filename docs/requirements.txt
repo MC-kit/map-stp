@@ -1,4 +1,4 @@
-sphinx==5.1.1
+sphinx==6.1.2
 sphinx-autobuild==2021.3.14
 sphinx-autodoc-typehints==1.19.2
 sphinx-autorun==1.1.1
