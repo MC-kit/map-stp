@@ -106,16 +106,13 @@ class Tree:
 
         Returns:
             new Node
-
         """
         node = Node(product, parent)
         self._node_index[product.number] = node
         return node
 
 
-def create_bodies_paths(
-    products: Iterable[Product], links: LinksList
-) -> List[List[str]]:
+def create_bodies_paths(products: Iterable[Product], links: LinksList) -> List[List[str]]:
     """Create list of paths for each body in STP file.
 
     A path is in turn a list of strings - parts of the path.
@@ -123,7 +120,6 @@ def create_bodies_paths(
     Args:
         products: list of product found on parsing STP
         links: pairs denoting links between the products.
-
 
     Returns:
         The list of paths.

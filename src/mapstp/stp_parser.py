@@ -70,7 +70,6 @@ class Product(Numbered):
 
         Raises:
             STPParserError: if `text` doesn't match 'PRODUCT_DEFINITION' statement format.
-
         """
         match = _PRODUCT_PATTERN.search(text)
         if not match:
@@ -118,7 +117,6 @@ class LeafProduct(Product):
 
         Args:
             body: what to append
-
         """
         self.bodies.append(body)
 
@@ -250,9 +248,7 @@ def _process_body(line: str, may_have_components: bool, products) -> bool:
         may_have_components = False
     last_product = products[-1]
     if not last_product.is_leaf:
-        products[-1] = last_product = LeafProduct(
-            last_product.number, last_product.name
-        )
+        products[-1] = last_product = LeafProduct(last_product.number, last_product.name)
     last_product.append(body)
     return may_have_components
 
@@ -291,7 +287,6 @@ def parse_path(inp: Path) -> ParseResult:
 
     Returns:
         Tuple containing list of products and list of links between them.
-
     """
     with inp.open(encoding="cp1251") as _inp:
         return parse(_inp)

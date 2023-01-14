@@ -2,7 +2,6 @@
 
 Use imported methods to organize other workflows in notebooks or dependant packages.
 Check the methods defined here as templates for other workflows.
-
 """
 from typing import List, Tuple
 

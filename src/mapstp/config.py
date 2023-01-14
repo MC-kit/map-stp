@@ -38,9 +38,7 @@ def env(key, converter: Optional[Callable[[str], Any]] = None, default=None):
         ) from exception
 
 
-def _extend_converter(
-    converter: Optional[Callable[[str], Any]]
-) -> Callable[[str], Any]:
+def _extend_converter(converter: Optional[Callable[[str], Any]]) -> Callable[[str], Any]:
     if converter is None or converter == str:
         return _identity
 

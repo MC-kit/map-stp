@@ -74,7 +74,6 @@ def select_output(
     Yields:
         stdout, if `output` file name is  not specified (None),
                 opened stream
-
     """
     if output:
         p = Path(output)
@@ -108,7 +107,6 @@ def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
 
     Returns:
         MCNPSections: - the text sections
-
     """
     sections = MCNP_SECTIONS_SEPARATOR_PATTERN.split(
         mcnp_path.read_text(encoding="cp1251"), maxsplit=3

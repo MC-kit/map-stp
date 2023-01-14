@@ -3,7 +3,6 @@
 Inserts end comments with information about path in STP
 corresponding to a cell and sets materials and densities,
 if specified in STP paths.
-
 """
 from typing import Generator, Iterable, List, Optional, TextIO, Tuple, Union
 
@@ -53,7 +52,6 @@ def extract_number_and_density(
 
     Raises:
         PathInfoError: when the resulting values are out of valid ranges
-
     """
     number, density, factor = path_info.iloc[row][["number", "density", "factor"]]
 
@@ -90,9 +88,7 @@ def _correct_first_line(
     if nd is not None:
         number, density = nd
         _line = (
-            _line[: match_end - 1]
-            + f" {int(number)} {-density:.5g}"
-            + _line[match_end:]
+            _line[: match_end - 1] + f" {int(number)} {-density:.5g}" + _line[match_end:]
         )
 
     return _line

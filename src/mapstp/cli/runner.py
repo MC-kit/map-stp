@@ -111,9 +111,7 @@ to the meta information provided in the STP.
     help="Number to start cell numbering in the Excel file "
     "(default: the first cell number in `mcnp` file, if specified, otherwise 1)",
 )
-@click.argument(
-    "stp", metavar="<stp-file>", type=click.Path(dir_okay=False, exists=True)
-)
+@click.argument("stp", metavar="<stp-file>", type=click.Path(dir_okay=False, exists=True))
 @click.argument(
     "mcnp",
     metavar="[mcnp-file]",

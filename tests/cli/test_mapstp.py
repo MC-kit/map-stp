@@ -17,9 +17,7 @@ from numpy.testing import assert_array_equal
 # noinspection PyTypeChecker
 def test_version_command(runner):
     result = runner.invoke(mapstp, args=["--version"], catch_exceptions=False)
-    assert result.exit_code == 0, (
-        "Should success on '--version' option: " + result.output
-    )
+    assert result.exit_code == 0, "Should success on '--version' option: " + result.output
     assert __version__ in result.output, "print version on 'version' command"
 
 

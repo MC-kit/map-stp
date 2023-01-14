@@ -28,7 +28,6 @@ def load_materials_index(materials_index: Optional[str] = None) -> pd.DataFrame:
 
     Raises:
         FileNotFoundError: if the file `materials_index` doesn't exist.
-
     """
     if materials_index is None:
         p = PACKAGE_DATA / "default-material-index.xlsx"

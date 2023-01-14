@@ -4,14 +4,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from mapstp.stp_parser import (
-    Body,
-    LeafProduct,
-    Link,
-    Product,
-    STPParserError,
-    parse_path,
-)
+from mapstp.stp_parser import Body, LeafProduct, Link, Product, STPParserError, parse_path
 from mapstp.tree import create_bodies_paths
 
 

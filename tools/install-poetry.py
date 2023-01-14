@@ -1,5 +1,4 @@
-"""
-This script will install Poetry and its dependencies.
+"""This script will install Poetry and its dependencies.
 
 It does, in order:
 
@@ -393,24 +392,20 @@ class Cursor:
         return self
 
     def clear_line(self) -> "Cursor":
-        """
-        Clears all the output from the current line.
-        """
+        """Clears all the output from the current line."""
         self._output.write("\x1b[2K")
 
         return self
 
     def clear_line_after(self) -> "Cursor":
-        """
-        Clears all the output from the current line after the current position.
-        """
+        """Clears all the output from the current line after the current position."""
         self._output.write("\x1b[K")
 
         return self
 
     def clear_output(self) -> "Cursor":
-        """
-        Clears all the output from the cursors' current position
+        """Clears all the output from the cursors' current position.
+
         to the end of the screen.
         """
         self._output.write("\x1b[0J")
@@ -418,9 +413,7 @@ class Cursor:
         return self
 
     def clear_screen(self) -> "Cursor":
-        """
-        Clears the entire screen.
-        """
+        """Clears the entire screen."""
         self._output.write("\x1b[2J")
 
         return self
@@ -500,9 +493,7 @@ class Installer:
         try:
             self.install(version)
         except subprocess.CalledProcessError as e:
-            raise PoetryInstallationError(
-                return_code=e.returncode, log=e.output.decode()
-            )
+            raise PoetryInstallationError(return_code=e.returncode, log=e.output.decode())
 
         self._write("")
         self.display_post_message(version)
@@ -510,9 +501,7 @@ class Installer:
         return 0
 
     def install(self, version, upgrade=False):
-        """
-        Installs Poetry in $POETRY_HOME.
-        """
+        """Installs Poetry in $POETRY_HOME."""
         self._write(
             "Installing {} ({})".format(
                 colorize("info", "Poetry"), colorize("info", version)
@@ -586,9 +575,7 @@ class Installer:
                 shutil.rmtree(env_path)
 
             if env_path_saved.exists():
-                self._install_comment(
-                    version, "Restoring previously saved environment."
-                )
+                self._install_comment(version, "Restoring previously saved environment.")
                 shutil.move(env_path_saved, env_path)
 
             raise e
@@ -744,9 +731,7 @@ class Installer:
             return 0
 
         self._write("")
-        releases = sorted(
-            metadata["releases"].keys(), key=cmp_to_key(_compare_versions)
-        )
+        releases = sorted(metadata["releases"].keys(), key=cmp_to_key(_compare_versions))
 
         if self._version and self._version not in releases:
             self._write(
@@ -881,7 +866,9 @@ def main():
                 text=True,
             )
             installer._write(colorize("error", f"See {path} for error logs."))
-            text = f"{e.log}\nTraceback:\n\n{''.join(traceback.format_tb(e.__traceback__))}"
+            text = (
+                f"{e.log}\nTraceback:\n\n{''.join(traceback.format_tb(e.__traceback__))}"
+            )
             Path(path).write_text(text)
 
         return e.return_code
