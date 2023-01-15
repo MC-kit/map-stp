@@ -73,7 +73,7 @@ class Product(Numbered):
         """
         match = _PRODUCT_PATTERN.search(text)
         if not match:
-            raise STPParserError(f"not a 'Product' line: '{text}'")
+            raise STPParserError(f"not a 'Product' line: {text!r}")
         number = int(match["digits"])
         name = match["name"]
         return cls(number, name)
@@ -147,7 +147,7 @@ class Link(Numbered):
         """
         match = _LINK_PATTERN.search(text)
         if not match:
-            raise STPParserError(f"not a 'Next assembly usage' line: '{text}'")
+            raise STPParserError(f"not a 'Next assembly usage' line: {text!r}")
         number = int(match["digits"])
         name = match["name"]
         src = int(match["src"])
@@ -177,7 +177,7 @@ class Body(Numbered):
         """
         match = _BODY_PATTERN.search(text)
         if not match:
-            raise STPParserError(f"not a 'solid brep' line: '{text}'")
+            raise STPParserError(f"not a 'solid brep' line: {text!r}")
         number = int(match["digits"])
         name = match["name"]
         return cls(number, name)

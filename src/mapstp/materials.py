@@ -83,9 +83,7 @@ def load_materials_map_from_stream(stream: TextIO) -> MaterialsDict:
             result += "\n"
         return result
 
-    materials_dict = {
-        k: _restore_material_text(v) for k, v in loader.materials_dict.items()
-    }
+    materials_dict = {k: _restore_material_text(v) for k, v in loader.materials_dict.items()}
 
     return materials_dict
 

@@ -98,9 +98,7 @@ def test_commenting1_with_excel(runner, tmp_path, data):
     )
     assert result.exit_code == 0, result.output
     assert excel.exists(), f"Should create Excel file {excel}"
-    path_info_df = pd.read_excel(
-        excel, engine="openpyxl", sheet_name="Cells", index_col="cell"
-    )
+    path_info_df = pd.read_excel(excel, engine="openpyxl", sheet_name="Cells", index_col="cell")
     assert_array_equal(path_info_df.index.to_numpy(), [100, 101, 102])
 
 
@@ -247,9 +245,7 @@ def test_run_without_excel_output_only(runner, tmp_path, data):
 
 
 def select_cell_and_stp_lines(lines: Iterable[str]) -> Dict[int, str]:
-    selected = list(
-        filter(lambda x: re.search(r"^\s{0,5}\d+\s+\d", x) or "$ stp: " in x, lines)
-    )
+    selected = list(filter(lambda x: re.search(r"^\s{0,5}\d+\s+\d", x) or "$ stp: " in x, lines))
     res = {}
     for i, line in enumerate(selected):
         if "$ stp: " in line:

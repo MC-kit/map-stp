@@ -33,7 +33,7 @@ def env(key, converter: Optional[Callable[[str], Any]] = None, default=None):
         return converter(val)
     except ValueError as exception:
         raise ValueError(
-            f"Invalid environment variable '{key}': "
+            f"Invalid environment variable {key!r}: "
             f"conversion {converter.__name__}({val}) failed."
         ) from exception
 
@@ -58,4 +58,4 @@ def _make_bool(val: str) -> bool:
         return True
     if val in ["0", "false", "no", "n", "nok", "off"]:
         return False
-    raise ValueError(f"expected a boolean equivalent, found '{val}'")
+    raise ValueError(f"expected a boolean equivalent, found {val!r}")

@@ -151,18 +151,14 @@ def mapstp(
 
     """
     if not (mcnp or excel):
-        raise click.UsageError(
-            "Nor `excel`, neither `mcnp` parameter is specified - nothing to do"
-        )
+        raise click.UsageError("Nor `excel`, neither `mcnp` parameter is specified - nothing to do")
     init_logger()
     logger.info("Running mapstp {}", __version__)
     cfg = ctx.ensure_object(Config)
     cfg.override = override
     paths, path_info = create_path_info(materials_index, stp)
     materials_map = load_materials_map(materials) if materials else None
-    used_materials_text = (
-        get_used_materials(materials_map, path_info) if materials_map else None
-    )
+    used_materials_text = get_used_materials(materials_map, path_info) if materials_map else None
     if mcnp:
         _mcnp = Path(mcnp)
         logger.info("Tagging model {}", mcnp)

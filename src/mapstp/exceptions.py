@@ -33,6 +33,4 @@ class PathInfoError(MyError):
             row: row in path_info table
             path_info: the path_info table
         """
-        MyError.__init__(
-            self, message + f" Row #{row}:\n" + f"{path_info.iloc[row].to_dict()}"
-        )
+        MyError.__init__(self, message + f" Row #{row}:\n" + f"{path_info.iloc[row].to_dict()}")

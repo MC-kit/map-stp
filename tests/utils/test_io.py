@@ -18,12 +18,7 @@ def test_find_first_cell_number_bad_paths(data):
 def test_read_mcnp_sections(data, tmp_path):
     mcnp = data / "test1.i"
     sections = read_mcnp_sections(mcnp)
-    assert (
-        sections.cells
-        and sections.surfaces
-        and sections.cards
-        and sections.remainder is None
-    )
+    assert sections.cells and sections.surfaces and sections.cards and sections.remainder is None
     tmp = tmp_path / "test-with-cells-and-surfaces-only.i"
     tmp.parent.mkdir(parents=True, exist_ok=True)
     tmp.write_text("\n\n".join([sections.cells, sections.surfaces]))
@@ -58,9 +53,4 @@ def test_read_mcnp_sections_with_empty_remainder(data, tmp_path):
     tmp.parent.mkdir(parents=True, exist_ok=True)
     tmp.write_text("\n\n".join([text, "\n" * 2]))
     sections = read_mcnp_sections(tmp)
-    assert (
-        sections.cells
-        and sections.surfaces
-        and sections.cards
-        and sections.remainder is None
-    )
+    assert sections.cells and sections.surfaces and sections.cards and sections.remainder is None
