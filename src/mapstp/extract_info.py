@@ -37,9 +37,7 @@ class _MetaInfo:
             self.rwcl = t
 
 
-def extract_path_info(
-    paths: List[List[str]], material_index: pd.DataFrame
-) -> pd.DataFrame:
+def extract_path_info(paths: List[List[str]], material_index: pd.DataFrame) -> pd.DataFrame:
     """Extract meta information from `paths` and associate corresponding data with each path.
 
     Args:
@@ -58,17 +56,11 @@ def extract_path_info(
 
 def _records(
     paths, material_index
-) -> Generator[
-    Tuple[Optional[int], Optional[float], Optional[float], Optional[str]],
-    None,
-    None,
-]:
+) -> Generator[Tuple[Optional[int], Optional[float], Optional[float], Optional[str]], None, None]:
     for path in paths:
         meta_info = _extract_meta_info_from_path(path)
         if meta_info.mnemonic:
-            density, number = _define_material_number_and_density(
-                material_index, meta_info, path
-            )
+            density, number = _define_material_number_and_density(material_index, meta_info, path)
         else:
             number = density = None
         yield number, density, meta_info.factor, meta_info.rwcl
@@ -111,9 +103,7 @@ def _extract_meta_info_from_path(path) -> _MetaInfo:
     return meta_info
 
 
-def _extract_meta_info(
-    i: int, match: re.Match, part: str, path: List[str]
-) -> Dict[str, str]:
+def _extract_meta_info(i: int, match: re.Match, part: str, path: List[str]) -> Dict[str, str]:
     meta = match["meta"]
     try:
         pars: Dict[str, str] = dict(map(_create_pair, meta.split()))

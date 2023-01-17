@@ -1,7 +1,6 @@
 """Intercept log messages from the used libraries and pass them to `loguru`.
 
 See https://github.com/Delgan/loguru
-
 """
 from typing import Final, Optional
 
@@ -36,9 +35,7 @@ class InterceptHandler(logging.Handler):
             frame = frame.f_back  # type: ignore[assignment]
             depth += 1
 
-        logger.opt(depth=depth, exception=record.exc_info).log(
-            level, record.getMessage()
-        )
+        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
 
 
 log = logging.getLogger()

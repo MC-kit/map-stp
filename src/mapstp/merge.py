@@ -3,7 +3,6 @@
 Inserts end comments with information about path in STP
 corresponding to a cell and sets materials and densities,
 if specified in STP paths.
-
 """
 from typing import Generator, Iterable, List, Optional, TextIO, Tuple, Union
 
@@ -36,9 +35,7 @@ def is_defined(number: Union[int, float, None]) -> bool:
     return number is not None and number is not pd.NA and not math.isnan(number)
 
 
-def extract_number_and_density(
-    row: int, path_info: pd.DataFrame
-) -> Optional[Tuple[int, float]]:
+def extract_number_and_density(row: int, path_info: pd.DataFrame) -> Optional[Tuple[int, float]]:
     """Extract material number and density from a `path_info` for a given `row`.
 
     Validate the values: number, if provided, is to be positive, density - not
@@ -53,7 +50,6 @@ def extract_number_and_density(
 
     Raises:
         PathInfoError: when the resulting values are out of valid ranges
-
     """
     number, density, factor = path_info.iloc[row][["number", "density", "factor"]]
 
@@ -89,11 +85,7 @@ def _correct_first_line(
 
     if nd is not None:
         number, density = nd
-        _line = (
-            _line[: match_end - 1]
-            + f" {int(number)} {-density:.5g}"
-            + _line[match_end:]
-        )
+        _line = _line[: match_end - 1] + f" {int(number)} {-density:.5g}" + _line[match_end:]
 
     return _line
 
@@ -154,9 +146,7 @@ class _Merger:
         return line
 
     def _on_first_cell(self, line: str, match) -> str:
-        line = _correct_first_line(
-            line, match.end(), self.current_path_idx, self.path_info
-        )
+        line = _correct_first_line(line, match.end(), self.current_path_idx, self.path_info)
         self.first_cell = False
         return line
 

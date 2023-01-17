@@ -17,9 +17,7 @@ THIS_FILENAME = Path(__file__).name
 def test_filename_resolver(package, resource, expected):
     resolver = filename_resolver(package)
     actual = resolver(resource)
-    assert actual.replace("\\", "/").endswith(
-        expected
-    ), "Failed to compute resource file name"
+    assert actual.replace("\\", "/").endswith(expected), "Failed to compute resource file name"
     assert Path(actual).exists(), f"The resource '{resource}' is not available"
 
 
@@ -34,9 +32,7 @@ def test_filename_resolver(package, resource, expected):
 def test_filename_resolver_when_resource_doesnt_exist(package, resource, expected):
     resolver = filename_resolver(package)
     actual = resolver(resource)
-    assert not Path(
-        actual
-    ).exists(), f"The resource '{resource}' should not be available"
+    assert not Path(actual).exists(), f"The resource '{resource}' should not be available"
 
 
 def test_filename_resolver_when_package_doesnt_exist():

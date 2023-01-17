@@ -38,9 +38,7 @@ def test_load_materials_index(materials):
     ],
 )
 def test_extract_info(materials, paths, expected, msg):
-    _expected = pd.DataFrame.from_records(
-        expected, columns=["number", "density", "factor", "rwcl"]
-    )
+    _expected = pd.DataFrame.from_records(expected, columns=["number", "density", "factor", "rwcl"])
     actual = extract_path_info(paths, materials)
     isna = actual.isna()
     assert (isna == _expected.isna()).all(axis=None), msg

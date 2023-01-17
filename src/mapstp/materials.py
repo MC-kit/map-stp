@@ -16,7 +16,7 @@ import pandas as pd
 from mapstp.utils.re import CARD_PATTERN, MATERIAL_PATTERN
 
 MaterialsDict = Dict[int, str]
-"""Mapping material number -> material MCNP text"""
+"""Mapping material number -> material MCNP text."""
 
 logger = getLogger()
 
@@ -74,7 +74,6 @@ def load_materials_map_from_stream(stream: TextIO) -> MaterialsDict:
 
     Returns:
         MaterialsDict: mapping material number -> material text
-
     """
     loader = _Loader(stream)
 
@@ -84,9 +83,7 @@ def load_materials_map_from_stream(stream: TextIO) -> MaterialsDict:
             result += "\n"
         return result
 
-    materials_dict = {
-        k: _restore_material_text(v) for k, v in loader.materials_dict.items()
-    }
+    materials_dict = {k: _restore_material_text(v) for k, v in loader.materials_dict.items()}
 
     return materials_dict
 
@@ -99,7 +96,6 @@ def load_materials_map(materials: Union[str, Path]) -> MaterialsDict:
 
     Returns:
         MaterialsDict: mapping material number -> material text
-
     """
     path = Path(materials)
     with path.open(encoding="cp1251") as stream:

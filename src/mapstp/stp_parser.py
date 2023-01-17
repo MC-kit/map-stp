@@ -250,9 +250,7 @@ def _process_body(line: str, may_have_components: bool, products) -> bool:
         may_have_components = False
     last_product = products[-1]
     if not last_product.is_leaf:
-        products[-1] = last_product = LeafProduct(
-            last_product.number, last_product.name
-        )
+        products[-1] = last_product = LeafProduct(last_product.number, last_product.name)
     last_product.append(body)
     return may_have_components
 

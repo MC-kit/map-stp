@@ -1,5 +1,4 @@
-"""
-This script will install Poetry and its dependencies.
+"""This script will install Poetry and its dependencies.
 
 It does, in order:
 
@@ -272,9 +271,7 @@ class VirtualEnvironment:
     def __init__(self, path: Path) -> None:
         self._path = path
         # str is required for compatibility with subprocess run on CPython <= 3.7 on Windows
-        self._python = str(
-            self._path.joinpath("Scripts/python.exe" if WINDOWS else "bin/python")
-        )
+        self._python = str(self._path.joinpath("Scripts/python.exe" if WINDOWS else "bin/python"))
 
     @property
     def path(self):
@@ -297,13 +294,9 @@ class VirtualEnvironment:
 
             with tempfile.TemporaryDirectory(prefix="poetry-installer") as temp_dir:
                 virtualenv_pyz = Path(temp_dir) / "virtualenv.pyz"
-                request = Request(
-                    virtualenv_bootstrap_url, headers={"User-Agent": "Python Poetry"}
-                )
+                request = Request(virtualenv_bootstrap_url, headers={"User-Agent": "Python Poetry"})
                 virtualenv_pyz.write_bytes(urlopen(request).read())
-                cls.run(
-                    sys.executable, virtualenv_pyz, "--clear", "--always-copy", target
-                )
+                cls.run(sys.executable, virtualenv_pyz, "--clear", "--always-copy", target)
 
         # We add a special file so that Poetry can detect
         # its own virtual environment
@@ -393,24 +386,20 @@ class Cursor:
         return self
 
     def clear_line(self) -> "Cursor":
-        """
-        Clears all the output from the current line.
-        """
+        """Clears all the output from the current line."""
         self._output.write("\x1b[2K")
 
         return self
 
     def clear_line_after(self) -> "Cursor":
-        """
-        Clears all the output from the current line after the current position.
-        """
+        """Clears all the output from the current line after the current position."""
         self._output.write("\x1b[K")
 
         return self
 
     def clear_output(self) -> "Cursor":
-        """
-        Clears all the output from the cursors' current position
+        """Clears all the output from the cursors' current position.
+
         to the end of the screen.
         """
         self._output.write("\x1b[0J")
@@ -418,9 +407,7 @@ class Cursor:
         return self
 
     def clear_screen(self) -> "Cursor":
-        """
-        Clears the entire screen.
-        """
+        """Clears the entire screen."""
         self._output.write("\x1b[2J")
 
         return self
@@ -500,9 +487,7 @@ class Installer:
         try:
             self.install(version)
         except subprocess.CalledProcessError as e:
-            raise PoetryInstallationError(
-                return_code=e.returncode, log=e.output.decode()
-            )
+            raise PoetryInstallationError(return_code=e.returncode, log=e.output.decode())
 
         self._write("")
         self.display_post_message(version)
@@ -510,13 +495,9 @@ class Installer:
         return 0
 
     def install(self, version, upgrade=False):
-        """
-        Installs Poetry in $POETRY_HOME.
-        """
+        """Installs Poetry in $POETRY_HOME."""
         self._write(
-            "Installing {} ({})".format(
-                colorize("info", "Poetry"), colorize("info", version)
-            )
+            "Installing {} ({})".format(colorize("info", "Poetry"), colorize("info", version))
         )
 
         with self.make_env(version) as env:
@@ -529,9 +510,7 @@ class Installer:
 
     def uninstall(self) -> int:
         if not self._data_dir.exists():
-            self._write(
-                "{} is not currently installed.".format(colorize("info", "Poetry"))
-            )
+            self._write("{} is not currently installed.".format(colorize("info", "Poetry")))
 
             return 1
 
@@ -541,9 +520,7 @@ class Installer:
 
         if version:
             self._write(
-                "Removing {} ({})".format(
-                    colorize("info", "Poetry"), colorize("b", version)
-                )
+                "Removing {} ({})".format(colorize("info", "Poetry"), colorize("b", version))
             )
         else:
             self._write("Removing {}".format(colorize("info", "Poetry")))
@@ -580,15 +557,11 @@ class Installer:
             yield VirtualEnvironment.make(env_path)
         except Exception as e:
             if env_path.exists():
-                self._install_comment(
-                    version, "An error occurred. Removing partial environment."
-                )
+                self._install_comment(version, "An error occurred. Removing partial environment.")
                 shutil.rmtree(env_path)
 
             if env_path_saved.exists():
-                self._install_comment(
-                    version, "Restoring previously saved environment."
-                )
+                self._install_comment(version, "Restoring previously saved environment.")
                 shutil.move(env_path_saved, env_path)
 
             raise e
@@ -675,9 +648,9 @@ class Installer:
                 return path
 
     def display_post_message_fish(self, version: str) -> None:
-        fish_user_paths = subprocess.check_output(
-            ["fish", "-c", "echo $fish_user_paths"]
-        ).decode("utf-8")
+        fish_user_paths = subprocess.check_output(["fish", "-c", "echo $fish_user_paths"]).decode(
+            "utf-8"
+        )
 
         message = POST_MESSAGE_NOT_IN_PATH
         if fish_user_paths and str(self._bin_dir) in fish_user_paths:
@@ -744,14 +717,10 @@ class Installer:
             return 0
 
         self._write("")
-        releases = sorted(
-            metadata["releases"].keys(), key=cmp_to_key(_compare_versions)
-        )
+        releases = sorted(metadata["releases"].keys(), key=cmp_to_key(_compare_versions))
 
         if self._version and self._version not in releases:
-            self._write(
-                colorize("error", "Version {} does not exist.".format(self._version))
-            )
+            self._write(colorize("error", "Version {} does not exist.".format(self._version)))
 
             return None, None
 
@@ -768,9 +737,7 @@ class Installer:
 
         if current_version == version and not self._force:
             self._write(
-                "The latest version ({}) is already installed.".format(
-                    colorize("b", version)
-                )
+                "The latest version ({}) is already installed.".format(colorize("b", version))
             )
 
             return None, current_version
@@ -796,9 +763,7 @@ class Installer:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Installs the latest (or given) version of poetry"
-    )
+    parser = argparse.ArgumentParser(description="Installs the latest (or given) version of poetry")
     parser.add_argument(
         "-p",
         "--preview",

@@ -86,9 +86,7 @@ class Tree:
         else:
             self._add_or_update_intermediate_node(dst, parent, product)
 
-    def _add_or_update_intermediate_node(
-        self, dst: int, parent: Node, product: Product
-    ) -> None:
+    def _add_or_update_intermediate_node(self, dst: int, parent: Node, product: Product) -> None:
         node = self._node_index.get(dst)
         if node is None:
             self._create_node(product, parent)
@@ -106,16 +104,13 @@ class Tree:
 
         Returns:
             new Node
-
         """
         node = Node(product, parent)
         self._node_index[product.number] = node
         return node
 
 
-def create_bodies_paths(
-    products: Iterable[Product], links: LinksList
-) -> List[List[str]]:
+def create_bodies_paths(products: Iterable[Product], links: LinksList) -> List[List[str]]:
     """Create list of paths for each body in STP file.
 
     A path is in turn a list of strings - parts of the path.
@@ -123,7 +118,6 @@ def create_bodies_paths(
     Args:
         products: list of product found on parsing STP
         links: pairs denoting links between the products.
-
 
     Returns:
         The list of paths.
@@ -142,7 +136,5 @@ def create_bodies_paths(
         product = cast(LeafProduct, ps[0])
         bodies_paths = []
         for b in product.bodies:
-            bodies_paths.append(
-                [b.name]
-            )  # TODO dvp: add transliteration for Russian names
+            bodies_paths.append([b.name])  # TODO dvp: add transliteration for Russian names
         return bodies_paths
