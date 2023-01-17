@@ -1,17 +1,21 @@
 [flake8]
 select=ANN,B,B9,BLK,C,D,DAR,E,F,I,N,PD,R,TC,TR,S,W
 max-complexity=10
-max-line-length=90
+max-line-length=100
 ignore=
-    # ANN001 Missing type annotation for function argument
+    # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
     ANN001
+    # ANN002 Missing type annotation for *drop_items: ... as above
+    ANN002
     # ANN101 Missing type annotation for self in method
     ANN101
     # ANN102 Missing type annotation for cls in classmethod
     ANN102
+    # ANN202 Missing return type annotation for protected function: ... dispatching
+    ANN202
     #ANN204 Missing return type annotation for special method
     ANN204
-    # zip() without `strict` parameter, pythons <3.10 don't have this keyword
+    # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.8, 3.9
     B905
     # C812 Missing trailing comma: black compatibility
     C812
@@ -25,7 +29,8 @@ ignore=
     E501
     # W503: Line break before binary operator: for compatibility with black settings
     W503
-    # import is controlled by isort
+
+    # import order is controlled by isort
     I100
     I101
     I201
