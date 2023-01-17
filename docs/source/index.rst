@@ -42,13 +42,14 @@ Options: ::
                                      (default: stdout)
      -e, --excel <excel-file>        Excel file to write the component paths
      --materials <materials-file>    Text file containing MCNP materials
-                                     specifications.If present, the selected
-                                     materials present in this file are printedto
+                                     specifications. If present, the selected
+                                     materials present in this file are printed to
                                      the `output` MCNP model, so, it becomes
                                      complete valid model
      -m, --materials-index <materials-index-file>
                                      Excel file containing materials mnemonics
-                                     and corresponding references for MCNP model
+                                     and corresponding materials
+                                     and densities for the MCNP model
                                      (default: file from the package internal
                                      data corresponding to ITER C-model)
      --separator <separator>         String to separate components in the STP
