@@ -22,70 +22,26 @@ Usage
 Command line interface
 ----------------------
 
-Usage: mapstp [OPTIONS] <stp-file> [mcnp-file]
-
-  Transfers meta information from STP to MCNP
-
-  For given STP file creates Excel table with a list of STP paths to STP
-  components, corresponding to cells in MCNP model, would it be generated from
-  the STP with SuperMC.
-
-  If MCNP file is also specified as the second `mcnp-file` argument, then
-  produces output MCNP file with STP paths inserted as end of line comments
-  after corresponding cells with prefix "sep:". The material numbers and
-  densities are set according to the meta information provided in the STP.
-
-Options: ::
-
-     --override / --no-override      Override existing files, (default: no)
-     -o, --output <output>           File to write the MCNP with marked cells
-                                     (default: stdout)
-     -e, --excel <excel-file>        Excel file to write the component paths
-     --materials <materials-file>    Text file containing MCNP materials
-                                     specifications. If present, the selected
-                                     materials present in this file are printed to
-                                     the `output` MCNP model, so, it becomes
-                                     complete valid model
-     -m, --materials-index <materials-index-file>
-                                     Excel file containing materials mnemonics
-                                     and corresponding materials
-                                     and densities for the MCNP model
-                                     (default: file from the package internal
-                                     data corresponding to ITER C-model)
-     --separator <separator>         String to separate components in the STP
-                                     path
-     --start-cell-number <number>    Number to start cell numbering in the Excel
-                                     file (default: the first cell number in
-                                     `mcnp` file, if specified, otherwise 1)
-     --version                       Show the version and exit.
-     --help                          Show this message and exit.
-
-
-
-
-
-.. todo ::
-
-   * Improve and fix the command line API help.
-   * Automate updating of the text above on CLI changes.
-
+.. click:: mapstp.cli.runner:mapstp
+   :prog: mapstp
+   :nested: full
 
 Installation
 ============
 
-From PyPI:
+From PyPI (recommended):
 
 .. code-block ::
 
    pip install mapstp
 
-With package manager:
+With package manager (as dependency):
 
 .. code-block ::
 
    poetry add mapstp
 
-From github:
+From source:
 
 .. code-block ::
 
