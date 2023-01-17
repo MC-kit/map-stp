@@ -2,10 +2,9 @@ Reference
 =========
 
 
-.. contents::
-    :local:
-    :backlinks: none
+.. todo::
 
+    Fix auto documenting...
 
 mapstp
 ------

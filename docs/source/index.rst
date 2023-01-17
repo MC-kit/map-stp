@@ -7,8 +7,7 @@
 **mapstp**: a tool to associate  MCNP and STP models
 ====================================================
 
-.. note::
-
+.. todo::
 
     The documentation is under development.
 
@@ -20,6 +19,7 @@
 
    license
    reference
+   todo
 
 
 The tool allows associate STP model components and cells of the MCNP model generated from the STP

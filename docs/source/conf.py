@@ -10,13 +10,17 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import sys
+
+from pathlib import Path
+
+pkg_path = Path("..", "..", "src").absolute()
+assert pkg_path.exists(), f"Invalid path {pkg_path}"
+sys.path.insert(0, str(pkg_path))
 
 from typing import Dict, List
 
-import mapstp  # type: ignore[import]
+import mapstp
 
 # -- Project information -----------------------------------------------------
 
@@ -40,10 +44,34 @@ release = mapstp.__version__
 
 extensions: List[str] = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.coverage",
+    "sphinx.ext.doctest",
+    "sphinx.ext.duration",
+    "sphinx.ext.extlinks",
+    "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
-    "sphinx.ext.duration",  # durations report on generation
     "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
 ]
+"""Used extensions.
+
+See `Sphinx Extensions <https://www.sphinx-doc.org/en/master/usage/extensions/index.html>`_
+"""
+
+# -- Options for autodoc ----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#configuration
+
+# Automatically extract typehints when specified and place them in
+# descriptions of the relevant function/method.
+autodoc_typehints = "description"
+
+# Don't show class signature with the class' name.
+autodoc_class_signature = "separated"
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/", None),
+    "numpy": ("http://docs.scipy.org/doc/numpy/", None),
+}
 
 # Napoleon settings
 napoleon_google_docstring = True
@@ -87,16 +115,13 @@ exclude_patterns: List[str] = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
-# If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = False
-
 
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = "sphinxdoc"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -125,7 +150,7 @@ todo_include_todos: bool = True
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "mckitdoc"
+htmlhelp_basename = "mckit-mapstp-doc"
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -143,51 +168,5 @@ latex_elements: Dict[str, str] = {
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
-#  author, documentclass [howto, manual, or own class]).
-latex_documents = [(master_doc, "mckit.tex", "mckit Documentation", "Roman Rodionov", "manual")]
-
-
-# -- Options for manual page output ---------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "mckit", "mckit Documentation", [author], 1)]
-
-
-# -- Options for Texinfo output -------------------------------------------
-
-# Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
-#  dir menu entry, description, category)
-texinfo_documents = [
-    (
-        master_doc,
-        "mckit-nuclides",
-        "mckit Documentation",
-        author,
-        "mckit-nuclides",
-        mckit_nuclides.__summary__,
-        "Miscellaneous",
-    ),
-]
-
-
-# -- Options for Epub output -------------------------------------------------
-
-# Bibliographic Dublin Core info.
-epub_title = project
-
-# The unique identifier of the text. This can be a ISBN number
-# or the project homepage.
-#
-# epub_identifier = ''
-
-# A unique identification for the text.
-#
-# epub_uid = ''
-
-# A list of files that should not be packed into the epub file.
-epub_exclude_files = ["search.html"]
-
-
-# -- Extension configuration -------------------------------------------------
+#  author, document class [howto, manual, or own class]).
+latex_documents = [(master_doc, "mapstp.tex", "mapstp Documentation", "Dmitry Portnov", "manual")]
