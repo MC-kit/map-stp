@@ -8,18 +8,21 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-# TODO dvp: make meta pattern configurable via command line or configuration file
-
 _META_PATTERN = re.compile(r".*\[(?P<meta>[^]]+)]")
 
 
 @dataclass
-class _MetaInfo:
+class _MetaInfoCollector:
     mnemonic: Optional[str] = None
     factor: Optional[float] = None
     rwcl: Optional[str] = None
 
     def update(self, pars: Dict[str, str]) -> None:
+        """Revise meta information collected on traversing along an STP branch.
+
+        Args:
+            pars: the last found meta information
+        """
         mnemonic = pars.get("m")
         if mnemonic is not None:
             if mnemonic == "void":
@@ -29,12 +32,8 @@ class _MetaInfo:
                 self.factor = None
             else:
                 self.mnemonic = mnemonic
-        t = pars.get("f")
-        if t is not None:
-            self.factor = float(t)
-        t = pars.get("r")
-        if t is not None:
-            self.rwcl = t
+        self.factor = pars.get("f", self.factor)
+        self.rwcl = pars.get("r", self.rwcl)
 
 
 def extract_path_info(paths: List[List[str]], material_index: pd.DataFrame) -> pd.DataFrame:
@@ -70,31 +69,29 @@ def _define_material_number_and_density(
     material_index, meta_info, path
 ) -> Tuple[Optional[float], Optional[int]]:
     try:
-        number: Optional[int] = int(
-            material_index.loc[meta_info.mnemonic]["number"]
-        )  # TODO dvp: check why type of number became float
+        number: Optional[int] = int(material_index.loc[meta_info.mnemonic]["number"])
     except KeyError:
         raise KeyError(
-            f"The mnemonic '{meta_info.mnemonic}' "
+            f"The mnemonic {meta_info.mnemonic!r} "
             "is not specified in the material index. "
             f"See the STP path: {'/'.join(path)}"
         ) from None
     density = material_index.loc[meta_info.mnemonic]["density"]
     if np.isnan(density):
         raise ValueError(
-            f"The density for mnemonic '{meta_info.mnemonic}' "
+            f"The density for mnemonic {meta_info.mnemonic!r} "
             "is not specified in the material index."
         )
     if density < 0.0:
         raise ValueError(
-            f"The density for mnemonic '{meta_info.mnemonic}' "
+            f"The density for mnemonic {meta_info.mnemonic!r} "
             "in the material index is to be positive."
         )
     return density, number
 
 
-def _extract_meta_info_from_path(path) -> _MetaInfo:
-    meta_info = _MetaInfo()
+def _extract_meta_info_from_path(path) -> _MetaInfoCollector:
+    meta_info = _MetaInfoCollector()
     for i, part in enumerate(path):
         match = _META_PATTERN.match(part)
         if match:

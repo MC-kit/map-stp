@@ -9,9 +9,9 @@ and RWCL id. The values can be specified in the names of STP
 components as special tags. A tag is denoted with bracket enclosed
 specification at the end of component name: "Component name [<spec>]".
 The spec may contain space separated entries:
-  - m:<mnemonic> - first column in a special material-index.xlxs file.
-  - f:<factor>   - float number for density correction factor
-  - r:<rwcl>     - any label to categorize the components for RWCL
+    - m:<mnemonic> - first column in a special material-index.xlxs file.
+    - f:<factor>   - float number for density correction factor
+    - r:<rwcl>     - any label to categorize the components for RWCL
 
 If MCNP file is also specified as the second `mcnp` argument,
 then produces output MCNP file with STP paths inserted

@@ -18,7 +18,7 @@ def test_filename_resolver(package, resource, expected):
     resolver = filename_resolver(package)
     actual = resolver(resource)
     assert actual.replace("\\", "/").endswith(expected), "Failed to compute resource file name"
-    assert Path(actual).exists(), f"The resource '{resource}' is not available"
+    assert Path(actual).exists(), f"The resource {resource!r} is not available"
 
 
 # noinspection PyCompatibility
@@ -32,7 +32,7 @@ def test_filename_resolver(package, resource, expected):
 def test_filename_resolver_when_resource_doesnt_exist(package, resource, expected):
     resolver = filename_resolver(package)
     actual = resolver(resource)
-    assert not Path(actual).exists(), f"The resource '{resource}' should not be available"
+    assert not Path(actual).exists(), f"The resource {resource!r} should not be available"
 
 
 def test_filename_resolver_when_package_doesnt_exist():
@@ -46,7 +46,7 @@ def test_path_resolver():
     actual = resolver("utils/" + THIS_FILENAME)
     assert isinstance(actual, Path)
     assert actual.name == THIS_FILENAME
-    assert actual.exists(), f"The file '{THIS_FILENAME}' should be available"
+    assert actual.exists(), f"The file {THIS_FILENAME!r} should be available"
 
 
 def test_path_resolver_in_own_package_with_separate_file():

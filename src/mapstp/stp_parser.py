@@ -74,7 +74,7 @@ class Product(Numbered):
         """
         match = _PRODUCT_PATTERN.search(text)
         if not match:
-            raise STPParserError(f"not a 'Product' line: '{text}'")
+            raise STPParserError(f"not a 'Product' line: {text!r}")
         number = int(match["digits"])
         name = match["name"]
         return cls(number, name)
@@ -149,7 +149,7 @@ class Link(Numbered):
         """
         match = _LINK_PATTERN.search(text)
         if not match:
-            raise STPParserError(f"not a 'Next assembly usage' line: '{text}'")
+            raise STPParserError(f"not a 'Next assembly usage' line: {text!r}")
         number = int(match["digits"])
         name = match["name"]
         src = int(match["src"])
@@ -179,7 +179,7 @@ class Body(Numbered):
         """
         match = _BODY_PATTERN.search(text)
         if not match:
-            raise STPParserError(f"not a 'solid brep' line: '{text}'")
+            raise STPParserError(f"not a 'solid brep' line: {text!r}")
         number = int(match["digits"])
         name = match["name"]
         return cls(number, name)
@@ -208,7 +208,7 @@ def parse(inp: TextIO) -> ParseResult:
     links: LinksList = []
     check_header(inp)
     # normal stp has links and components,
-    # but in q 'simple' case there are bodies only and one product
+    # but in 'simple' case there are bodies only and one product
     may_have_components = True
     for line_no_minus_3, line in enumerate(inp):
         match = _SELECT_PATTERN.search(line)
