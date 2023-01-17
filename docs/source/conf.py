@@ -52,6 +52,7 @@ extensions: List[str] = [
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
+    "sphinx_autodoc_typehints",
 ]
 """Used extensions.
 

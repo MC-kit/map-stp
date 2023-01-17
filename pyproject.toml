@@ -130,7 +130,6 @@ flake8-pylint = ">=0.1.3"
 [tool.poetry.group.docs.dependencies]
 sphinx = ">=6.1.3"
 sphinx-autodoc-typehints = ">=1.19.5"
-sphinx-autorun = ">=1.1.1"
 sphinx-click = ">=4.4.0"
 
 [tool.poetry.group.docs_auto.dependencies]
@@ -300,3 +299,18 @@ experimental = true
 [tool.pycln]
 path = "src"
 #silence = true
+
+
+[tool.pydocstringformatter]
+write = true
+style = "pep257"
+exclude = "tools/**"
+strip-whitespaces = true
+max-line-length = 90
+summary-quotes-same-line = true
+
+
+[tool.pylint]
+good-names-rgxs=["."]  # a single character variable is okay
+logging-format-style="new"   # use {} in logging messages
+deprecated-modules=["six"]
