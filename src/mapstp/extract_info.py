@@ -32,8 +32,14 @@ class _MetaInfoCollector:
                 self.factor = None
             else:
                 self.mnemonic = mnemonic
-        self.factor = pars.get("f", self.factor)
-        self.rwcl = pars.get("r", self.rwcl)
+
+        t = pars.get("f")
+        if t is not None:
+            self.factor = float(t)
+
+        t = pars.get("r")
+        if t is not None:
+            self.rwcl = t
 
 
 def extract_path_info(paths: List[List[str]], material_index: pd.DataFrame) -> pd.DataFrame:
