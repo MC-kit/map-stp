@@ -128,13 +128,17 @@ def create_bodies_paths(products: Iterable[Product], links: LinksList) -> List[L
     if links:
         tree = Tree(products, links)
         return tree.create_bodies_paths()
-    else:  # `simple` STP case
-        ps = list(products)
-        if 1 != len(ps):  # pragma: no cover
-            msg = "Only one product is expected for `simple` stp"
-            raise ValueError(msg)
-        product = cast(LeafProduct, ps[0])
-        bodies_paths = []
-        for b in product.bodies:
-            bodies_paths.append([b.name])  # TODO dvp: add transliteration for Russian names
-        return bodies_paths
+
+    ps = list(products)
+
+    if 1 != len(ps):  # pragma: no cover
+        msg = "Only one product is expected for `simple` stp"
+        raise ValueError(msg)
+
+    product = cast(LeafProduct, ps[0])
+    bodies_paths = []
+
+    for b in product.bodies:
+        bodies_paths.append([b.name])  # TODO dvp: add transliteration for Russian names
+
+    return bodies_paths
