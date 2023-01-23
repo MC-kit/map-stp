@@ -67,8 +67,8 @@ files = [
 lazy-object-proxy = ">=1.4.0"
 typing-extensions = ">=4.0.0"
 wrapt = [
-    {version = ">=1.11,<2", markers = "python_version < \"3.11\""},
     {version = ">=1.14,<2", markers = "python_version >= \"3.11\""},
+    {version = ">=1.11,<2", markers = "python_version < \"3.11\""},
 ]
 
 [[package]]
@@ -649,14 +649,14 @@ flake8 = ">=5.0.0"
 
 [[package]]
 name = "flake8-bugbear"
-version = "23.1.14"
+version = "23.1.20"
 description = "A plugin for flake8 finding likely bugs and design problems in your program. Contains warnings that don't belong in pyflakes and pycodestyle."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "flake8-bugbear-23.1.14.tar.gz", hash = "sha256:ba31dd954ef9c2a8f523adee3fdd78d1f9dd1afcba59cc6ad4c116e2cc1563f3"},
-    {file = "flake8_bugbear-23.1.14-py3-none-any.whl", hash = "sha256:ecaeb93acbd02f26f2246907b0e4c291cafdf65ef2ea24bbdbb596fd8d30605e"},
+    {file = "flake8-bugbear-23.1.20.tar.gz", hash = "sha256:55902ab5a48c5ea53d8689ecd146eda548e72f2724192b9c1d68f6d975d13c06"},
+    {file = "flake8_bugbear-23.1.20-py3-none-any.whl", hash = "sha256:04a115e5f9c8e87c38bdbbcdf9f58223ffe05469c07c9a7bd8633330bc4d078b"},
 ]
 
 [package.dependencies]
@@ -1529,9 +1529,9 @@ files = [
 
 [package.dependencies]
 numpy = [
-    {version = ">=1.20.3", markers = "python_version < \"3.10\""},
     {version = ">=1.21.0", markers = "python_version >= \"3.10\""},
     {version = ">=1.23.2", markers = "python_version >= \"3.11\""},
+    {version = ">=1.20.3", markers = "python_version < \"3.10\""},
 ]
 python-dateutil = ">=2.8.1"
 pytz = ">=2020.1"
@@ -1805,8 +1805,8 @@ files = [
 astroid = ">=2.12.13,<=2.14.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = [
-    {version = ">=0.2", markers = "python_version < \"3.11\""},
     {version = ">=0.3.6", markers = "python_version >= \"3.11\""},
+    {version = ">=0.2", markers = "python_version < \"3.11\""},
 ]
 isort = ">=4.2.5,<6"
 mccabe = ">=0.6,<0.8"
@@ -2317,21 +2317,6 @@ testing = ["covdefaults (>=2.2.2)", "coverage (>=7.0.5)", "diff-cover (>=7.3)", 
 type-comment = ["typed-ast (>=1.5.4)"]
 
 [[package]]
-name = "sphinx-autorun"
-version = "1.1.1"
-description = "Sphinx extension autorun"
-category = "dev"
-optional = false
-python-versions = "*"
-files = [
-    {file = "sphinx-autorun-1.1.1.tar.gz", hash = "sha256:61a39b604487c6dbfd601b3814443bb554532617abd39563e8d603c01ccc711a"},
-    {file = "sphinx_autorun-1.1.1-py3-none-any.whl", hash = "sha256:3a2869641e89f693a4cae1a461a8bf1b2492e34e0f1f86f372eb849842c6f258"},
-]
-
-[package.dependencies]
-Sphinx = ">=0.6"
-
-[[package]]
 name = "sphinx-click"
 version = "4.4.0"
 description = "Sphinx extension that automatically documents click applications"
@@ -2816,4 +2801,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "cb8d6f70f554279a82cd1939c7a21235467c6a329e1008682413a3e004d83dd1"
+content-hash = "3fba900c1a7131683151a00f98166b170da3031c922c5bb160f4d7e10832d8e6"
