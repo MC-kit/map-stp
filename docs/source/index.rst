@@ -1,8 +1,3 @@
-.. mapstp documentation master file, created by
-   sphinx-quickstart on Sat Nov 20 21:18:28 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 ====================================================
 **mapstp**: a tool to associate  MCNP and STP models
 ====================================================
@@ -51,12 +46,12 @@ Details
 =======
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   license
-   modules
-   todo
    readme
+   modules
+   license
+   todo
 
 
 

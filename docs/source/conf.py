@@ -45,6 +45,8 @@ release = mapstp.__version__
 extensions: List[str] = [
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.ifconfig",
     "sphinx.ext.doctest",
     "sphinx.ext.duration",
     "sphinx.ext.extlinks",
