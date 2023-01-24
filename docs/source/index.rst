@@ -31,19 +31,19 @@ Installation
 
 From PyPI (recommended):
 
-.. code-block ::
+.. code-block::
 
    pip install mapstp
 
 With package manager (as dependency):
 
-.. code-block ::
+.. code-block::
 
    poetry add mapstp
 
 From source:
 
-.. code-block ::
+.. code-block::
 
    pip install https://github.com/MC-kit/map-stp.git
 
