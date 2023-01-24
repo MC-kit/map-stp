@@ -29,21 +29,18 @@ ignore=
     E501
     # W503: Line break before binary operator: for compatibility with black settings
     W503
-
     # import order is controlled by isort
     I100
     I101
     I201
     I202
-
     # ignore some questionable pandas-vet warnings
     # PD005: use operator instead of method
-    PD005  # - too much false positives
+    PD005
     # We use at() to access single values
     PD008
     # And we use iat()
     PD009
-
 exclude=
     .git
     __pycache__
