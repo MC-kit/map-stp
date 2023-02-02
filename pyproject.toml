@@ -24,7 +24,7 @@ classifiers = [
 ]
 
 [build-system]
-requires = ["poetry-core>=1.1.0"]
+requires = ["poetry-core >= 1.1.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
@@ -303,9 +303,9 @@ path = "src"
 [tool.pydocstringformatter]
 write = true
 style = "pep257"
-exclude = "tools/**"
+exclude = ["tools/**","src/**/*_parser.py","src/**/*_tab.py"]
 strip-whitespaces = true
-max-line-length = 90
+max-line-length = 100
 summary-quotes-same-line = true
 
 
