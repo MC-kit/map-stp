@@ -28,7 +28,7 @@ import mapstp
 # General information about the project.
 project = "mapstp"
 copyright = "2022, dvp"
-author = "dvp"
+author = "dvp2015"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

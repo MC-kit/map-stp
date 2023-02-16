@@ -139,6 +139,7 @@ sphinx-autobuild = ">=2021.3.14"
 atomic = true
 ensure_newline_before_comments = true
 known_first_party = "mckit_nuclides"
+known_third_party = "mpl_toolkits,matplotlib,numpy,scipy"
 known_typing = "typing,types,typing_extensions,mypy,mypy_extensions"
 sections = "FUTURE,TYPING,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
 default_section = "FIRSTPARTY"
