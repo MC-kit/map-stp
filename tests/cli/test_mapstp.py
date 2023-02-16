@@ -4,6 +4,8 @@ import re
 
 from pathlib import Path
 
+from numpy.testing import assert_array_equal
+
 import pandas as pd
 import pytest
 
@@ -11,7 +13,6 @@ from mapstp.cli.runner import __summary__, __version__, mapstp
 from mapstp.materials import load_materials_map
 from mapstp.utils.io import find_first_cell_number, read_mcnp_sections
 from mapstp.utils.re import CELL_START_PATTERN, MATERIAL_PATTERN
-from numpy.testing import assert_array_equal
 
 
 # noinspection PyTypeChecker

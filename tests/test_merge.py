@@ -1,5 +1,6 @@
-import mapstp.merge as m
 import numpy as np
+
+import mapstp.merge as m
 import pandas as pd
 import pytest
 
