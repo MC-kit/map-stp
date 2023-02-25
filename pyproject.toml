@@ -198,8 +198,13 @@ markers = [
 # xfail tests that pass should fail the test suite
 xfail_strict = true
 filterwarnings = [
-    "ignore:.*not typechecking multipledispatch.dispatcher.*:UserWarning"
+    "error",
+    'ignore:Implementing implicit namespace packages \(as specified in PEP 420\) is preferred to `pkg_resources.declare_namespace`',
+    "ignore:.*not typechecking multipledispatch.dispatcher.*UserWarning",
+    'ignore:.*Deprecated call to `pkg_resources.declare_namespace'
 ]
+log_format = "%(asctime)s %(levelname)s %(message)s"
+log_date_format = "%Y-%m-%d %H:%M:%S"
 
 [tool.xdoctest]
 quiet = true
@@ -217,6 +222,7 @@ source = ["src/mapstp"]
 show_missing = true
 skip_covered = true
 fail_under = 95
+omit = ["*_tab.py", "**/__init__.py"]
 # Regexes for lines to exclude from consideration
 exclude_lines = [
     # Have to re-enable the standard pragma
@@ -298,6 +304,29 @@ experimental = true
 
 [tool.pycln]
 path = "src"
+exclude = '''
+(
+    \.egg-info
+  | \.eggs
+  | \.git
+  | \.mypy_cache
+  | \.pytest_cache
+  | \.nox
+  | \.venv
+  | \.idea
+  | _build
+  | 3rd-party
+  | build
+  | build_configs
+  | data
+  | dist
+  | notebooks
+  | htmlcov
+  | wrk
+  | [Pp]arser
+  | tab\.py
+)
+'''
 #silence = true
 
 
