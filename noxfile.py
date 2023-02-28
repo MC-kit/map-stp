@@ -61,9 +61,6 @@ package: Final = find_my_name()
 locations: Final = f"src/{package}", "tests", "./noxfile.py", "docs/source/conf.py"
 
 supported_pythons: Final = "3.8", "3.9", "3.10", "3.11"
-black_pythons: Final = "3.11"
-lint_pythons: Final = "3.11"
-mypy_pythons: Final = "3.11"
 
 
 def _update_hook(hook: Path, virtualenv: str, s: Session) -> None:
@@ -110,7 +107,7 @@ def activate_virtualenv_in_precommit_hooks(s: Session) -> None:
         _update_hook(hook, virtualenv, s)
 
 
-@session(name="pre-commit", python="3.11")
+@session(name="pre-commit")
 def precommit(s: Session) -> None:
     """Lint using pre-commit."""
     args = s.posargs or ["run", "--all-files", "--show-diff-on-failure"]
@@ -127,7 +124,7 @@ def precommit(s: Session) -> None:
         activate_virtualenv_in_precommit_hooks(s)
 
 
-@session(python="3.11")
+@session
 def safety(s: Session) -> None:
     """Scan dependencies for insecure packages."""
     requirements = f"{s.virtualenv.location}/safety-requirements.txt"
@@ -188,7 +185,7 @@ def coverage(s: Session) -> None:
 
 
 # TODO dvp: check some strange errors on 3.8, 3.9 and slow install of pandas on 3.11
-@session(python="3.10")
+@session
 def typeguard(s: Session) -> None:
     """Runtime type checking using Typeguard."""
     s.run(
@@ -201,7 +198,7 @@ def typeguard(s: Session) -> None:
     s.run("pytest", f"--typeguard-packages={package}", *s.posargs)
 
 
-@session(python="3.11")
+@session
 def isort(s: Session) -> None:
     """Organize imports."""
     search_patterns = [
@@ -238,7 +235,7 @@ def isort(s: Session) -> None:
         )
 
 
-@session(python=black_pythons)
+@session
 def black(s: Session) -> None:
     """Run black code formatter."""
     args = s.posargs or locations
@@ -253,7 +250,7 @@ def black(s: Session) -> None:
     s.run("black", *args)
 
 
-@session(python=lint_pythons)
+@session
 def lint(s: Session) -> None:
     """Lint using flake8."""
     args = s.posargs or locations
@@ -268,7 +265,7 @@ def lint(s: Session) -> None:
     s.run("flake8", *args)
 
 
-@session(python=mypy_pythons)
+@session
 def mypy(s: Session) -> None:
     """Type-check using mypy."""
     args = s.posargs or ["src", "docs/source/conf.py"]

@@ -14,7 +14,6 @@ def filename_resolver(package: str) -> Callable[[str], str]:
 
     Args:
         package: the package below which the data is stored.
-                 Optional, if not specified, the package of caller will be used.
 
     Returns:
         callable which appends the argument to the package folder.
@@ -36,7 +35,6 @@ def path_resolver(package: str) -> Callable[[str], Path]:
 
     Args:
         package: the package below which the data is stored.
-                 Optional, if not specified, the package of caller will be used.
 
     Returns:
         callable which appends the argument to the package folder adt returns as Path.
