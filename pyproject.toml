@@ -217,7 +217,7 @@ source = ["src", ".nox/*/site-packages"]
 
 [tool.coverage.run]
 branch = true
-source = ["src/mckit_nuclides"]
+source = ["src"]
 omit = ["*_tab.py", "**/__init__.py"]
 
 [tool.coverage.report]
