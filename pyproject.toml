@@ -38,6 +38,7 @@ Chnagelog = "https://github.com/MC-kit/mapstp/releases"
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
 click = ">=8.0.4"
+importlib-resources = {version = ">=5.12.0", python = "3.8"}
 loguru = ">=0.6.0"
 numpy = ">=1.24.2"
 openpyxl = ">=3.0.9"
