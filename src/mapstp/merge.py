@@ -47,31 +47,24 @@ def extract_number_and_density(row: int, path_info: pd.DataFrame) -> Optional[Tu
 
     Returns:
         number and density or None, if not available
-
-    Raises:
-        PathInfoError: when the resulting values are out of valid ranges
     """
     number, density, factor = path_info.iloc[row][["number", "density", "factor"]]
+
+    def _validate(expr, msg):
+        if not expr:
+            raise PathInfoError(msg, row, path_info)
 
     if not is_defined(number):
         return None  # void space
 
-    if not is_defined(density):
-        msg = f"The `density` value is not defined for material number {number}."
-        raise PathInfoError(msg, row, path_info)
-
-    if number <= 0:
-        msg = "The values in `number` column are to be positive."
-        raise PathInfoError(msg, row, path_info)
-
-    if density < 0:
-        msg = "The values in `density` column cannot be negative."
-        raise PathInfoError(msg, row, path_info)
+    _validate(
+        is_defined(density), f"The `density` value is not defined for material number {number}."
+    )
+    _validate(0 < number, "The values in `number` column are to be positive.")
+    _validate(0.0 <= density, "The values in `density` column cannot be negative.")
 
     if is_defined(factor):
-        if factor < 0.0:
-            msg = "The values in `factor` column cannot be negative."
-            raise PathInfoError(msg, row, path_info)
+        _validate(0.0 <= factor, "The values in `factor` column cannot be negative.")
         density *= factor
 
     return number, density

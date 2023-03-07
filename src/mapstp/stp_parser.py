@@ -225,11 +225,7 @@ def _process_line(match, line, links, may_have_components: bool, products) -> bo
     if group == "solid":
         may_have_components = _process_body(line, may_have_components, products)
     elif group == "link":
-        if not may_have_components:
-            msg = "Unexpected `link` is found in `simple` STP"
-            raise STPParserError(msg)
-        link = Link.from_string(line)
-        links.append((link.src, link.dst))
+        _add_link(line, links, may_have_components)
     elif group == "product":
         if may_have_components:
             product = Product.from_string(line)
@@ -238,6 +234,14 @@ def _process_line(match, line, links, may_have_components: bool, products) -> bo
         msg = "Shouldn't be here, check _SELECT_PATTERN"
         raise STPParserError(msg)
     return may_have_components
+
+
+def _add_link(line, links, may_have_components):
+    if not may_have_components:
+        msg = "Unexpected `link` is found in `simple` STP"
+        raise STPParserError(msg)
+    link = Link.from_string(line)
+    links.append((link.src, link.dst))
 
 
 def _process_body(line: str, may_have_components: bool, products) -> bool:

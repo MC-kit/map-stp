@@ -25,16 +25,16 @@ def env(key, converter: Optional[Callable[[str], Any]] = None, default=None):
     if key not in environ:
         return default
 
-    val = environ[key]
+    inp = environ[key]
 
     converter = _extend_converter(converter)
 
     try:
-        return converter(val)
+        return converter(inp)
     except ValueError as exception:
         raise ValueError(
             f"Invalid environment variable {key!r}: "
-            f"conversion {converter.__name__}({val}) failed."
+            f"conversion {converter.__name__}({inp}) failed."
         ) from exception
 
 
@@ -52,10 +52,10 @@ def _identity(val: _T) -> _T:
     return val
 
 
-def _make_bool(val: str) -> bool:
-    val = val.lower()
-    if val in ["1", "true", "yes", "y", "ok", "on"]:
+def _make_bool(inp: str) -> bool:
+    inp = inp.lower()
+    if inp in ["1", "true", "yes", "y", "ok", "on"]:
         return True
-    if val in ["0", "false", "no", "n", "nok", "off"]:
+    if inp in ["0", "false", "no", "n", "nok", "off"]:
         return False
-    raise ValueError(f"expected a boolean equivalent, found {val!r}")
+    raise ValueError(f"expected a boolean equivalent, found {inp!r}")

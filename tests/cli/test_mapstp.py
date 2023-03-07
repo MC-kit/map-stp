@@ -123,7 +123,7 @@ def test_override(runner, tmp_path, data, touch_output, touch_excel, expected):
         assert excel.exists()
     stp = data / "test1.stp"
     mcnp = data / "test1.i"
-    result = runner.invoke(
+    run_result = runner.invoke(
         mapstp,
         args=[
             "--output",
@@ -137,7 +137,7 @@ def test_override(runner, tmp_path, data, touch_output, touch_excel, expected):
         ],
         catch_exceptions=True,
     )
-    assert result.exit_code == expected, result.output
+    assert run_result.exit_code == expected, run_result.output
 
 
 def extract_first_void_cell_lines(lines):
