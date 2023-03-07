@@ -1,6 +1,7 @@
 [flake8]
 select=ANN,B,B9,BLK,C,D,DAR,E,F,I,N,PD,R,TC,TR,S,W
 max-complexity=10
+max-mccabe-complexity=5
 max-line-length=100
 ignore=
     # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
@@ -64,7 +65,7 @@ per-file-ignores =
     tools/install_flake8_deps.py:S404,S603,S607,B950
     config.py:ANN001,ANN201
     src/mapstp/cli/logging.py:PD005
-    tests/*:S101,ANN,DAR100,D100,D103,DAR101,DAR103
+    tests/*:ANN,B950,DAR100,D100,D101,D102,D103,D104,DAR101,DAR103,S101
 ignore-decorators=click,pytest
 docstring-convention = google
 rst-roles = class,const,func,meth,mod,ref
