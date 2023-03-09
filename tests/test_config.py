@@ -9,17 +9,18 @@ TEST_VALUE = "_TEST_VALUE"
 
 @pytest.fixture
 def setval():
-    def _call(value):
-        if value is not None:
-            environ[TEST_VALUE] = value
+    def _call(env_value):
+        if env_value is not None:
+            environ[TEST_VALUE] = env_value
 
     yield _call
+
     if TEST_VALUE in environ:
         del environ[TEST_VALUE]
 
 
 @pytest.mark.parametrize(
-    "value,type_,default,expected,msg",
+    "env_value,type_,default,expected,msg",
     [
         (
             None,
@@ -43,14 +44,14 @@ def setval():
         ("no", bool, None, False, "return False if 'no' is set"),
     ],
 )
-def test_env(setval, value, type_, default, expected, msg):
-    setval(value)
+def test_env(setval, env_value, type_, default, expected, msg):
+    setval(env_value)
     actual = env(TEST_VALUE, type_, default)
     assert actual is None and expected is None or actual == expected
 
 
 @pytest.mark.parametrize(
-    "value,type_,default,exception,msg",
+    "env_value,type_,default,exception,msg",
     [
         ("bad", bool, None, ValueError, "'bad' is invalid value for boolean variable"),
         ("bad", int, None, ValueError, "'bad' is invalid value for int variable"),
@@ -64,7 +65,7 @@ def test_env(setval, value, type_, default, expected, msg):
         ),
     ],
 )
-def test_env_bad_paths(setval, value, type_, default, exception, msg):
-    setval(value)
+def test_env_bad_paths(setval, env_value, type_, default, exception, msg):
+    setval(env_value)
     with pytest.raises(exception):
         env(TEST_VALUE, type_, default)
