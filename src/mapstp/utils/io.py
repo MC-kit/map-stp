@@ -1,5 +1,7 @@
 """Input/output utility methods."""
-from typing import Generator, Optional, TextIO, Union
+from __future__ import annotations
+
+from typing import Generator, TextIO, Union
 
 import os
 import sys
@@ -35,7 +37,7 @@ def can_override(path: Path, override: bool) -> Path:
     return path
 
 
-def find_first_cell_number(mcnp: Union[str, Path]) -> int:
+def find_first_cell_number(mcnp: str | Path) -> int:
     """Find the first cell number in MCNP model.
 
     Args:
@@ -61,7 +63,7 @@ def find_first_cell_number(mcnp: Union[str, Path]) -> int:
 @contextmanager
 def select_output(
     override: bool,
-    output: Optional[PathLike] = None,
+    output: PathLike | None = None,
 ) -> Generator[TextIO, None, None]:
     """Select stream for output.
 
@@ -94,9 +96,9 @@ class MCNPSections:
     """Text sections from an MCNP file."""
 
     cells: str
-    surfaces: Optional[str] = None
-    cards: Optional[str] = None
-    remainder: Optional[str] = None
+    surfaces: str | None = None
+    cards: str | None = None
+    remainder: str | None = None
 
 
 def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
@@ -113,11 +115,11 @@ def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
     )
     sections_len = len(sections)
     cells = sections[0].strip()
-    surfaces = sections[1].strip() if 2 <= sections_len else None
-    cards = sections[2].strip() if 3 <= sections_len else None
-    if 4 <= sections_len:
-        remainder: Optional[str] = sections[3].strip()
-        if remainder == "":
+    surfaces = sections[1].strip() if 2 <= sections_len else None  # noqa: PLR2004
+    cards = sections[2].strip() if 3 <= sections_len else None  # noqa: PLR2004
+    if 4 <= sections_len:  # noqa: PLR2004
+        remainder: str | None = sections[3].strip()
+        if not remainder:
             remainder = None
     else:
         remainder = None

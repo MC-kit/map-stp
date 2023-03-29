@@ -1,4 +1,5 @@
 """The regular expressions to be used in various modules."""
+from __future__ import annotations
 
 import re
 

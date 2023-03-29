@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from logging import WARNING, LogRecord, getLogger
 
 from mapstp.cli.logging import InterceptHandler, init_logger
@@ -16,12 +18,12 @@ def test_when_stderr_is_off(capsys):
     msg = "Test error output"
     getLogger().error(msg)
     err = capsys.readouterr().err
-    assert err == "", "STD error output should not contain any message"
+    assert not err, "STD error output should not contain any message"
 
 
 class _Record(LogRecord):
     def __init__(self):
-        super(_Record, self).__init__(
+        super().__init__(
             name="UNKNOWN_LEVEL",
             level=WARNING,
             pathname=__file__,

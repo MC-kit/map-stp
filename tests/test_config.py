@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from os import environ
 
 import pytest
@@ -7,7 +9,7 @@ from mapstp.config import env
 TEST_VALUE = "_TEST_VALUE"
 
 
-@pytest.fixture
+@pytest.fixture()
 def setval():
     def _call(env_value):
         if env_value is not None:
@@ -20,7 +22,7 @@ def setval():
 
 
 @pytest.mark.parametrize(
-    "env_value,type_,default,expected,msg",
+    ["env_value", "type_", "default", "expected", "msg"],
     [
         (
             None,
@@ -44,14 +46,14 @@ def setval():
         ("no", bool, None, False, "return False if 'no' is set"),
     ],
 )
-def test_env(setval, env_value, type_, default, expected, msg):
+def test_env(setval, env_value, type_, default, expected, msg):  # noqa: PLR0913
     setval(env_value)
     actual = env(TEST_VALUE, type_, default)
     assert actual is None and expected is None or actual == expected
 
 
 @pytest.mark.parametrize(
-    "env_value,type_,default,exception,msg",
+    ["env_value", "type_", "default", "exception", "msg"],
     [
         ("bad", bool, None, ValueError, "'bad' is invalid value for boolean variable"),
         ("bad", int, None, ValueError, "'bad' is invalid value for int variable"),
@@ -65,7 +67,7 @@ def test_env(setval, env_value, type_, default, expected, msg):
         ),
     ],
 )
-def test_env_bad_paths(setval, env_value, type_, default, exception, msg):
+def test_env_bad_paths(setval, env_value, type_, default, exception, msg):  # noqa: PLR0913
     setval(env_value)
     with pytest.raises(exception):
         env(TEST_VALUE, type_, default)

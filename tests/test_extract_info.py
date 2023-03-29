@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 import pandas as pd
@@ -14,7 +16,7 @@ def test_load_materials_index(materials):
 
 
 @pytest.mark.parametrize(
-    "paths, expected, msg",
+    ["paths", "expected", "msg"],
     [
         (
             [["aaa [m-LH]", "bbb", "ccc0"]],
@@ -47,25 +49,22 @@ def test_extract_info(materials, paths, expected, msg):
 
 
 @pytest.mark.parametrize(
-    "paths, exception, msg",
+    ["paths", "exception", "msg"],
     [
         (
             [["aaa [m-Unknown]", "bbb", "ccc0"]],
             KeyError,
-            "The mnemonic 'Unknown' is not specified in the material index. "
-            "See the STP path: aaa [m-Unknown]/bbb/ccc0",
+            "The mnemonic 'Unknown' is not specified in the material index. ",
         ),
     ],
 )
 def test_extract_info_with_missed_material(materials, paths, exception, msg):
-    with pytest.raises(exception) as x:
+    with pytest.raises(exception, match=msg):
         extract_path_info(paths, materials)
-        assert x.type is exception
-        assert x.value == msg
 
 
 @pytest.mark.parametrize(
-    "paths, exception, msg",
+    ["paths", "exception", "msg"],
     [
         (
             [["aaa [m-LH]", "bbb", "ccc0"]],
@@ -77,14 +76,12 @@ def test_extract_info_with_missed_material(materials, paths, exception, msg):
 def test_extract_info_with_missed_density(materials, paths, exception, msg):
     materials_without_density = materials.loc[["LH"]]
     materials_without_density.density = np.NaN
-    with pytest.raises(exception) as x:
+    with pytest.raises(exception, match=msg):
         extract_path_info(paths, materials_without_density)
-        assert x.type is exception
-        assert x.value == msg
 
 
 @pytest.mark.parametrize(
-    "paths, exception, msg",
+    ["paths", "exception", "msg"],
     [
         (
             [["aaa [m-LH]", "bbb", "ccc0"]],
@@ -96,10 +93,8 @@ def test_extract_info_with_missed_density(materials, paths, exception, msg):
 def test_extract_info_with_negative_density(materials, paths, exception, msg):
     materials_with_negative_density = materials.loc[["LH"]]
     materials_with_negative_density.density = -1.0
-    with pytest.raises(exception) as x:
+    with pytest.raises(exception, match=msg):
         extract_path_info(paths, materials_with_negative_density)
-        assert x.type is exception
-        assert x.value == msg
 
 
 if __name__ == "__main__":

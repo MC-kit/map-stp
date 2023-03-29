@@ -1,6 +1,7 @@
 """Data structures and algorithms to store and process STP nodes and their links."""
+from __future__ import annotations
 
-from typing import Dict, Iterable, Iterator, List, Optional, Tuple, cast
+from typing import Iterable, Iterator, cast
 
 from dataclasses import dataclass
 
@@ -19,7 +20,7 @@ class Node:
     """
 
     product: Product
-    parent: Optional["Node"] = None
+    parent: Node | None = None
 
     def collect_parents(self) -> Iterator[Product]:
         """Iterate through the parents of the node from root parent to this node.
@@ -45,13 +46,13 @@ class Tree:
             products: list of product found on parsing STP
             links: pairs denoting links between the products.
         """
-        self._product_index: Dict[int, Product] = make_index(products)
-        self._node_index: Dict[int, Node] = {}
+        self._product_index: dict[int, Product] = make_index(products)
+        self._node_index: dict[int, Node] = {}
         self._body_links: LinksList = []
         for link in links:
             self._create_nodes_from_link(link)
 
-    def create_bodies_paths(self) -> List[List[str]]:
+    def create_bodies_paths(self) -> list[list[str]]:
         """Create list of paths for each body in STP file.
 
         A path is in turn a list of strings - parts of the path.
@@ -75,7 +76,7 @@ class Tree:
                     )  # TODO dvp: add transliteration for Russian names
         return bodies_paths
 
-    def _create_nodes_from_link(self, link: Tuple[int, int]) -> None:
+    def _create_nodes_from_link(self, link: tuple[int, int]) -> None:
         src, dst = link
         product = self._product_index[dst]
         parent = self._node_index.get(src)
@@ -95,7 +96,7 @@ class Tree:
                 raise STPParserError()
             node.parent = parent
 
-    def _create_node(self, product: Product, parent: Optional[Node] = None) -> Node:
+    def _create_node(self, product: Product, parent: Node | None = None) -> Node:
         """Create and register a node.
 
         Args:
@@ -110,7 +111,7 @@ class Tree:
         return node
 
 
-def create_bodies_paths(products: Iterable[Product], links: LinksList) -> List[List[str]]:
+def create_bodies_paths(products: Iterable[Product], links: LinksList) -> list[list[str]]:
     """Create list of paths for each body in STP file.
 
     A path is in turn a list of strings - parts of the path.

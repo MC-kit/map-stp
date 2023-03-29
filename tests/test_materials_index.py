@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 
 from mapstp.materials_index import load_materials_index

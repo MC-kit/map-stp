@@ -20,6 +20,7 @@ as end of line comments after corresponding cells with prefix
 "sep:". The material numbers and densities are set according
 to the meta information provided in the STP.
 """
+from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -39,6 +40,8 @@ from mapstp.workflow import create_path_info
 # TODO dvp: add customized configuring from a configuration toml-file.
 @dataclass
 class Config:
+    """Shared configuration."""
+
     override: bool = False
 
 
@@ -122,7 +125,7 @@ to the meta information provided in the STP.
 @click.version_option(__version__, prog_name=package_name)
 @click.help_option()
 @click.pass_context
-def mapstp(
+def mapstp(  # noqa: PLR0913
     ctx,
     override: bool,
     output,
@@ -134,22 +137,19 @@ def mapstp(
     stp,
     mcnp,
 ) -> None:
-    f"""Transfers meta information from STP to MCNP model and Excel.
+    """Transfers meta information from STP to MCNP model and Excel.
 
     Args:
-        ctx:
-        override:
-        output:
-        excel:
-        materials:
-        materials_index:
-        separator:
-        start_cell_number:
-        stp:
-        mcnp:
-
-    Returns:
-
+        ctx: context object
+        override: override existing files if exist, if false - raise exception
+        output: where to store resulting mcnp
+        excel: excel to store mapping cell->tags, stp path
+        materials: file with MCNP materials
+        materials_index: excel with list of mnemonics mapping to material numbers from `materials` file
+        separator: character to separate parts of stp path on output, default(/)
+        start_cell_number: number of cell to start mapping
+        stp: STP file correspoinding to the input model
+        mcnp: input MCNP model - to be tagged in output
     """
     if not (mcnp or excel):
         raise click.UsageError("Nor `excel`, neither `mcnp` parameter is specified - nothing to do")

@@ -2,8 +2,9 @@
 
 The map associates material number to its MCNP specification text.
 """
+from __future__ import annotations
 
-from typing import Callable, Dict, Generator, Iterable, List, TextIO, Union
+from typing import Callable, Dict, Generator, Iterable, TextIO
 
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -26,7 +27,7 @@ logger = getLogger()
 class _Loader:
     stream: TextIO
     material_no: int = field(default=-1, init=False)
-    materials_dict: Dict[int, List[str]] = field(
+    materials_dict: dict[int, list[str]] = field(
         default_factory=lambda: defaultdict(list), init=False
     )
 
@@ -63,8 +64,7 @@ class _Loader:
                 raise ValueError(f"Material number {self.material_no} is duplicated")
             self._append(line)
             return True
-        else:
-            return False  # skipping other cards and prepending text
+        return False  # skipping other cards and prepending text
 
 
 def load_materials_map_from_stream(stream: TextIO) -> MaterialsDict:
@@ -84,12 +84,10 @@ def load_materials_map_from_stream(stream: TextIO) -> MaterialsDict:
             result += "\n"
         return result
 
-    materials_dict = {k: _restore_material_text(v) for k, v in loader.materials_dict.items()}
-
-    return materials_dict
+    return {k: _restore_material_text(v) for k, v in loader.materials_dict.items()}
 
 
-def load_materials_map(materials: Union[str, Path]) -> MaterialsDict:
+def load_materials_map(materials: str | Path) -> MaterialsDict:
     """Read materials from MCNP file.
 
     Args:
@@ -123,7 +121,7 @@ def drop_material_cards(lines: Iterable[str]) -> Generator[str, None, None]:
             yield line
 
 
-def materials_spec_mapper(materials_map: Dict[int, str]) -> Callable[[int], str]:
+def materials_spec_mapper(materials_map: dict[int, str]) -> Callable[[int], str]:
     """Create method to extract a material specification by its number.
 
     Args:
@@ -138,9 +136,10 @@ def materials_spec_mapper(materials_map: Dict[int, str]) -> Callable[[int], str]
             text = materials_map.get(used_number)
             if not text:
                 logger.warning(
-                    f"Material M{used_number} is not found "
+                    "Material M{} is not found "
                     "in provided materials specifications. "
                     "A dummy specification is issued to the tagged model.",
+                    used_number,
                 )
                 text = (
                     f"m{used_number}  "
@@ -148,13 +147,12 @@ def materials_spec_mapper(materials_map: Dict[int, str]) -> Callable[[int], str]
                     "        1.001.31c  1.0\n"
                 )
             return text
-        else:
-            return ""
+        return ""
 
     return _func
 
 
-def get_used_materials(materials_map: Dict[int, str], path_info: pd.DataFrame) -> str:
+def get_used_materials(materials_map: dict[int, str], path_info: pd.DataFrame) -> str:
     """Collect text of used materials specifications.
 
     Args:

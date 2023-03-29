@@ -4,7 +4,9 @@ Inserts end comments with information about path in STP
 corresponding to a cell and sets materials and densities,
 if specified in STP paths.
 """
-from typing import Generator, Iterable, List, Optional, TextIO, Tuple, Union
+from __future__ import annotations
+
+from typing import Generator, Iterable, TextIO
 
 import math
 
@@ -22,7 +24,7 @@ from mapstp.utils.re import CELL_START_PATTERN
 logger = getLogger()
 
 
-def is_defined(number: Union[int, float, None]) -> bool:
+def is_defined(number: int | float | None) -> bool:
     """Check if number coming from a DataFrame object cell is not None or NaN.
 
     Args:
@@ -35,7 +37,7 @@ def is_defined(number: Union[int, float, None]) -> bool:
     return number is not None and number is not pd.NA and not math.isnan(number)
 
 
-def extract_number_and_density(row: int, path_info: pd.DataFrame) -> Optional[Tuple[int, float]]:
+def extract_number_and_density(row: int, path_info: pd.DataFrame) -> tuple[int, float] | None:
     """Extract material number and density from a `path_info` for a given `row`.
 
     Validate the values: number, if provided, is to be positive, density - not
@@ -60,11 +62,13 @@ def extract_number_and_density(row: int, path_info: pd.DataFrame) -> Optional[Tu
     _validate(
         is_defined(density), f"The `density` value is not defined for material number {number}."
     )
-    _validate(0 < number, "The values in `number` column are to be positive.")
-    _validate(0.0 <= density, "The values in `density` column cannot be negative.")
+    _validate(0 < number, "The values in `number` column are to be positive.")  # noqa: PLR2004
+    _validate(0.0 <= density, "The values in `density` column cannot be negative.")  # noqa: PLR2004
 
     if is_defined(factor):
-        _validate(0.0 <= factor, "The values in `factor` column cannot be negative.")
+        _validate(
+            0.0 <= factor, "The values in `factor` column cannot be negative."  # noqa: PLR2004
+        )
         density *= factor
 
     return number, density
@@ -78,14 +82,14 @@ def _correct_first_line(
 
     if nd is not None:
         number, density = nd
-        _line = _line[: match_end - 1] + f" {int(number)} {-density:.5g}" + _line[match_end:]
+        return _line[: match_end - 1] + f" {int(number)} {-density:.5g}" + _line[match_end:]
 
     return _line
 
 
 @dataclass
 class _Merger:
-    paths: List[str]
+    paths: list[str]
     path_info: pd.DataFrame
     mcnp_lines: Iterable[str]
     first_cell: bool = field(init=False, default=True)
@@ -99,9 +103,8 @@ class _Merger:
         self.paths_length = len(self.paths)
 
     def format_comment(self) -> str:
-        comment = f"      $ stp: {self.paths[self.current_path_idx]}"
         self.current_path_idx += 1
-        return comment
+        return f"      $ stp: {self.paths[self.current_path_idx]}"
 
     def merge_lines(self) -> Generator[str, None, None]:
         for line in self.mcnp_lines:
@@ -114,8 +117,9 @@ class _Merger:
             yield self.format_comment()
         if self.current_path_idx != self.paths_length:
             logger.warning(
-                f"Only {self.current_path_idx} cells merged, "
-                f"STP specifies {self.paths_length} bodies."
+                "Only {} cells merged, " "STP specifies {} bodies.",
+                self.current_path_idx,
+                self.paths_length,
             )
 
     def _on_cell_start(self, line, match) -> Generator[str, None, None]:
@@ -145,7 +149,7 @@ class _Merger:
 
 
 def _merge_lines(
-    paths: List[str],
+    paths: list[str],
     path_info: pd.DataFrame,
     mcnp_lines: Iterable[str],
 ) -> Generator[str, None, None]:
@@ -155,10 +159,10 @@ def _merge_lines(
 
 def merge_paths(
     output: TextIO,
-    paths: List[str],
+    paths: list[str],
     path_info: pd.DataFrame,
     mcnp: Path,
-    used_materials_text: Optional[str] = None,
+    used_materials_text: str | None = None,
 ) -> None:
     """Print to `output` the updated MCNP code.
 
@@ -222,7 +226,7 @@ def _print_control_cards_with_used_materials(
         print(remainder, file=output, end="")
 
 
-def join_paths(paths: List[List[str]], separator: str = "/") -> List[str]:
+def join_paths(paths: list[list[str]], separator: str = "/") -> list[str]:
     """Collect rows of strings to string.
 
     Args:

@@ -1,6 +1,5 @@
 """Major methods to create accompanying Excel output file."""
-
-from typing import List
+from __future__ import annotations
 
 from pathlib import Path
 
@@ -9,7 +8,7 @@ import pandas as pd
 
 def create_excel(
     excel: Path,
-    paths: List[List[str]],
+    paths: list[list[str]],
     path_info: pd.DataFrame,
     separator: str,
     start_cell_number: int,

@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from __future__ import annotations
 
 from dataclasses import dataclass
 
@@ -18,7 +18,7 @@ def test_product():
 
 
 @pytest.mark.parametrize(
-    "text, expected",
+    ["text", "expected"],
     [
         ("#69=PRODUCT_DEFINITION('test1','test1',#136,#1);", Product(69, "test1")),
     ],
@@ -38,7 +38,7 @@ def test_exception(text):
 
 
 @pytest.mark.parametrize(
-    "text, expected",
+    ["text", "expected"],
     [
         (
             "#79=NEXT_ASSEMBLY_USAGE_OCCURRENCE('Component1','Component1','Component1',#69,#80,$);",
@@ -52,7 +52,7 @@ def test_link_from_string(text, expected):
 
 
 @pytest.mark.parametrize(
-    "text, expected",
+    ["text", "expected"],
     [
         (
             "#89=MANIFOLD_SOLID_BREP('Body2',#159);",
@@ -67,9 +67,9 @@ def test_body_from_string(text, expected):
 
 @dataclass
 class _ParserTestResult:
-    components: List[str]
-    numbers: List[int]
-    links: List[Tuple[int, int]]
+    components: list[str]
+    numbers: list[int]
+    links: list[tuple[int, int]]
     case: str
 
     def check(self, components, numbers, links):
@@ -79,7 +79,7 @@ class _ParserTestResult:
 
 
 @pytest.mark.parametrize(
-    "stp, expected",
+    ["stp", "expected"],
     [
         (
             "test1.stp",
@@ -174,8 +174,8 @@ def test_stp_parser1(data, stp, expected):
 @dataclass
 class _CreateBodiesPathsResult:
     length: int
-    first_path: List[str]
-    last_path: List[str]
+    first_path: list[str]
+    last_path: list[str]
 
     def check(self, stp, paths):
         assert len(paths) == self.length, f"Wrong length of paths found in {stp}"
@@ -184,7 +184,7 @@ class _CreateBodiesPathsResult:
 
 
 @pytest.mark.parametrize(
-    "stp, expected",
+    ["stp", "expected"],
     [
         (
             "test1.stp",
@@ -235,17 +235,15 @@ def test_create_bodies_paths(data, stp, expected):
 def test_file_with_wrong_header(tmp_path):
     p = tmp_path / "test_with_wrong_header.stp"
     p.write_text("this is invalid stp file\nHEADER;")
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(ValueError, match="Not a valid STP file"):
         parse_path(p)
-        assert "Not a valid STP file" in exc_info.value.args[0]
 
 
 def test_file_with_wrong_protocol(tmp_path):
     p = tmp_path / "test_with_wrong_protocol.stp"
     p.write_text('ISO-10303-21;\nHEADER;\nFILE_DESCRIPTION(("STEP AP246"), "1");\n')
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(ValueError, match="STP protocol is not AP214"):
         parse_path(p)
-        assert "STP protocol AP214 is expected" in exc_info.value.args[0]
 
 
 if __name__ == "__main__":

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 
 from mapstp.materials import drop_material_cards, load_materials_map

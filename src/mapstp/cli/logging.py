@@ -2,7 +2,9 @@
 
 See https://github.com/Delgan/loguru
 """
-from typing import Final, Optional
+from __future__ import annotations
+
+from typing import Final
 
 import logging
 import sys
@@ -56,8 +58,8 @@ MAPSTP_FILE_LOG_PATH: Final[Path] = env(
 
 def init_logger(
     *,
-    stderr_format: Optional[str] = MAPSTP_CONSOLE_LOG_FORMAT,
-    log_path: Optional[Path] = MAPSTP_FILE_LOG_PATH,
+    stderr_format: str | None = MAPSTP_CONSOLE_LOG_FORMAT,
+    log_path: Path | None = MAPSTP_FILE_LOG_PATH,
 ) -> None:
     """Configure logger with given parameters.
 

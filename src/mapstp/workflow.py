@@ -3,7 +3,7 @@
 Use imported methods to organize other workflows in notebooks or dependant packages.
 Check the methods defined here as templates for other workflows.
 """
-from typing import List, Tuple
+from __future__ import annotations
 
 from logging import getLogger
 from pathlib import Path
@@ -16,7 +16,7 @@ from mapstp.stp_parser import parse_path
 from mapstp.tree import create_bodies_paths
 
 
-def create_path_info(materials_index: str, stp: str) -> Tuple[List[List[str]], pd.DataFrame]:
+def create_path_info(materials_index: str, stp: str) -> tuple[list[list[str]], pd.DataFrame]:
     """Join information from materials index and stp paths to table.
 
     Args:

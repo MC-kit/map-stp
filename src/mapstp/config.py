@@ -1,14 +1,14 @@
 """Configuration tools."""
 from __future__ import annotations
 
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, Callable, TypeVar
 
 from os import environ
 
 _T = TypeVar("_T")
 
 
-def env(key, converter: Optional[Callable[[str], Any]] = None, default=None):
+def env(key, converter: Callable[[str], Any] | None = None, default=None):
     """Retrieve environment variable and convert to specified type with proper diagnostics.
 
     Args:
@@ -38,7 +38,7 @@ def env(key, converter: Optional[Callable[[str], Any]] = None, default=None):
         ) from exception
 
 
-def _extend_converter(converter: Optional[Callable[[str], Any]]) -> Callable[[str], Any]:
+def _extend_converter(converter: Callable[[str], Any] | None) -> Callable[[str], Any]:
     if converter is None or converter == str:
         return _identity
 

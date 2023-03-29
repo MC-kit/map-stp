@@ -1,5 +1,7 @@
 """Extract meta information from paths given in an STP file."""
-from typing import Dict, Generator, List, Optional, Tuple
+from __future__ import annotations
+
+from typing import Generator
 
 import re
 
@@ -14,11 +16,11 @@ _META_PATTERN = re.compile(r".*\[(?P<meta>[^]]+)]")
 
 @dataclass
 class _MetaInfoCollector:
-    mnemonic: Optional[str] = None
-    factor: Optional[float] = None
-    rwcl: Optional[str] = None
+    mnemonic: str | None = None
+    factor: float | None = None
+    rwcl: str | None = None
 
-    def update(self, pars: Dict[str, str]) -> None:
+    def update(self, pars: dict[str, str]) -> None:
         """Revise meta information collected on traversing along an STP branch.
 
         Args:
@@ -43,7 +45,7 @@ class _MetaInfoCollector:
             self.rwcl = t
 
 
-def extract_path_info(paths: List[List[str]], material_index: pd.DataFrame) -> pd.DataFrame:
+def extract_path_info(paths: list[list[str]], material_index: pd.DataFrame) -> pd.DataFrame:
     """Extract meta information from `paths` and associate corresponding data with each path.
 
     Args:
@@ -62,7 +64,7 @@ def extract_path_info(paths: List[List[str]], material_index: pd.DataFrame) -> p
 
 def _records(
     paths, material_index
-) -> Generator[Tuple[Optional[int], Optional[float], Optional[float], Optional[str]], None, None]:
+) -> Generator[tuple[int | None, float | None, float | None, str | None], None, None]:
     for path in paths:
         meta_info = _extract_meta_info_from_path(path)
         if meta_info.mnemonic:
@@ -74,9 +76,9 @@ def _records(
 
 def _define_material_number_and_density(
     material_index, meta_info, path
-) -> Tuple[Optional[float], Optional[int]]:
+) -> tuple[float | None, int | None]:
     try:
-        number: Optional[int] = int(material_index.loc[meta_info.mnemonic]["number"])
+        number: int | None = int(material_index.loc[meta_info.mnemonic]["number"])
     except KeyError:
         raise KeyError(
             f"The mnemonic {meta_info.mnemonic!r} "
@@ -107,15 +109,15 @@ def _extract_meta_info_from_path(path) -> _MetaInfoCollector:
     return meta_info
 
 
-def _extract_meta_info(i: int, match: re.Match, part: str, path: List[str]) -> Dict[str, str]:
+def _extract_meta_info(i: int, match: re.Match, part: str, path: list[str]) -> dict[str, str]:
     meta = match["meta"]
     try:
-        pars: Dict[str, str] = dict(map(_create_pair, meta.split()))
+        pars: dict[str, str] = dict(map(_create_pair, meta.split()))
     except ValueError as _ex:
         raise ValueError(f"On path {path} part #{i}: {part}") from _ex
     return pars
 
 
-def _create_pair(x: str) -> Tuple[str, str]:
+def _create_pair(x: str) -> tuple[str, str]:
     a, b = x.split("-", 1)  # type: str, str
     return a, b

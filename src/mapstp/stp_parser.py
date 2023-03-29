@@ -1,6 +1,7 @@
 """The module defines methods and classes to parse STP file and represent parsing results."""
+from __future__ import annotations
 
-from typing import Dict, Iterable, List, TextIO, Tuple
+from typing import Iterable, List, TextIO, Tuple
 
 import re
 
@@ -59,7 +60,7 @@ class Product(Numbered):
         return False
 
     @classmethod
-    def from_string(cls, text: str) -> "Product":
+    def from_string(cls, text: str) -> Product:
         """Create Product from a text string.
 
         Args:
@@ -78,7 +79,7 @@ class Product(Numbered):
         name = match["name"]
         return cls(number, name)
 
-    def append(self, body: "Body") -> None:
+    def append(self, body: Body) -> None:
         """Append body to this product.
 
         Only applicable to LeafProduct.
@@ -97,7 +98,7 @@ class Product(Numbered):
 class LeafProduct(Product):
     """The class to append bodies to "Product definitions"."""
 
-    bodies: List["Body"] = field(default_factory=list)
+    bodies: list[Body] = field(default_factory=list)
 
     @property
     def is_leaf(self) -> bool:
@@ -110,7 +111,7 @@ class LeafProduct(Product):
         """
         return True
 
-    def append(self, body: "Body") -> None:
+    def append(self, body: Body) -> None:
         """Append body to this product.
 
         Only applicable to LeafProduct.
@@ -131,7 +132,7 @@ class Link(Numbered):
     dst: int
 
     @classmethod
-    def from_string(cls, text: str) -> "Link":
+    def from_string(cls, text: str) -> Link:
         """Parse STP line with NEXT_OCCURRENCE_USAGE.
 
         The line specifies a source->destination link between products.
@@ -163,7 +164,7 @@ class Body(Numbered):
     name: str
 
     @classmethod
-    def from_string(cls, text: str) -> "Body":
+    def from_string(cls, text: str) -> Body:
         """Parse MANIFOLD_SOLID_BREP line.
 
         Args:
@@ -202,7 +203,7 @@ def parse(inp: TextIO) -> ParseResult:
     Raises:
         FileError: with line number where parsing failed
     """
-    products: List[Product] = []
+    products: list[Product] = []
     links: LinksList = []
     check_header(inp)
     # normal stp has links and components,
@@ -296,7 +297,7 @@ def parse_path(inp: Path) -> ParseResult:
         return parse(_inp)
 
 
-def make_index(products: Iterable[Product]) -> Dict[int, Product]:
+def make_index(products: Iterable[Product]) -> dict[int, Product]:
     """Collect dictionary from a list of Product objects.
 
     Args:

@@ -1,4 +1,6 @@
-from typing import Dict, Iterable
+from __future__ import annotations
+
+from typing import Iterable
 
 import re
 
@@ -104,7 +106,7 @@ def test_commenting1_with_excel(runner, tmp_path, data):
 
 
 @pytest.mark.parametrize(
-    "touch_output, touch_excel, expected",
+    ["touch_output", "touch_excel", "expected"],
     [
         (False, False, 0),
         (True, False, 1),
@@ -112,7 +114,7 @@ def test_commenting1_with_excel(runner, tmp_path, data):
         (True, True, 1),
     ],
 )
-def test_override(runner, tmp_path, data, touch_output, touch_excel, expected):
+def test_override(runner, tmp_path, data, touch_output, touch_excel, expected):  # noqa: PLR0913
     output: Path = tmp_path / "test1-with-comments.i"
     excel: Path = tmp_path / "test1.xlsx"
     if touch_output:
@@ -177,7 +179,7 @@ def test_info_assignment(runner, tmp_path, data):
 
 
 @pytest.mark.parametrize(
-    "mcnp, expected",
+    ["mcnp", "expected"],
     [
         ("test-extract-info.i", 2000),
     ],
@@ -245,7 +247,7 @@ def test_run_without_excel_output_only(runner, tmp_path, data):
     assert excel.exists(), f"Excel file {excel} is not created"
 
 
-def select_cell_and_stp_lines(lines: Iterable[str]) -> Dict[int, str]:
+def select_cell_and_stp_lines(lines: Iterable[str]) -> dict[int, str]:
     selected = list(filter(lambda x: re.search(r"^\s{0,5}\d+\s+\d", x) or "$ stp: " in x, lines))
     res = {}
     for i, line in enumerate(selected):

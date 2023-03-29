@@ -15,12 +15,13 @@ flake8-use-fstring - make sure you’re using f-strings instead of % or .format(
 pep8-naming - make sure names of variables, classes, and modules look right.
 pydocstyle - docstring style checker
 
-References
+References:
 ----------
 Partially borrowed from:
 
 - https://cthoyt.com/2020/04/25/how-to-code-with-me-flake8.html
 """
+from __future__ import annotations
 
 import subprocess
 

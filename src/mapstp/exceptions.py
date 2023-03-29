@@ -1,4 +1,6 @@
 """Utility module to specify exception hierarchy for all tee package."""
+from __future__ import annotations
+
 import pandas as pd
 
 

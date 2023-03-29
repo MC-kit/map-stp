@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 from pathlib import Path
 
@@ -22,8 +22,7 @@ def materials() -> pd.DataFrame:
 
 
 @pytest.fixture(scope="session")
-def paths_ei(data) -> List[List[str]]:
+def paths_ei(data) -> list[list[str]]:
     _stp = Path(data / "test-extract-info.stp")
     products, links = parse_path(_stp)
-    paths = create_bodies_paths(products, links)
-    return paths
+    return create_bodies_paths(products, links)
