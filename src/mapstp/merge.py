@@ -103,8 +103,9 @@ class _Merger:
         self.paths_length = len(self.paths)
 
     def format_comment(self) -> str:
+        comment = f"      $ stp: {self.paths[self.current_path_idx]}"
         self.current_path_idx += 1
-        return f"      $ stp: {self.paths[self.current_path_idx]}"
+        return comment  # noqa: RET504 - false positive
 
     def merge_lines(self) -> Generator[str, None, None]:
         for line in self.mcnp_lines:

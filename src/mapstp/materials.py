@@ -136,7 +136,7 @@ def materials_spec_mapper(materials_map: dict[int, str]) -> Callable[[int], str]
             text = materials_map.get(used_number)
             if not text:
                 logger.warning(
-                    "Material M{} is not found "
+                    "Material M%s is not found "
                     "in provided materials specifications. "
                     "A dummy specification is issued to the tagged model.",
                     used_number,
