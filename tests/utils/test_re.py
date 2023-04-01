@@ -6,7 +6,7 @@ from mapstp.utils.re import CARD_PATTERN
 
 
 @pytest.mark.parametrize(
-    ["text", "expected"],
+    "text,expected",
     [
         ("CUT ...", "card"),
         ("c cut ...", "comment"),

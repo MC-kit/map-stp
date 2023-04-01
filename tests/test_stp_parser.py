@@ -18,7 +18,7 @@ def test_product():
 
 
 @pytest.mark.parametrize(
-    ["text", "expected"],
+    "text,expected",
     [
         ("#69=PRODUCT_DEFINITION('test1','test1',#136,#1);", Product(69, "test1")),
     ],
@@ -38,7 +38,7 @@ def test_exception(text):
 
 
 @pytest.mark.parametrize(
-    ["text", "expected"],
+    "text,expected",
     [
         (
             "#79=NEXT_ASSEMBLY_USAGE_OCCURRENCE('Component1','Component1','Component1',#69,#80,$);",
@@ -52,7 +52,7 @@ def test_link_from_string(text, expected):
 
 
 @pytest.mark.parametrize(
-    ["text", "expected"],
+    "text,expected",
     [
         (
             "#89=MANIFOLD_SOLID_BREP('Body2',#159);",
@@ -79,7 +79,7 @@ class _ParserTestResult:
 
 
 @pytest.mark.parametrize(
-    ["stp", "expected"],
+    "stp,expected",
     [
         (
             "test1.stp",
@@ -184,7 +184,7 @@ class _CreateBodiesPathsResult:
 
 
 @pytest.mark.parametrize(
-    ["stp", "expected"],
+    "stp,expected",
     [
         (
             "test1.stp",

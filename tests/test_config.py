@@ -22,7 +22,7 @@ def setval():
 
 
 @pytest.mark.parametrize(
-    ["env_value", "type_", "default", "expected", "msg"],
+    "env_value,type_,default,expected,msg",
     [
         (
             None,
@@ -53,7 +53,7 @@ def test_env(setval, env_value, type_, default, expected, msg):  # noqa: PLR0913
 
 
 @pytest.mark.parametrize(
-    ["env_value", "type_", "default", "exception", "msg"],
+    "env_value,type_,default,exception,msg",
     [
         ("bad", bool, None, ValueError, "'bad' is invalid value for boolean variable"),
         ("bad", int, None, ValueError, "'bad' is invalid value for int variable"),

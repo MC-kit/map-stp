@@ -13,7 +13,7 @@ def test_merger(data):
 
 
 @pytest.mark.parametrize(
-    ["number", "density", "factor", "expected"],
+    "number,density,factor,expected",
     [
         (1, 7.93, pd.NA, (1, 7.93)),
         (1, 7.93, np.NAN, (1, 7.93)),
@@ -29,7 +29,7 @@ def test_extract_number_and_density(number, density, factor, expected):
 
 
 @pytest.mark.parametrize(
-    ["number", "density", "factor", "exception"],
+    "number,density,factor,exception",
     [
         (-1, 7.93, pd.NA, m.PathInfoError),
         (1, -7.93, np.NAN, m.PathInfoError),

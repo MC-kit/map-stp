@@ -16,7 +16,7 @@ def test_load_materials_index(materials):
 
 
 @pytest.mark.parametrize(
-    ["paths", "expected", "msg"],
+    "paths,expected,msg",
     [
         (
             [["aaa [m-LH]", "bbb", "ccc0"]],
@@ -49,7 +49,7 @@ def test_extract_info(materials, paths, expected, msg):
 
 
 @pytest.mark.parametrize(
-    ["paths", "exception", "msg"],
+    "paths,exception,msg",
     [
         (
             [["aaa [m-Unknown]", "bbb", "ccc0"]],
@@ -64,7 +64,7 @@ def test_extract_info_with_missed_material(materials, paths, exception, msg):
 
 
 @pytest.mark.parametrize(
-    ["paths", "exception", "msg"],
+    "paths,exception,msg",
     [
         (
             [["aaa [m-LH]", "bbb", "ccc0"]],
@@ -81,7 +81,7 @@ def test_extract_info_with_missed_density(materials, paths, exception, msg):
 
 
 @pytest.mark.parametrize(
-    ["paths", "exception", "msg"],
+    "paths,exception,msg",
     [
         (
             [["aaa [m-LH]", "bbb", "ccc0"]],

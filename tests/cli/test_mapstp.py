@@ -106,7 +106,7 @@ def test_commenting1_with_excel(runner, tmp_path, data):
 
 
 @pytest.mark.parametrize(
-    ["touch_output", "touch_excel", "expected"],
+    "touch_output,touch_excel,expected",
     [
         (False, False, 0),
         (True, False, 1),
@@ -179,7 +179,7 @@ def test_info_assignment(runner, tmp_path, data):
 
 
 @pytest.mark.parametrize(
-    ["mcnp", "expected"],
+    "mcnp,expected",
     [
         ("test-extract-info.i", 2000),
     ],
