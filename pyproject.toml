@@ -3,10 +3,10 @@ name = "mapstp"
 version = "0.3.10a0"
 description = "Transfers meta information from STP to MCNP"
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
+license = "MIT"
 homepage = "https://github.com/MC-kit/map-stp"
 repository = "https://github.com/MC-kit/map-stp"
 # documentation = "https://mapstp.readthedocs.io
-license = "MIT"
 keywords = ["STP", "MCNP", "SuperMC", "SpaceClaim"]
 readme = "README.rst"
 packages = [
@@ -497,7 +497,7 @@ required-imports = ["from __future__ import annotations"]
 
 
 [tool.ruff.flake8-pytest-style]
-parametrize-names-type = "list"
+parametrize-names-type = "csv"
 
 [tool.ruff.pydocstyle]
 # Use Google-style docstrings.
