@@ -1,14 +1,16 @@
 """The module defines methods and classes to parse STP file and represent parsing results."""
 from __future__ import annotations
 
-from typing import Iterable, List, TextIO, Tuple
+from typing import TYPE_CHECKING, Iterable, List, TextIO, Tuple
 
 import re
 
 from dataclasses import dataclass, field
-from pathlib import Path
 
 from mapstp.exceptions import FileError, STPParserError
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 # Hint: check patterns on https://pythex.org/
 
@@ -18,7 +20,7 @@ _NAME = r"'(?P<name>(?:''|[^'])+)'"
 _SELECT_PATTERN = re.compile(
     _NUMBERED + r"(?P<solid>MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)|"
     r"(?P<link>NEXT_ASSEMBLY_USAGE)|"
-    r"(?P<product>PRODUCT_DEFINITION\()"
+    r"(?P<product>PRODUCT_DEFINITION\()",
 )
 
 _PRODUCT_PATTERN = re.compile(_NUMBERED + r"PRODUCT_DEFINITION\(" + _NAME + r",.*")
@@ -26,10 +28,10 @@ _LINK_PATTERN = re.compile(
     _NUMBERED
     + r"NEXT_ASSEMBLY_USAGE_OCCURRENCE\("
     + _NAME
-    + r",.*#(?P<src>\d+),#(?P<dst>\d+),\$\);"
+    + r",.*#(?P<src>\d+),#(?P<dst>\d+),\$\);",
 )
 _BODY_PATTERN = re.compile(
-    _NUMBERED + r"(?:MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)\(" + _NAME + r",.*\);"
+    _NUMBERED + r"(?:MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)\(" + _NAME + r",.*\);",
 )
 
 
@@ -214,7 +216,11 @@ def parse(inp: TextIO) -> ParseResult:
         if match:
             try:
                 may_have_components = _process_line(
-                    match, line, links, may_have_components, products
+                    match,
+                    line,
+                    links,
+                    may_have_components,
+                    products,
                 )
             except STPParserError as exception:
                 raise FileError(f"Error in line {line_no_minus_3 + 3}") from exception
@@ -271,14 +277,14 @@ def check_header(inp: TextIO) -> None:
     if line != _VALID_FIRST_LINE:
         raise FileError(
             "Not a valid STP file: the expected first row "
-            f"{_VALID_FIRST_LINE[:-1]}, actual {line}"
+            f"{_VALID_FIRST_LINE[:-1]}, actual {line}",
         )
     next(inp)
     line = next(inp)
     if line != _VALID_THIRD_LINE:
         raise FileError(
             "STP protocol is not AP214, the expected third row "
-            f"{_VALID_THIRD_LINE}, actual {line}"
+            f"{_VALID_THIRD_LINE}, actual {line}",
         )
 
 

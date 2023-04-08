@@ -49,7 +49,7 @@ def setval():
 def test_env(setval, env_value, type_, default, expected, msg):  # noqa: PLR0913
     setval(env_value)
     actual = env(TEST_VALUE, type_, default)
-    assert actual is None and expected is None or actual == expected
+    assert actual is None and expected is None or actual == expected, msg
 
 
 @pytest.mark.parametrize(
@@ -67,7 +67,7 @@ def test_env(setval, env_value, type_, default, expected, msg):  # noqa: PLR0913
         ),
     ],
 )
-def test_env_bad_paths(setval, env_value, type_, default, exception, msg):  # noqa: PLR0913
+def test_env_bad_paths(setval, env_value, type_, default, exception, msg):  # noqa: PLR0913, ARG001
     setval(env_value)
     with pytest.raises(exception):
         env(TEST_VALUE, type_, default)

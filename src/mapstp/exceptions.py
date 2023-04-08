@@ -1,7 +1,10 @@
 """Utility module to specify exception hierarchy for all tee package."""
 from __future__ import annotations
 
-import pandas as pd
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 class MyError(ValueError):

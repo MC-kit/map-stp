@@ -63,7 +63,8 @@ def extract_path_info(paths: list[list[str]], material_index: pd.DataFrame) -> p
 
 
 def _records(
-    paths, material_index
+    paths,
+    material_index,
 ) -> Generator[tuple[int | None, float | None, float | None, str | None], None, None]:
     for path in paths:
         meta_info = _extract_meta_info_from_path(path)
@@ -75,7 +76,9 @@ def _records(
 
 
 def _define_material_number_and_density(
-    material_index, meta_info, path
+    material_index,
+    meta_info,
+    path,
 ) -> tuple[float | None, int | None]:
     try:
         number: int | None = int(material_index.loc[meta_info.mnemonic]["number"])
@@ -83,18 +86,18 @@ def _define_material_number_and_density(
         raise KeyError(
             f"The mnemonic {meta_info.mnemonic!r} "
             "is not specified in the material index. "
-            f"See the STP path: {'/'.join(path)}"
+            f"See the STP path: {'/'.join(path)}",
         ) from None
     density = material_index.loc[meta_info.mnemonic]["density"]
     if np.isnan(density):
         raise ValueError(
             f"The density for mnemonic {meta_info.mnemonic!r} "
-            "is not specified in the material index."
+            "is not specified in the material index.",
         )
     if density < 0.0:
         raise ValueError(
             f"The density for mnemonic {meta_info.mnemonic!r} "
-            "in the material index is to be positive."
+            "in the material index is to be positive.",
         )
     return density, number
 

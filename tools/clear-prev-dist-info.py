@@ -55,7 +55,7 @@ def get_project_name() -> str:
     if pyproject_path is None:
         raise OSError(
             "Illegal directory: cannot find file pyproject.toml "
-            f"from current directory: {Path.cwd()}"
+            f"from current directory: {Path.cwd()}",
         )
     pyproject = tomli.loads(pyproject_path.read_text())
     name = pyproject["tool"]["poetry"]["name"].replace("-", "_")

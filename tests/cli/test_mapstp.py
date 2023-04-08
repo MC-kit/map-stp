@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from typing import Iterable
+from typing import TYPE_CHECKING, Iterable
 
 import re
-
-from pathlib import Path
 
 from numpy.testing import assert_array_equal
 
@@ -15,6 +13,9 @@ from mapstp.cli.runner import __summary__, __version__, mapstp
 from mapstp.materials import load_materials_map
 from mapstp.utils.io import find_first_cell_number, read_mcnp_sections
 from mapstp.utils.re import CELL_START_PATTERN, MATERIAL_PATTERN
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 # noinspection PyTypeChecker
@@ -68,7 +69,7 @@ def test_commenting1(runner, tmp_path, data):
     assert len(lines) == 3
 
 
-def test_commenting1_to_stdout(runner, tmp_path, data):
+def test_commenting1_to_stdout(runner, data):
     stp = data / "test1.stp"
     mcnp = data / "test1.i"
     result = runner.invoke(

@@ -8,7 +8,7 @@ from os import environ
 _T = TypeVar("_T")
 
 
-def env(key, converter: Callable[[str], Any] | None = None, default=None):
+def env(key, converter: Callable[[str], Any] | None = None, default=None):  # noqa: ANN201
     """Retrieve environment variable and convert to specified type with proper diagnostics.
 
     Args:
@@ -34,7 +34,7 @@ def env(key, converter: Callable[[str], Any] | None = None, default=None):
     except ValueError as exception:
         raise ValueError(
             f"Invalid environment variable {key!r}: "
-            f"conversion {converter.__name__}({inp}) failed."
+            f"conversion {converter.__name__}({inp}) failed.",
         ) from exception
 
 

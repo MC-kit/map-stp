@@ -24,13 +24,13 @@ def test_path_resolver(package, resource, expected) -> None:
 
 
 @pytest.mark.parametrize(
-    "package,resource,expected",
+    "package,resource",
     [
-        ("tests", "data/not_existing", "tests/data/not_existing"),
-        ("mapstp", "data/not_existing", "mapstp/data/not_existing"),
+        ("tests", "data/not_existing"),
+        ("mckit_nuclides", "data/not_existing"),
     ],
 )
-def test_path_resolver_when_resource_doesnt_exist(package, resource, expected) -> None:
+def test_path_resolver_when_resource_doesnt_exist(package, resource) -> None:
     resolver = path_resolver(package)
     actual = resolver(resource)
     assert not Path(actual).exists(), f"The resource {resource!r} should not be available"

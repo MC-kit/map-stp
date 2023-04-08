@@ -32,7 +32,7 @@ def can_override(path: Path, override: bool) -> Path:
     if not override and path.exists():
         raise FileExistsError(
             f"File {path} already exists."
-            "Consider to use '--override' command line option or remove the file."
+            "Consider to use '--override' command line option or remove the file.",
         )
     return path
 
@@ -111,13 +111,14 @@ def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
         MCNPSections: - the text sections
     """
     sections = MCNP_SECTIONS_SEPARATOR_PATTERN.split(
-        mcnp_path.read_text(encoding="cp1251"), maxsplit=3
+        mcnp_path.read_text(encoding="cp1251"),
+        maxsplit=3,
     )
     sections_len = len(sections)
     cells = sections[0].strip()
-    surfaces = sections[1].strip() if 2 <= sections_len else None  # noqa: PLR2004
-    cards = sections[2].strip() if 3 <= sections_len else None  # noqa: PLR2004
-    if 4 <= sections_len:  # noqa: PLR2004
+    surfaces = sections[1].strip() if sections_len >= 2 else None
+    cards = sections[2].strip() if sections_len >= 3 else None
+    if sections_len >= 4:
         remainder: str | None = sections[3].strip()
         if not remainder:
             remainder = None

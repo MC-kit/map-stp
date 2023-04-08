@@ -42,7 +42,11 @@ importlib-resources = {version = ">=5.12.0", python = "3.8"}
 loguru = ">=0.6.0"
 numpy = ">=1.24.2"
 openpyxl = ">=3.0.9"
-pandas = ">=1.4.1"
+pandas = [
+    { version = ">=2.0.0", markers = "sys_platform != 'win32'" },
+    {version = "^1.5.3", markers = "sys_platform == 'win32'" },
+]
+# wrong wheels for newer version
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
@@ -56,8 +60,9 @@ tomli = { version = ">=2.0.1", python="<3.11" }
 # TODO dvp: apply yappi: https://coderzcolumn.com/tutorials/python/yappi-yet-another-python-profiler
 #yappi = ">=1.3.2"
 
-[tool.poetry.group.safety.dependencies]
-safety = ">=2.3.5"
+# Safety uses obsolete packaging module.
+# [tool.poetry.group.safety.dependencies]
+# safety = ">=2.3.5"
 
 [tool.poetry.group.pre_commit.dependencies]
 pre-commit = ">=2.15.0"
@@ -72,10 +77,12 @@ isort = ">=5.9.3"
 pycln = {version = "^2.1.1", extras = ["click"]}
 
 [tool.poetry.group.test.dependencies]
-pytest = ">=7.0.1"
+pytest = ">=7.1"
 pytest-cache = ">=1.0"
-pytest-cov = ">=3.0.0"
-pytest-mock = ">=3.6.1"
+pytest-cov = ">=4.0"
+pytest-mock = ">=3.9"
+pytest-randomly = ">=3.12"
+pytest-xdist = { version = ">=3.1", extras = ["psutil"] }
 coverage = { version = ">=6.1.2", extras = ["toml"] }
 
 [tool.poetry.group.coverage.dependencies]
@@ -85,10 +92,10 @@ coverage = { version = ">=6.1.2", extras = ["toml"] }
 xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 
 [tool.poetry.group.typeguard.dependencies]
-typeguard = ">=2.13.0"
-
+typeguard = ">=2.13.3"
+# typeguard = ">=3.0.2"  - pygls, which is required by ruff-lsp, doesn't allow newer version
 [tool.poetry.group.mypy.dependencies]
-mypy = ">=0.931"
+mypy = ">=1.2.0"
 pep8-naming = ">=0.12.1"
 types-setuptools = ">=57.4.2"
 numpy = ">=1.23.2"
@@ -150,7 +157,7 @@ ruff = ">=0.0.259"
 [tool.isort]
 atomic = true
 ensure_newline_before_comments = true
-known_first_party = "mckit_nuclides"
+known_first_party = "src"
 known_third_party = "mpl_toolkits,matplotlib,numpy,scipy"
 known_typing = "typing,types,typing_extensions,mypy,mypy_extensions"
 sections = "FUTURE,TYPING,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
@@ -252,6 +259,7 @@ exclude_lines = [
     # Don't complain if non-runnable code isn't run:
     "if 0:",
     "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
 ]
 ignore_errors = true
 sort = "Cover"
@@ -365,31 +373,54 @@ deprecated-modules=["six"]
 [tool.ruff]
 target-version = "py38"
 #see full list: https://beta.ruff.rs/docs/rules/#pyflakes-f
+#or run 'ruff linter' to see a brief list
 select= [
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "I",
-  "N",
-  "PIE",
-  "PT",
-  "PL",
-  "PLC",
-  "PLE",
-  "PLR",
-  "PLW",
-  "PYI",
-  "Q",
-  "R",
-  "S",
-  "T",
-  "U",
-  "W",
-  "YTT"
+    "A", # flake8-builtins
+    "ANN", # flake8-annotations
+    "ARG", # flake8-unused-arguments
+    "B", # flake8-bugbear
+    "BLE", # flake8-blind-except
+    "C4", # flake8-comprehensions
+    "C90", # mccabe
+    "COM", # flake8-commas
+    "DJ", # flake8-django
+    "D", # pydocstyle
+    "DTZ", # flake8-datetimez
+    "EM", # flake8-errmsg
+    "ERA", # eradicate
+    "E", # pycodestyle
+    "EXE", # flake8-executable
+    "FBT", # flake8-boolean-trap
+    "F", # Pyflakes
+    "G", # flake8-logging-format
+    "ICN", # flake8-import-conventions
+    "I", # isort
+    "INP", # flake8-no-pep420
+    "ISC", # flake8-implicit-str-concat
+    "N", # pep8-naming
+    "NPY", # NumPy-specific rules
+    "PD", # pandas-vet
+    "PGH", # pygrep-hooks
+    "PIE", # flake8-pie
+    "PL", # Pylint
+    "PT", # flake8-pytest-style
+    "PTH", # flake8-use-pathlib
+    "PYI", # flake8-pyi
+    "Q", # flake8-quotes
+    "RET", # flake8-return
+    "RSE", # flake8-raise
+    "RUF", # Ruff-specific rules
+    "S", # flake8-bandit
+    "SIM", # flake8-simplify
+    "SLF", # flake8-self
+    "T10", # flake8-debugger
+    "T20", # flake8-print
+    "TCH", # flake8-type-checking
+    "TID", # flake8-tidy-imports
+    "TRY", # tryceratops
+    "UP", # pyupgrade
+    "W", # pycodestyle 2
+    "YTT", # flake8-2020
 ]
 
 # Ignore rules that currently fail on the codebase
@@ -420,7 +451,10 @@ ignore = [
     # "E722",  # Do not use bare `except`
     # "E731",  # Do not assign a `lambda` expression, use a `def`
     # "E741",  # Ambiguous variable name: `<VARIABLE>`
-    # "E743",  # Ambiguous function name: `<FUNCTION>`
+    # "E743",  # Ambiguous function name: `<FUNCTION>
+
+    "EM102",   # Exception must not use an f-string literal, assign to variable first
+
     # "F401",  # `<TYPE>` imported but unused
     # "F403",  # `from <MODULE> import *` used; unable to detect undefined names
     # "F405",  # `<TYPE>` may be undefined, or defined from star imports: `<MODULE>`
@@ -430,6 +464,8 @@ ignore = [
     # "F821",  # Undefined name `VARIABLE`
     # "F823",  # Local variable `VARIABLE` referenced before assignment
     # "F841",  # Local variable `VARIABLE` is assigned to but never used
+
+    "FBT001",  # Boolean positional arg in function definition (TODO!)
 
     "I001",  # import order is controlled by isort
     # "I101",
@@ -442,8 +478,11 @@ ignore = [
     # "PD009", # And we use iat()
     "PLE1205", # logging-too-many-args - with use logure with '{' style of placeholders
     "PLR2004", # Magic value in comparison - forces to convert all 0.0 to global constants
-    # "W503",  # Line break before binary operator: for compatibility with black settings
     "PT019",   # Fixture `_bin` without value is injected as parameter (false positive?)
+
+    "TRY003",  #  Avoid specifying long messages outside the exception class
+
+    # "W503",  # Line break before binary operator: for compatibility with black settings
 ]
 
 # Same as Black.
@@ -474,14 +513,10 @@ exclude = [
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["E402"]
-"src/xpypact/fluxes.py" = ["F811"]
 "benchmarks/*" = ["S101"]
 "noxfile.py" = ["ANN"]
 "tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104",  "PLR2004", "S101"]
-"src/xpypact/inventory.py" = ["F811"]
-"src/xpypact/data_arrays.py" = ["ANN401", "PD011"]
-"src/xpypact/utils/resource.py" = ["ANN202"]
-"tools/*" = ["T201"]
+"tools/*" = ["T201", "INP001"]
 
 [tool.ruff.mccabe]
 # Unlike Flake8, default to a complexity level of 10.

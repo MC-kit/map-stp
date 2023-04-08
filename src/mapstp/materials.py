@@ -4,7 +4,7 @@ The map associates material number to its MCNP specification text.
 """
 from __future__ import annotations
 
-from typing import Callable, Dict, Generator, Iterable, TextIO
+from typing import TYPE_CHECKING, Callable, Dict, Generator, Iterable, TextIO
 
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -13,9 +13,10 @@ from pathlib import Path
 
 import numpy as np
 
-import pandas as pd
-
 from mapstp.utils.re import CARD_PATTERN, MATERIAL_PATTERN
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 MaterialsDict = Dict[int, str]
 """Mapping material number -> material MCNP text."""
@@ -28,7 +29,8 @@ class _Loader:
     stream: TextIO
     material_no: int = field(default=-1, init=False)
     materials_dict: dict[int, list[str]] = field(
-        default_factory=lambda: defaultdict(list), init=False
+        default_factory=lambda: defaultdict(list),
+        init=False,
     )
 
     def __post_init__(self) -> None:
@@ -37,7 +39,7 @@ class _Loader:
 
     @property
     def _in_material_card(self) -> bool:
-        return 0 < self.material_no
+        return self.material_no > 0
 
     def _process_line(self, line) -> None:
         if self._in_material_card:
@@ -51,7 +53,7 @@ class _Loader:
             self._check_if_material_line(line)
 
     def _append(self, line: str) -> None:
-        if 0 < self.material_no:
+        if self.material_no > 0:
             self.materials_dict[self.material_no].append(line)
 
     def _check_if_material_line(self, line: str) -> bool:
@@ -132,7 +134,7 @@ def materials_spec_mapper(materials_map: dict[int, str]) -> Callable[[int], str]
     """
 
     def _func(used_number: int) -> str:
-        if 0 < used_number:
+        if used_number > 0:
             text = materials_map.get(used_number)
             if not text:
                 logger.warning(

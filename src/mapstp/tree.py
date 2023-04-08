@@ -1,12 +1,15 @@
 """Data structures and algorithms to store and process STP nodes and their links."""
 from __future__ import annotations
 
-from typing import Iterable, Iterator, cast
+from typing import TYPE_CHECKING, Iterable, Iterator, cast
 
 from dataclasses import dataclass
 
 from mapstp.exceptions import STPParserError
-from mapstp.stp_parser import LeafProduct, LinksList, Product, make_index
+from mapstp.stp_parser import LeafProduct, make_index
+
+if TYPE_CHECKING:
+    from mapstp.stp_parser import LinksList, Product
 
 
 @dataclass
@@ -72,7 +75,7 @@ class Tree:
                 #           Products and LeafProducts to avoid cast
                 for b in cast(LeafProduct, product).bodies:
                     bodies_paths.append(
-                        path + [b.name]
+                        [*path, b.name],
                     )  # TODO dvp: add transliteration for Russian names
         return bodies_paths
 
@@ -93,7 +96,7 @@ class Tree:
             self._create_node(product, parent)
         else:
             if node.parent is not None:  # pragma: no cover
-                raise STPParserError()
+                raise STPParserError
             node.parent = parent
 
     def _create_node(self, product: Product, parent: Node | None = None) -> Node:
@@ -132,7 +135,7 @@ def create_bodies_paths(products: Iterable[Product], links: LinksList) -> list[l
 
     ps = list(products)
 
-    if 1 != len(ps):  # pragma: no cover
+    if len(ps) != 1:  # pragma: no cover
         msg = "Only one product is expected for `simple` stp"
         raise ValueError(msg)
 

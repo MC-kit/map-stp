@@ -59,6 +59,10 @@ exclude=
     *.egg-info
     .cache
     .eggs
+    notebooks/dvp/*.py
+    .nox
+    .idea
+
 per-file-ignores =
     noxfile.py:ANN,DAR101
     tools/clear-prev-dist-info.py:S404,S603,S607

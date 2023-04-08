@@ -152,7 +152,8 @@ def mapstp(  # noqa: PLR0913
         mcnp: input MCNP model - to be tagged in output
     """
     if not (mcnp or excel):
-        raise click.UsageError("Nor `excel`, neither `mcnp` parameter is specified - nothing to do")
+        msg = "Nor `excel`, neither `mcnp` parameter is specified - nothing to do"
+        raise click.UsageError(msg)
     init_logger()
     logger.info("Running mapstp {}", __version__)
     cfg = ctx.ensure_object(Config)

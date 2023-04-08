@@ -22,7 +22,8 @@ def test_merger(data):
 )
 def test_extract_number_and_density(number, density, factor, expected):
     ndf_table = pd.DataFrame.from_records(
-        data=[(number, density, factor)], columns=["number", "density", "factor"]
+        data=[(number, density, factor)],
+        columns=["number", "density", "factor"],
     )
     actual = m.extract_number_and_density(0, ndf_table)
     assert expected == actual
@@ -38,7 +39,8 @@ def test_extract_number_and_density(number, density, factor, expected):
 )
 def test_extract_number_and_density_bad_path(number, density, factor, exception):
     ndf_table = pd.DataFrame.from_records(
-        data=[(number, density, factor)], columns=["number", "density", "factor"]
+        data=[(number, density, factor)],
+        columns=["number", "density", "factor"],
     )
     with pytest.raises(exception):
         m.extract_number_and_density(0, ndf_table)

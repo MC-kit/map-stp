@@ -6,13 +6,12 @@ if specified in STP paths.
 """
 from __future__ import annotations
 
-from typing import Generator, Iterable, TextIO
+from typing import TYPE_CHECKING, Generator, Iterable, TextIO
 
 import math
 
 from dataclasses import dataclass, field
 from logging import getLogger
-from pathlib import Path
 
 import pandas as pd
 
@@ -20,6 +19,9 @@ from mapstp.exceptions import PathInfoError
 from mapstp.materials import drop_material_cards
 from mapstp.utils.io import read_mcnp_sections
 from mapstp.utils.re import CELL_START_PATTERN
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 logger = getLogger()
 
@@ -60,14 +62,16 @@ def extract_number_and_density(row: int, path_info: pd.DataFrame) -> tuple[int, 
         return None  # void space
 
     _validate(
-        is_defined(density), f"The `density` value is not defined for material number {number}."
+        is_defined(density),
+        f"The `density` value is not defined for material number {number}.",
     )
-    _validate(0 < number, "The values in `number` column are to be positive.")  # noqa: PLR2004
-    _validate(0.0 <= density, "The values in `density` column cannot be negative.")  # noqa: PLR2004
+    _validate(number > 0, "The values in `number` column are to be positive.")
+    _validate(density >= 0.0, "The values in `density` column cannot be negative.")
 
     if is_defined(factor):
         _validate(
-            0.0 <= factor, "The values in `factor` column cannot be negative."  # noqa: PLR2004
+            factor >= 0.0,
+            "The values in `factor` column cannot be negative.",
         )
         density *= factor
 
@@ -75,9 +79,11 @@ def extract_number_and_density(row: int, path_info: pd.DataFrame) -> tuple[int, 
 
 
 def _correct_first_line(
-    _line: str, match_end: int, current_path_idx: int, path_info: pd.DataFrame
+    _line: str,
+    match_end: int,
+    current_path_idx: int,
+    path_info: pd.DataFrame,
 ) -> str:
-
     nd = extract_number_and_density(current_path_idx, path_info)
 
     if nd is not None:
@@ -103,9 +109,9 @@ class _Merger:
         self.paths_length = len(self.paths)
 
     def format_comment(self) -> str:
-        comment = f"      $ stp: {self.paths[self.current_path_idx]}"
+        i = self.current_path_idx
         self.current_path_idx += 1
-        return comment  # noqa: RET504 - false positive
+        return f"      $ stp: {self.paths[i]}"
 
     def merge_lines(self) -> Generator[str, None, None]:
         for line in self.mcnp_lines:
@@ -118,7 +124,7 @@ class _Merger:
             yield self.format_comment()
         if self.current_path_idx != self.paths_length:
             logger.warning(
-                "Only {} cells merged, " "STP specifies {} bodies.",
+                "Only {} cells merged, STP specifies {} bodies.",
                 self.current_path_idx,
                 self.paths_length,
             )
@@ -199,19 +205,25 @@ def _print_other_sections(mcnp_sections, output, used_materials_text) -> None:
         cards = mcnp_sections.cards
         if cards:
             _print_control_cards_with_used_materials(
-                cards, mcnp_sections, output, used_materials_text
+                cards,
+                mcnp_sections,
+                output,
+                used_materials_text,
             )
         else:
             print(used_materials_text, file=output)
     else:
         logger.warning(
             "There are no surfaces in model, "
-            "skipping surfaces and data cards including materials"
+            "skipping surfaces and data cards including materials",
         )
 
 
 def _print_control_cards_with_used_materials(
-    cards, mcnp_sections, output, used_materials_text
+    cards,
+    mcnp_sections,
+    output,
+    used_materials_text,
 ) -> None:
     if used_materials_text:
         used_materials_text = used_materials_text.strip()
