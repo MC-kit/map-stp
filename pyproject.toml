@@ -42,11 +42,7 @@ importlib-resources = {version = ">=5.12.0", python = "3.8"}
 loguru = ">=0.6.0"
 numpy = ">=1.24.2"
 openpyxl = ">=3.0.9"
-pandas = [
-    { version = ">=2.0.0", markers = "sys_platform != 'win32'" },
-    {version = "^1.5.3", markers = "sys_platform == 'win32'" },
-]
-# wrong wheels for newer version
+pandas = ">=2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
@@ -59,10 +55,6 @@ tomli = { version = ">=2.0.1", python="<3.11" }
 #[tool.poetry.group.profile.dependencies]
 # TODO dvp: apply yappi: https://coderzcolumn.com/tutorials/python/yappi-yet-another-python-profiler
 #yappi = ">=1.3.2"
-
-# Safety uses obsolete packaging module.
-# [tool.poetry.group.safety.dependencies]
-# safety = ">=2.3.5"
 
 [tool.poetry.group.pre_commit.dependencies]
 pre-commit = ">=2.15.0"
@@ -94,6 +86,7 @@ xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 [tool.poetry.group.typeguard.dependencies]
 typeguard = ">=2.13.3"
 # typeguard = ">=3.0.2"  - pygls, which is required by ruff-lsp, doesn't allow newer version
+
 [tool.poetry.group.mypy.dependencies]
 mypy = ">=1.2.0"
 pep8-naming = ">=0.12.1"
@@ -269,6 +262,7 @@ sort = "Cover"
 # See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
 #     https://dev.to/tusharsadhwani/the-comprehensive-guide-to-mypy-561m
 [tool.mypy]
+python_version = "3.11"
 # strict = true     # TODO dvp: uncomment this to get strict control
 follow_imports = "silent"
 # namespace_packages = true
@@ -298,8 +292,8 @@ module = [
     "pandas",
     "pytest",
     "scipy.constants",
+    "tomli",
     "tomllib",
-    "tomli"
 ]
 ignore_missing_imports = true
 
@@ -431,10 +425,25 @@ ignore = [
     "ANN102", # ANN102 Missing type annotation for cls in classmethod
     "ANN202", # ANN202 Missing return type annotation for protected function: ... dispatching
     "ANN204", # ANN204 Missing return type annotation for special method
+
+    # "ARG001", # Unused function argument: `expected`
+
     "B905",   # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.8, 3.9
+
     # "C812",   # C812 Missing trailing comma: black compatibility
+    # "C901",   # too complex - ...
+
+    # "D100",   # Missing docstring in public module
+    # "D101",   # Missing docstring in public class
+    # "D102",   # Missing docstring in public method
+    # "D103",   # Missing docstring in public function
     "D105",   # D105 Missing docstring in magic method (__hash__, __eq__)
+    # "D104",   # Missing docstring in public package
+    # "D106",   # Missing docstring in public nested class
     "D107",   # Missing docstring in __init__
+    # "D417",   # Missing argument descriptions in the docstring: `config`, `ebins`, - TODO
+
+
     # "E203",   # E203: Whitespace before ‘:'
     # "E401",  # Multiple imports on one line
     "E402",  # Module level import not at top of file
@@ -451,9 +460,12 @@ ignore = [
     # "E722",  # Do not use bare `except`
     # "E731",  # Do not assign a `lambda` expression, use a `def`
     # "E741",  # Ambiguous variable name: `<VARIABLE>`
-    # "E743",  # Ambiguous function name: `<FUNCTION>
+    # "E743",  # Ambiguous function name: `<FUNCTION>`
 
     "EM102",   # Exception must not use an f-string literal, assign to variable first
+
+    # "N803",    # Argument name `R` should be lowercase
+    # "N806",    # Variable `D` in function should be lowercase
 
     # "F401",  # `<TYPE>` imported but unused
     # "F403",  # `from <MODULE> import *` used; unable to detect undefined names
@@ -471,15 +483,25 @@ ignore = [
     # "I101",
     # "I201",
     # "I202",
+    # "INP001",  # File `tools/clear-prev-dist-info.py` is part of an implicit namespace package.
 
 # ignore some questionable pandas-vet warnings
     # "PD005", # use operator instead of method
     # "PD008", # We use at() to access single values
     # "PD009", # And we use iat()
+
     "PLE1205", # logging-too-many-args - with use logure with '{' style of placeholders
-    "PLR2004", # Magic value in comparison - forces to convert all 0.0 to global constants
+
+    # "PLR0912", # Too many branches (15 > 12)
+    # "PLR0913", # Too many arguments to function call (6 > 5)
+    # "PLR0915", # Too many statements (65 > 50)
+    "PLR2004", # magic number - don't want declare 0.0 as constant
     "PT019",   # Fixture `_bin` without value is injected as parameter (false positive?)
 
+    # "S101",    # Use of `assert` detected
+    # "S301",    # `pickle` and modules that wrap... - TODO - use sql instead of pickle
+
+    # "TCH001",  # Move application import `mckit.utils.named` into a type-checking block
     "TRY003",  #  Avoid specifying long messages outside the exception class
 
     # "W503",  # Line break before binary operator: for compatibility with black settings
