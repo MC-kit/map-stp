@@ -27,7 +27,7 @@ def test_path_resolver(package, resource, expected) -> None:
     "package,resource",
     [
         ("tests", "data/not_existing"),
-        ("mckit_nuclides", "data/not_existing"),
+        ("mapstp", "data/not_existing"),
     ],
 )
 def test_path_resolver_when_resource_doesnt_exist(package, resource) -> None:
