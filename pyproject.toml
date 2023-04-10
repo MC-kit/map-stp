@@ -478,8 +478,10 @@ ignore = [
     # "F841",  # Local variable `VARIABLE` is assigned to but never used
 
     "FBT001",  # Boolean positional arg in function definition (TODO!)
+    # "FBT002",  # Boolean default value in function definition (TODO!)
+    # "FBT003",  # Boolean positional value in function call
 
-    "I001",  # import order is controlled by isort
+    "I001",    # import order is controlled by isort
     # "I101",
     # "I201",
     # "I202",
@@ -501,7 +503,10 @@ ignore = [
     # "S101",    # Use of `assert` detected
     # "S301",    # `pickle` and modules that wrap... - TODO - use sql instead of pickle
 
+    # "SLF001",  # Private member accessed: `_geometry_spec`
+
     # "TCH001",  # Move application import `mckit.utils.named` into a type-checking block
+
     "TRY003",  #  Avoid specifying long messages outside the exception class
 
     # "W503",  # Line break before binary operator: for compatibility with black settings
