@@ -74,7 +74,6 @@ pytest-cache = ">=1.0"
 pytest-cov = ">=4.0"
 pytest-mock = ">=3.9"
 pytest-randomly = ">=3.12"
-pytest-xdist = { version = ">=3.1", extras = ["psutil"] }
 coverage = { version = ">=6.1.2", extras = ["toml"] }
 
 [tool.poetry.group.coverage.dependencies]
