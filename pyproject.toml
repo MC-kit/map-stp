@@ -216,7 +216,7 @@ filterwarnings = [
     "ignore:.*not typechecking multipledispatch.dispatcher.*UserWarning",
     'ignore:.*io.FileIO \[closed\]',
     'ignore:.*Deprecated call to `pkg_resources.declare_namespace',
-    'ignore:.*DeprecationWarning.*Implicit None on return values'
+    'ignore:.*Implicit None on return values:DeprecationWarning'
 ]
 log_format = "%(asctime)s %(levelname)s %(message)s"
 log_date_format = "%Y-%m-%d %H:%M:%S"
@@ -463,6 +463,7 @@ ignore = [
     # "E741",  # Ambiguous variable name: `<VARIABLE>`
     # "E743",  # Ambiguous function name: `<FUNCTION>`
 
+    # "EM101",   # Exception must not use a string literal, assign to variable first
     "EM102",   # Exception must not use an f-string literal, assign to variable first
 
     # "N803",    # Argument name `R` should be lowercase
@@ -546,7 +547,7 @@ exclude = [
 "benchmarks/*" = ["S101"]
 "noxfile.py" = ["ANN"]
 "tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104",  "PLR2004", "S101"]
-"tools/*" = ["T201", "INP001"]
+"tools/*" = ["T201", "INP001", "S603", "S607"]
 
 [tool.ruff.mccabe]
 # Unlike Flake8, default to a complexity level of 10.

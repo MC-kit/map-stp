@@ -36,7 +36,7 @@ jobs:
       !contains(github.event.head_commit.message, '[skip_ci]')
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3.5.0
+        uses: actions/checkout@v3.5.2
 
       - name: Set up Python 3.10  # on 3.11 pip install in unstable: "canonicalize" fails occasionally
         uses: actions/setup-python@v4.5.0
@@ -81,7 +81,7 @@ jobs:
     needs: lint
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3.5.0
+        uses: actions/checkout@v3.5.2
         with:
           fetch-depth: 1
 
@@ -133,7 +133,7 @@ jobs:
     steps:
 
       - name: Checkout repository
-        uses: actions/checkout@v3.5.0
+        uses: actions/checkout@v3.5.2
         with:
           fetch-depth: 1
 
@@ -183,7 +183,7 @@ jobs:
     steps:
 
       - name: Check out the repository
-        uses: actions/checkout@v3.5.0
+        uses: actions/checkout@v3.5.2
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v4.5.0
@@ -230,4 +230,4 @@ jobs:
           nox --force-color --session=coverage -- xml
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v3.1.1
+        uses: codecov/codecov-action@v3.1.2
