@@ -54,7 +54,6 @@ exclude=
     wrk
     build
     dist
-    tools/install-poetry.py
     *.pyc
     *.egg-info
     .cache
