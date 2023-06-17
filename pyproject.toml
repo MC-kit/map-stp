@@ -59,7 +59,7 @@ tomli = { version = ">=2.0.1", python="<3.11" }
 [tool.poetry.group.pre_commit.dependencies]
 pre-commit = ">=2.15.0"
 rstcheck = ">=3.3.1"
-pydocstringformatter = "^0.7.3"
+pydocstringformatter = ">=0.7.3"
 
 [tool.poetry.group.black.dependencies]
 black = ">=22.8.0"  #TODO dvp: update with safety and packaging
@@ -300,7 +300,7 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = [
     "tomllib",
-    "tomli"
+    "tomli",
 ]
 allow_redefinition = true
 disable_error_code = "no-redef"
@@ -322,33 +322,6 @@ context=5
 include = ["src"]
 experimental = true
 
-[tool.pycln]
-path = "src"
-exclude = '''
-(
-    \.egg-info
-  | \.eggs
-  | \.git
-  | \.mypy_cache
-  | \.pytest_cache
-  | \.nox
-  | \.venv
-  | \.idea
-  | _build
-  | 3rd-party
-  | build
-  | build_configs
-  | data
-  | dist
-  | notebooks
-  | htmlcov
-  | wrk
-  | [Pp]arser
-  | tab\.py
-)
-'''
-#silence = true
-
 
 [tool.pydocstringformatter]
 write = true
@@ -363,6 +336,11 @@ summary-quotes-same-line = true
 good-names-rgxs=["."]  # a single character variable is okay
 logging-format-style="new"   # use {} in logging messages
 deprecated-modules=["six"]
+extension-pkg-allow-list=["duckdb"]
+disable=[
+    "wrong-import-order"  # this is `isort` responsibility
+]
+
 
 [tool.ruff]
 target-version = "py38"
@@ -384,7 +362,7 @@ select= [
     "ERA", # eradicate
     "E", # pycodestyle
     "EXE", # flake8-executable
-    "FBT", # flake8-boolean-trap
+    "FBT", # flake8-boolean-trap  https://adamj.eu/tech/2021/07/10/python-type-hints-how-to-avoid-the-boolean-trap
     "F", # Pyflakes
     "G", # flake8-logging-format
     "ICN", # flake8-import-conventions
@@ -433,6 +411,8 @@ ignore = [
 
     # "C812",   # C812 Missing trailing comma: black compatibility
     # "C901",   # too complex - ...
+
+    # "COM812", #  [*] Trailing comma missing
 
     # "D100",   # Missing docstring in public module
     # "D101",   # Missing docstring in public class
@@ -537,7 +517,7 @@ exclude = [
   "wrk",
   "*.egg-info",
   ".cache",
-  "notebooks/dvp/*.py"
+  "notebooks/dvp/*.py",
 ]
 # Assume Python 3.10.
 # target-version = "py310"
