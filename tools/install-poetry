@@ -32,10 +32,12 @@
 # Check if this gets worse with document development.
 #
 
-curl -sSL https://install.python-poetry.org | python3 -
-poetry --version
-poetry completions bash >> ~/.bash_completion
-poetry completions zsh >| ~/.zfunc/_poetry
+curl -sSL https://install.python-poetry.org | python3 - "$@"
+if [[ "$1" != "--uninstall" ]]; then
+    poetry --version
+    poetry completions bash >> ~/.bash_completion
+    poetry completions zsh > ~/.zfunc/_poetry
+fi
 
 
 # vim: set ts=4 sw=4 tw=92 ss=0 ft=sh et ai :

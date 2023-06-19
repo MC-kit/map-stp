@@ -1,61 +1,55 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 import pytest
 
-from mapstp.utils.resource import filename_resolver, path_resolver
+from mapstp.utils.resource import path_resolver
 
 THIS_FILENAME = Path(__file__).name
 
 
 # noinspection PyCompatibility
 @pytest.mark.parametrize(
-    "package, resource, expected",
+    "package,resource,expected",
     [
-        # (None, THIS_FILENAME, THIS_FILENAME),
         ("tests", "data/test1.stp", "/data/test1.stp"),
     ],
 )
-def test_filename_resolver(package, resource, expected):
-    resolver = filename_resolver(package)
+def test_path_resolver(package, resource, expected) -> None:
+    resolver = path_resolver(package)
     actual = resolver(resource)
-    assert actual.replace("\\", "/").endswith(
-        expected
-    ), "Failed to compute resource file name"
-    assert Path(actual).exists(), f"The resource '{resource}' is not available"
+    assert str(actual).replace("\\", "/").endswith(expected), "Failed to compute resource file name"
+    assert Path(actual).exists(), f"The resource {resource!r} is not available"
 
 
-# noinspection PyCompatibility
 @pytest.mark.parametrize(
-    "package, resource, expected",
+    "package,resource",
     [
-        # (None, "not_existing.py", "not_existing.py"),
-        ("tests", "data/not_existing", "tests/data/not_existing"),
-        ("mapstp", "data/not_existing", "mapstp/data/not_existing"),
+        ("tests", "data/not_existing"),
+        ("mapstp", "data/not_existing"),
     ],
 )
-def test_filename_resolver_when_resource_doesnt_exist(package, resource, expected):
-    resolver = filename_resolver(package)
+def test_path_resolver_when_resource_doesnt_exist(package, resource) -> None:
+    resolver = path_resolver(package)
     actual = resolver(resource)
-    assert not Path(
-        actual
-    ).exists(), f"The resource '{resource}' should not be available"
+    assert not Path(actual).exists(), f"The resource {resource!r} should not be available"
 
 
-def test_filename_resolver_when_package_doesnt_exist():
-    resolver = filename_resolver("not_existing")
+def test_path_resolver_when_package_doesnt_exist() -> None:
     with pytest.raises(ModuleNotFoundError):
-        resolver("something.txt")
+        path_resolver("not_existing")("something.txt")
 
 
-def test_path_resolver():
+def test_path_resolver_local() -> None:
     resolver = path_resolver("tests")
     actual = resolver("utils/" + THIS_FILENAME)
     assert isinstance(actual, Path)
     assert actual.name == THIS_FILENAME
-    assert actual.exists(), f"The file '{THIS_FILENAME}' should be available"
+    assert actual.exists(), f"The file {THIS_FILENAME!r} should be available"
 
 
-def test_path_resolver_in_own_package_with_separate_file():
+def test_path_resolver_in_own_package_with_separate_file() -> None:
     resolver = path_resolver("tests")
     assert resolver("data").exists(), "Should find 'data' in the 'tests' package"
 

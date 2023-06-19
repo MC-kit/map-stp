@@ -4,6 +4,8 @@ Provides functionality to transfer meta information
 inserted to STP file component names as special tags
 to MCNP files generated from the STP with SuperMC.
 """
+from __future__ import annotations
+
 from importlib import metadata as _meta
 from importlib.metadata import PackageNotFoundError, version
 

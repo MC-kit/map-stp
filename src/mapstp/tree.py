@@ -1,11 +1,15 @@
 """Data structures and algorithms to store and process STP nodes and their links."""
+from __future__ import annotations
 
-from typing import Dict, Iterable, Iterator, List, Optional, cast
+from typing import TYPE_CHECKING, Iterable, Iterator, cast
 
 from dataclasses import dataclass
 
 from mapstp.exceptions import STPParserError
-from mapstp.stp_parser import LeafProduct, LinksList, Product, make_index
+from mapstp.stp_parser import LeafProduct, make_index
+
+if TYPE_CHECKING:
+    from mapstp.stp_parser import LinksList, Product
 
 
 @dataclass
@@ -19,7 +23,7 @@ class Node:
     """
 
     product: Product
-    parent: Optional["Node"] = None
+    parent: Node | None = None
 
     def collect_parents(self) -> Iterator[Product]:
         """Iterate through the parents of the node from root parent to this node.
@@ -33,10 +37,9 @@ class Node:
 
 
 class Tree:
-    """Upward directed tree: it has to find only the parents from a given node.
+    """Upward directed tree: it is used to find only the parents from a given node.
 
     Indexes and stores results of STP file parsing.
-
     """
 
     def __init__(self, products: Iterable[Product], links: LinksList) -> None:
@@ -45,49 +48,14 @@ class Tree:
         Args:
             products: list of product found on parsing STP
             links: pairs denoting links between the products.
-
-        Raises:
-            STPParserError: if the information is screwed.
         """
-        self._product_index: Dict[int, Product] = make_index(products)
-        self._node_index: Dict[int, Node] = {}
-        self._body_links = []
+        self._product_index: dict[int, Product] = make_index(products)
+        self._node_index: dict[int, Node] = {}
+        self._body_links: LinksList = []
         for link in links:
-            src, dst = link
-            product = self._product_index[dst]
-            if product.is_leaf:
-                self._body_links.append(link)
-                parent = self._node_index.get(src)
-                if parent is None:
-                    self.__create_node(self._product_index[src])
-            else:
-                parent = self._node_index.get(src)
-                if parent is None:
-                    parent = self.__create_node(self._product_index[src])
-                node = self._node_index.get(dst)
-                if node is None:
-                    self.__create_node(product, parent)
-                else:
-                    if node.parent is not None:  # pragma: no cover
-                        raise STPParserError()
-                    node.parent = parent
+            self._create_nodes_from_link(link)
 
-    def __create_node(self, product: Product, parent: Optional[Node] = None) -> Node:
-        """Create and register a node.
-
-        Args:
-            product: data associated with the new Node
-            parent: its parent Node
-
-        Returns:
-            new Node
-
-        """
-        node = Node(product, parent)
-        self._node_index[product.number] = node
-        return node
-
-    def create_bodies_paths(self) -> List[List[str]]:
+    def create_bodies_paths(self) -> list[list[str]]:
         """Create list of paths for each body in STP file.
 
         A path is in turn a list of strings - parts of the path.
@@ -107,14 +75,46 @@ class Tree:
                 #           Products and LeafProducts to avoid cast
                 for b in cast(LeafProduct, product).bodies:
                     bodies_paths.append(
-                        path + [b.name]
+                        [*path, b.name],
                     )  # TODO dvp: add transliteration for Russian names
         return bodies_paths
 
+    def _create_nodes_from_link(self, link: tuple[int, int]) -> None:
+        src, dst = link
+        product = self._product_index[dst]
+        parent = self._node_index.get(src)
+        if parent is None:
+            parent = self._create_node(self._product_index[src])
+        if product.is_leaf:
+            self._body_links.append(link)
+        else:
+            self._add_or_update_intermediate_node(dst, parent, product)
 
-def create_bodies_paths(
-    products: Iterable[Product], links: LinksList
-) -> List[List[str]]:
+    def _add_or_update_intermediate_node(self, dst: int, parent: Node, product: Product) -> None:
+        node = self._node_index.get(dst)
+        if node is None:
+            self._create_node(product, parent)
+        else:
+            if node.parent is not None:  # pragma: no cover
+                raise STPParserError
+            node.parent = parent
+
+    def _create_node(self, product: Product, parent: Node | None = None) -> Node:
+        """Create and register a node.
+
+        Args:
+            product: data associated with the new Node
+            parent: its parent Node
+
+        Returns:
+            new Node
+        """
+        node = Node(product, parent)
+        self._node_index[product.number] = node
+        return node
+
+
+def create_bodies_paths(products: Iterable[Product], links: LinksList) -> list[list[str]]:
     """Create list of paths for each body in STP file.
 
     A path is in turn a list of strings - parts of the path.
@@ -123,25 +123,26 @@ def create_bodies_paths(
         products: list of product found on parsing STP
         links: pairs denoting links between the products.
 
-
     Returns:
         The list of paths.
 
     Raises:
-        ValueError: if more then one product is found in STP without components
+        ValueError: if more than one product is found in STP without components
     """
     if links:
         tree = Tree(products, links)
         return tree.create_bodies_paths()
-    else:  # `simple` STP case
-        ps = list(products)
-        if 1 != len(ps):  # pragma: no cover
-            msg = "Only one product is expected for `simple` stp"
-            raise ValueError(msg)
-        product = cast(LeafProduct, ps[0])
-        bodies_paths = []
-        for b in product.bodies:
-            bodies_paths.append(
-                [b.name]
-            )  # TODO dvp: add transliteration for Russian names
-        return bodies_paths
+
+    ps = list(products)
+
+    if len(ps) != 1:  # pragma: no cover
+        msg = "Only one product is expected for `simple` stp"
+        raise ValueError(msg)
+
+    product = cast(LeafProduct, ps[0])
+    bodies_paths = []
+
+    for b in product.bodies:
+        bodies_paths.append([b.name])  # TODO dvp: add transliteration for Russian names
+
+    return bodies_paths

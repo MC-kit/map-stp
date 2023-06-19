@@ -1,13 +1,16 @@
 """The module defines methods and classes to parse STP file and represent parsing results."""
+from __future__ import annotations
 
-from typing import Dict, Iterable, List, TextIO, Tuple
+from typing import TYPE_CHECKING, Iterable, List, TextIO, Tuple
 
 import re
 
 from dataclasses import dataclass, field
-from pathlib import Path
 
 from mapstp.exceptions import FileError, STPParserError
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 # Hint: check patterns on https://pythex.org/
 
@@ -17,7 +20,7 @@ _NAME = r"'(?P<name>(?:''|[^'])+)'"
 _SELECT_PATTERN = re.compile(
     _NUMBERED + r"(?P<solid>MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)|"
     r"(?P<link>NEXT_ASSEMBLY_USAGE)|"
-    r"(?P<product>PRODUCT_DEFINITION\()"
+    r"(?P<product>PRODUCT_DEFINITION\()",
 )
 
 _PRODUCT_PATTERN = re.compile(_NUMBERED + r"PRODUCT_DEFINITION\(" + _NAME + r",.*")
@@ -25,10 +28,10 @@ _LINK_PATTERN = re.compile(
     _NUMBERED
     + r"NEXT_ASSEMBLY_USAGE_OCCURRENCE\("
     + _NAME
-    + r",.*#(?P<src>\d+),#(?P<dst>\d+),\$\);"
+    + r",.*#(?P<src>\d+),#(?P<dst>\d+),\$\);",
 )
 _BODY_PATTERN = re.compile(
-    _NUMBERED + r"(?:MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)\(" + _NAME + r",.*\);"
+    _NUMBERED + r"(?:MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)\(" + _NAME + r",.*\);",
 )
 
 
@@ -47,8 +50,19 @@ class Product(Numbered):
 
     name: str
 
+    @property
+    def is_leaf(self) -> bool:
+        """Tell if this product is the last in an STP path.
+
+        The Leaf products may have bodies and can be shared between multiple paths in STP.
+
+        Returns:
+            False always for non LeafProducts.
+        """
+        return False
+
     @classmethod
-    def from_string(cls, text: str) -> "Product":
+    def from_string(cls, text: str) -> Product:
         """Create Product from a text string.
 
         Args:
@@ -59,16 +73,15 @@ class Product(Numbered):
 
         Raises:
             STPParserError: if `text` doesn't match 'PRODUCT_DEFINITION' statement format.
-
         """
         match = _PRODUCT_PATTERN.search(text)
         if not match:
-            raise STPParserError(f"not a 'Product' line: '{text}'")
+            raise STPParserError(f"not a 'Product' line: {text!r}")
         number = int(match["digits"])
         name = match["name"]
         return cls(number, name)
 
-    def append(self, body: "Body") -> None:
+    def append(self, body: Body) -> None:
         """Append body to this product.
 
         Only applicable to LeafProduct.
@@ -81,35 +94,13 @@ class Product(Numbered):
         """
         raise NotImplementedError(f"Cannot add a Body object to {self}")
 
-    @property
-    def is_leaf(self) -> bool:
-        """Tell if this product is the last in an STP path.
-
-        The Leaf products may have bodies and can be shared between multiple paths in STP.
-
-        Returns:
-            False always for non LeafProducts.
-        """
-        return False
-
 
 # noinspection PyClassHasNoInit
 @dataclass
 class LeafProduct(Product):
     """The class to append bodies to "Product definitions"."""
 
-    bodies: List["Body"] = field(default_factory=list)
-
-    def append(self, body: "Body") -> None:
-        """Append body to this product.
-
-        Only applicable to LeafProduct.
-
-        Args:
-            body: what to append
-
-        """
-        self.bodies.append(body)
+    bodies: list[Body] = field(default_factory=list)
 
     @property
     def is_leaf(self) -> bool:
@@ -122,6 +113,16 @@ class LeafProduct(Product):
         """
         return True
 
+    def append(self, body: Body) -> None:
+        """Append body to this product.
+
+        Only applicable to LeafProduct.
+
+        Args:
+            body: what to append
+        """
+        self.bodies.append(body)
+
 
 # noinspection PyClassHasNoInit
 @dataclass
@@ -133,7 +134,7 @@ class Link(Numbered):
     dst: int
 
     @classmethod
-    def from_string(cls, text: str) -> "Link":
+    def from_string(cls, text: str) -> Link:
         """Parse STP line with NEXT_OCCURRENCE_USAGE.
 
         The line specifies a source->destination link between products.
@@ -149,7 +150,7 @@ class Link(Numbered):
         """
         match = _LINK_PATTERN.search(text)
         if not match:
-            raise STPParserError(f"not a 'Next assembly usage' line: '{text}'")
+            raise STPParserError(f"not a 'Next assembly usage' line: {text!r}")
         number = int(match["digits"])
         name = match["name"]
         src = int(match["src"])
@@ -165,7 +166,7 @@ class Body(Numbered):
     name: str
 
     @classmethod
-    def from_string(cls, text: str) -> "Body":
+    def from_string(cls, text: str) -> Body:
         """Parse MANIFOLD_SOLID_BREP line.
 
         Args:
@@ -179,7 +180,7 @@ class Body(Numbered):
         """
         match = _BODY_PATTERN.search(text)
         if not match:
-            raise STPParserError(f"not a 'solid brep' line: '{text}'")
+            raise STPParserError(f"not a 'solid brep' line: {text!r}")
         number = int(match["digits"])
         name = match["name"]
         return cls(number, name)
@@ -202,50 +203,65 @@ def parse(inp: TextIO) -> ParseResult:
         Tuple containing list of products and list of links between them.
 
     Raises:
-        FileError: on invalid file header and if STP protocol is not AP214
+        FileError: with line number where parsing failed
     """
-    products: List[Product] = []
+    products: list[Product] = []
     links: LinksList = []
     check_header(inp)
     # normal stp has links and components,
-    # but in q 'simple' case there are bodies only and one product
+    # but in 'simple' case there are bodies only and one product
     may_have_components = True
     for line_no_minus_3, line in enumerate(inp):
-        try:
-            match = _SELECT_PATTERN.search(line)
-            if match:
-                group = match.lastgroup
-                if group == "solid":
-                    body = Body.from_string(line)
-                    if not products:
-                        # msg = "At least one product is to be loaded at this step"
-                        # raise STPParserError(msg)
-
-                        # Case for STP without components, just bodies
-                        products.append(LeafProduct(0, "dummy"))
-                        may_have_components = False
-                    last_product = products[-1]
-                    if not last_product.is_leaf:
-                        products[-1] = last_product = LeafProduct(
-                            last_product.number, last_product.name
-                        )
-                    last_product.append(body)
-                elif group == "link":
-                    if not may_have_components:
-                        msg = "Unexpected `link` is found in `simple` STP"
-                        raise STPParserError(msg)
-                    link = Link.from_string(line)
-                    links.append((link.src, link.dst))
-                elif group == "product":
-                    if may_have_components:
-                        product = Product.from_string(line)
-                        products.append(product)
-                else:
-                    msg = "Shouldn't be here, check _SELECT_PATTERN"
-                    raise STPParserError(msg)
-        except STPParserError as exception:
-            raise FileError(f"Error in line {line_no_minus_3 + 3}") from exception
+        match = _SELECT_PATTERN.search(line)
+        if match:
+            try:
+                may_have_components = _process_line(
+                    match,
+                    line,
+                    links,
+                    may_have_components,
+                    products,
+                )
+            except STPParserError as exception:
+                raise FileError(f"Error in line {line_no_minus_3 + 3}") from exception
     return products, links
+
+
+def _process_line(match, line, links, may_have_components: bool, products) -> bool:
+    group = match.lastgroup
+    if group == "solid":
+        may_have_components = _process_body(line, may_have_components, products)
+    elif group == "link":
+        _add_link(line, links, may_have_components)
+    elif group == "product":
+        if may_have_components:
+            product = Product.from_string(line)
+            products.append(product)
+    else:
+        msg = "Shouldn't be here, check _SELECT_PATTERN"
+        raise STPParserError(msg)
+    return may_have_components
+
+
+def _add_link(line, links, may_have_components):
+    if not may_have_components:
+        msg = "Unexpected `link` is found in `simple` STP"
+        raise STPParserError(msg)
+    link = Link.from_string(line)
+    links.append((link.src, link.dst))
+
+
+def _process_body(line: str, may_have_components: bool, products) -> bool:
+    body = Body.from_string(line)
+    if not products:
+        # Case for STP without components, just bodies
+        products.append(LeafProduct(0, "dummy"))
+        may_have_components = False
+    last_product = products[-1]
+    if not last_product.is_leaf:
+        products[-1] = last_product = LeafProduct(last_product.number, last_product.name)
+    last_product.append(body)
+    return may_have_components
 
 
 def check_header(inp: TextIO) -> None:
@@ -261,14 +277,14 @@ def check_header(inp: TextIO) -> None:
     if line != _VALID_FIRST_LINE:
         raise FileError(
             "Not a valid STP file: the expected first row "
-            f"{_VALID_FIRST_LINE[:-1]}, actual {line}"
+            f"{_VALID_FIRST_LINE[:-1]}, actual {line}",
         )
     next(inp)
     line = next(inp)
     if line != _VALID_THIRD_LINE:
         raise FileError(
             "STP protocol is not AP214, the expected third row "
-            f"{_VALID_THIRD_LINE}, actual {line}"
+            f"{_VALID_THIRD_LINE}, actual {line}",
         )
 
 
@@ -282,13 +298,12 @@ def parse_path(inp: Path) -> ParseResult:
 
     Returns:
         Tuple containing list of products and list of links between them.
-
     """
     with inp.open(encoding="cp1251") as _inp:
         return parse(_inp)
 
 
-def make_index(products: Iterable[Product]) -> Dict[int, Product]:
+def make_index(products: Iterable[Product]) -> dict[int, Product]:
     """Collect dictionary from a list of Product objects.
 
     Args:

@@ -1,43 +1,14 @@
 """Configuration tools."""
 from __future__ import annotations
 
-from typing import TypeVar
+from typing import Any, Callable, TypeVar
 
 from os import environ
 
 _T = TypeVar("_T")
 
 
-def _make_bool(key: str, val: str) -> bool:
-    val = val.lower()
-    if val in ["1", "true", "yes", "y", "ok", "on"]:
-        return True
-    if val in ["0", "false", "no", "n", "nok", "off"]:
-        return False
-    raise ValueError(
-        f"Invalid environment variable '{key}': expected a boolean, found '{val}'"
-    )
-
-
-def _make_int(key: str, val: str) -> int:
-    try:
-        return int(val)
-    except ValueError:
-        raise ValueError(
-            f"Invalid environment variable '{key}': expected an integer, found '{val}'"
-        ) from None
-
-
-def _make_float(key: str, val: str) -> float:
-    try:
-        return float(val)
-    except ValueError:
-        raise ValueError(
-            f"Invalid environment variable '{key}': expected a float, found '{val}'"
-        ) from None
-
-
-def env(key, converter=str, default=None):
+def env(key, converter: Callable[[str], Any] | None = None, default=None):  # noqa: ANN201
     """Retrieve environment variable and convert to specified type with proper diagnostics.
 
     Args:
@@ -54,24 +25,37 @@ def env(key, converter=str, default=None):
     if key not in environ:
         return default
 
-    val = environ[key]
+    inp = environ[key]
 
-    if converter is None or converter == str:
-        return val
-
-    if converter == bool:
-        return _make_bool(key, val)
-
-    if converter == int:
-        return _make_int(key, val)
-
-    if converter == float:
-        return _make_float(key, val)
+    converter = _extend_converter(converter)
 
     try:
-        return converter(val)
-    except ValueError:
+        return converter(inp)
+    except ValueError as exception:
         raise ValueError(
-            f"Invalid environment variable '{key}': "
-            f"conversion {converter.__name__}({val}) failed."
-        ) from None
+            f"Invalid environment variable {key!r}: "
+            f"conversion {converter.__name__}({inp}) failed.",
+        ) from exception
+
+
+def _extend_converter(converter: Callable[[str], Any] | None) -> Callable[[str], Any]:
+    if converter is None or converter == str:
+        return _identity
+
+    if converter == bool:
+        return _make_bool
+
+    return converter
+
+
+def _identity(val: _T) -> _T:
+    return val
+
+
+def _make_bool(inp: str) -> bool:
+    inp = inp.lower()
+    if inp in ["1", "true", "yes", "y", "ok", "on"]:
+        return True
+    if inp in ["0", "false", "no", "n", "nok", "off"]:
+        return False
+    raise ValueError(f"expected a boolean equivalent, found {inp!r}")

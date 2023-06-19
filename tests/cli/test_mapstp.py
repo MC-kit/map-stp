@@ -1,8 +1,10 @@
-from typing import Dict, Iterable
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Iterable
 
 import re
 
-from pathlib import Path
+from numpy.testing import assert_array_equal
 
 import pandas as pd
 import pytest
@@ -11,17 +13,19 @@ from mapstp.cli.runner import __summary__, __version__, mapstp
 from mapstp.materials import load_materials_map
 from mapstp.utils.io import find_first_cell_number, read_mcnp_sections
 from mapstp.utils.re import CELL_START_PATTERN, MATERIAL_PATTERN
-from numpy.testing import assert_array_equal
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
+# noinspection PyTypeChecker
 def test_version_command(runner):
     result = runner.invoke(mapstp, args=["--version"], catch_exceptions=False)
-    assert result.exit_code == 0, (
-        "Should success on '--version' option: " + result.output
-    )
+    assert result.exit_code == 0, "Should success on '--version' option: " + result.output
     assert __version__ in result.output, "print version on 'version' command"
 
 
+# noinspection PyTypeChecker
 def test_help_command(runner):
     result = runner.invoke(mapstp, args=["--help"], catch_exceptions=False)
     assert result.exit_code == 0, result.output
@@ -65,7 +69,7 @@ def test_commenting1(runner, tmp_path, data):
     assert len(lines) == 3
 
 
-def test_commenting1_to_stdout(runner, tmp_path, data):
+def test_commenting1_to_stdout(runner, data):
     stp = data / "test1.stp"
     mcnp = data / "test1.i"
     result = runner.invoke(
@@ -98,12 +102,12 @@ def test_commenting1_with_excel(runner, tmp_path, data):
     )
     assert result.exit_code == 0, result.output
     assert excel.exists(), f"Should create Excel file {excel}"
-    df = pd.read_excel(excel, engine="openpyxl", sheet_name="Cells", index_col="cell")
-    assert_array_equal(df.index.values, [100, 101, 102])
+    path_info_df = pd.read_excel(excel, engine="openpyxl", sheet_name="Cells", index_col="cell")
+    assert_array_equal(path_info_df.index.to_numpy(), [100, 101, 102])
 
 
 @pytest.mark.parametrize(
-    "touch_output, touch_excel, expected",
+    "touch_output,touch_excel,expected",
     [
         (False, False, 0),
         (True, False, 1),
@@ -111,7 +115,7 @@ def test_commenting1_with_excel(runner, tmp_path, data):
         (True, True, 1),
     ],
 )
-def test_override(runner, tmp_path, data, touch_output, touch_excel, expected):
+def test_override(runner, tmp_path, data, touch_output, touch_excel, expected):  # noqa: PLR0913
     output: Path = tmp_path / "test1-with-comments.i"
     excel: Path = tmp_path / "test1.xlsx"
     if touch_output:
@@ -122,7 +126,7 @@ def test_override(runner, tmp_path, data, touch_output, touch_excel, expected):
         assert excel.exists()
     stp = data / "test1.stp"
     mcnp = data / "test1.i"
-    result = runner.invoke(
+    run_result = runner.invoke(
         mapstp,
         args=[
             "--output",
@@ -136,7 +140,7 @@ def test_override(runner, tmp_path, data, touch_output, touch_excel, expected):
         ],
         catch_exceptions=True,
     )
-    assert result.exit_code == expected, result.output
+    assert run_result.exit_code == expected, run_result.output
 
 
 def extract_first_void_cell_lines(lines):
@@ -176,7 +180,7 @@ def test_info_assignment(runner, tmp_path, data):
 
 
 @pytest.mark.parametrize(
-    "mcnp, expected",
+    "mcnp,expected",
     [
         ("test-extract-info.i", 2000),
     ],
@@ -244,10 +248,8 @@ def test_run_without_excel_output_only(runner, tmp_path, data):
     assert excel.exists(), f"Excel file {excel} is not created"
 
 
-def select_cell_and_stp_lines(lines: Iterable[str]) -> Dict[int, str]:
-    selected = list(
-        filter(lambda x: re.search(r"^\s{0,5}\d+\s+\d", x) or "$ stp: " in x, lines)
-    )
+def select_cell_and_stp_lines(lines: Iterable[str]) -> dict[int, str]:
+    selected = list(filter(lambda x: re.search(r"^\s{0,5}\d+\s+\d", x) or "$ stp: " in x, lines))
     res = {}
     for i, line in enumerate(selected):
         if "$ stp: " in line:
@@ -321,19 +323,22 @@ def test_tnes(runner, tmp_path, data):
     cell2stp = select_cell_and_stp_lines(sections.cells.split("\n"))
     assert 1 in cell2stp
     assert sections.cards, f"Control cards should be presented in {output}"
+    check_materials(materials, 3)
+    check_materials(output, 4)
+    path_info_df = pd.read_excel(excel, index_col="cell")
+    path = path_info_df.loc[1]["STP path"]
+    assert "[m-reflector]" in path
+
+
+def check_materials(materials, number_of_materials):
     materials_dict = load_materials_map(materials)
-    assert len(materials_dict) == 3, f"There should be fore materials in {materials}"
+    assert (
+        len(materials_dict) == number_of_materials
+    ), f"There should be {number_of_materials} materials in {materials}"
     for i in range(1, 4):
         assert i in materials_dict
-    assert materials_dict[1].split("\n")[1].strip().startswith("5010.31d")
-    materials_dict = load_materials_map(output)
-    assert len(materials_dict) == 4, f"There should be fore materials in {output}"
-    for i in range(1, 5):
-        assert i in materials_dict
-    assert materials_dict[1].split("\n")[1].strip().startswith("5010.31d")
-    df = pd.read_excel(excel, index_col="cell")
-    path = df.loc[1]["STP path"]
-    assert "[m-reflector]" in path
+    material_1_first_row = materials_dict[1].split("\n")[1].strip()
+    assert material_1_first_row.startswith("5010.31d")
 
 
 if __name__ == "__main__":

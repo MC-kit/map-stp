@@ -1,5 +1,10 @@
 """Utility module to specify exception hierarchy for all tee package."""
-import pandas as pd
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 class MyError(ValueError):
@@ -33,6 +38,4 @@ class PathInfoError(MyError):
             row: row in path_info table
             path_info: the path_info table
         """
-        MyError.__init__(
-            self, message + f" Row #{row}:\n" + f"{path_info.iloc[row].to_dict()}"
-        )
+        MyError.__init__(self, message + f" Row #{row}:\n" + f"{path_info.iloc[row].to_dict()}")

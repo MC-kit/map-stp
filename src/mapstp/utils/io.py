@@ -1,5 +1,7 @@
 """Input/output utility methods."""
-from typing import Generator, Optional, TextIO, Union
+from __future__ import annotations
+
+from typing import Generator, TextIO, Union
 
 import os
 import sys
@@ -22,7 +24,7 @@ def can_override(path: Path, override: bool) -> Path:
         override: permission to override flag
 
     Returns:
-        The input `path`to facilitate chaining in mapping in code.
+        The input `path` to facilitate chaining in mapping in code.
 
     Raises:
         FileExistsError: if file exists, but override is not allowed.
@@ -30,12 +32,12 @@ def can_override(path: Path, override: bool) -> Path:
     if not override and path.exists():
         raise FileExistsError(
             f"File {path} already exists."
-            "Consider to use '--override' command line option or remove the file."
+            "Consider to use '--override' command line option or remove the file.",
         )
     return path
 
 
-def find_first_cell_number(mcnp: Union[str, Path]) -> int:
+def find_first_cell_number(mcnp: str | Path) -> int:
     """Find the first cell number in MCNP model.
 
     Args:
@@ -52,7 +54,8 @@ def find_first_cell_number(mcnp: Union[str, Path]) -> int:
         for line in stream:
             match = CELL_START_PATTERN.search(line)
             if match:
-                cell_number = int(line[: match.end()].split()[0])
+                cell_start = line[: match.end()]
+                cell_number = int(cell_start.split()[0])
                 return cell_number
     raise ValueError(f"Cells with material 0 are not found in {mcnp}. Is it MCNP file?")
 
@@ -60,7 +63,7 @@ def find_first_cell_number(mcnp: Union[str, Path]) -> int:
 @contextmanager
 def select_output(
     override: bool,
-    output: Optional[PathLike] = None,
+    output: PathLike | None = None,
 ) -> Generator[TextIO, None, None]:
     """Select stream for output.
 
@@ -73,7 +76,6 @@ def select_output(
     Yields:
         stdout, if `output` file name is  not specified (None),
                 opened stream
-
     """
     if output:
         p = Path(output)
@@ -94,9 +96,9 @@ class MCNPSections:
     """Text sections from an MCNP file."""
 
     cells: str
-    surfaces: Optional[str] = None
-    cards: Optional[str] = None
-    remainder: Optional[str] = None
+    surfaces: str | None = None
+    cards: str | None = None
+    remainder: str | None = None
 
 
 def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
@@ -107,18 +109,18 @@ def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
 
     Returns:
         MCNPSections: - the text sections
-
     """
     sections = MCNP_SECTIONS_SEPARATOR_PATTERN.split(
-        mcnp_path.read_text(encoding="cp1251"), maxsplit=3
+        mcnp_path.read_text(encoding="cp1251"),
+        maxsplit=3,
     )
     sections_len = len(sections)
     cells = sections[0].strip()
-    surfaces = sections[1].strip() if 2 <= sections_len else None
-    cards = sections[2].strip() if 3 <= sections_len else None
-    if 4 <= sections_len:
-        remainder: Optional[str] = sections[3].strip()
-        if remainder == "":
+    surfaces = sections[1].strip() if sections_len >= 2 else None
+    cards = sections[2].strip() if sections_len >= 3 else None
+    if sections_len >= 4:
+        remainder: str | None = sections[3].strip()
+        if not remainder:
             remainder = None
     else:
         remainder = None
