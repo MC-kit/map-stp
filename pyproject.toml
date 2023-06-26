@@ -140,7 +140,7 @@ pyls-isort = ">=0.2.2"
 python-lsp-black = ">=1.2.1"
 pyls-memestra = ">=0.0.16"
 pylsp-rope = ">=0.1.11"
-ruff-lsp = "^0.0.24"
+ruff-lsp = ">=0.0.24,<0.0.36"
 
 [tool.poetry.group.ruff.dependencies]
 ruff = ">=0.0.259"
