@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mapstp"
-version = "0.3.10"
+version = "0.3.11"
 description = "Transfers meta information from STP to MCNP"
 authors = ["dvp <dmitri_portnov@yahoo.com>"]
 license = "MIT"
@@ -36,7 +36,7 @@ Chnagelog = "https://github.com/MC-kit/mapstp/releases"
 
 
 [tool.poetry.dependencies]
-python = ">=3.8.1,<4.0"
+python = ">=3.9,<4.0"
 click = ">=8.0.4"
 importlib-resources = {version = ">=5.12.0", python = "3.8"}
 loguru = ">=0.6.0"
@@ -62,17 +62,17 @@ rstcheck = ">=3.3.1"
 pydocstringformatter = ">=0.7.3"
 
 [tool.poetry.group.black.dependencies]
-black = ">=22.8.0"  #TODO dvp: update with safety and packaging
+black = ">=22.8.0"
 
 [tool.poetry.group.isort.dependencies]
 isort = ">=5.9.3"
 
 [tool.poetry.group.test.dependencies]
 pytest = ">=7.1"
-pytest-cache = ">=1.0"
+# pytest-cache = ">=1.0"
 pytest-cov = ">=4.0"
-pytest-mock = ">=3.9"
-pytest-randomly = ">=3.12"
+# pytest-mock = ">=3.9"
+# pytest-randomly = ">=3.12"
 coverage = { version = ">=6.1.2", extras = ["toml"] }
 
 [tool.poetry.group.coverage.dependencies]
@@ -118,8 +118,6 @@ flake8-scream = ">=0.1.0"
 flake8-simplify = ">=0.19.3"
 flake8-use-fstring = ">=1.4"
 flake8-use-pathlib = ">=0.3.0"
-pandas-vet = ">=0.2.3"
-tryceratops = ">=1.0.1"
 pylint = ">=2.15.10"
 flake8-pylint = ">=0.1.3"
 # TODO dvp: check/use flake8-pyprojecttoml plugin

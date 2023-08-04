@@ -45,5 +45,4 @@ def load_materials_index(materials_index: str | None = None) -> pd.DataFrame:
     )
     materials = materials.loc[materials["mnemonic"].notna()]
     materials = materials.rename(columns={"eff.density, g/cm3": "density"})
-    materials = materials.set_index(keys="mnemonic")
-    return materials
+    return materials.set_index(keys="mnemonic")
