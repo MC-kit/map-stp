@@ -36,7 +36,7 @@ Chnagelog = "https://github.com/MC-kit/mapstp/releases"
 
 
 [tool.poetry.dependencies]
-python = ">=3.8.1,<4.0"
+python = ">=3.9,<4.0"
 click = ">=8.0.4"
 importlib-resources = {version = ">=5.12.0", python = "3.8"}
 loguru = ">=0.6.0"
@@ -62,7 +62,7 @@ rstcheck = ">=3.3.1"
 pydocstringformatter = ">=0.7.3"
 
 [tool.poetry.group.black.dependencies]
-black = ">=22.8.0"  #TODO dvp: update with safety and packaging
+black = ">=22.8.0"
 
 [tool.poetry.group.isort.dependencies]
 isort = ">=5.9.3"

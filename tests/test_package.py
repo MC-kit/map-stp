@@ -15,8 +15,7 @@ def find_version_from_project_toml():
         for line in stream:
             _line = line.strip()
             if _line.startswith("version"):
-                version = _line.split("=")[1].strip().strip('"')
-                return version
+                return _line.split("=")[1].strip().strip('"')
         raise ValueError(f"Cannot find item 'version' in {toml_path}")
 
 

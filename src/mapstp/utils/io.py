@@ -55,8 +55,7 @@ def find_first_cell_number(mcnp: str | Path) -> int:
             match = CELL_START_PATTERN.search(line)
             if match:
                 cell_start = line[: match.end()]
-                cell_number = int(cell_start.split()[0])
-                return cell_number
+                return int(cell_start.split()[0])
     raise ValueError(f"Cells with material 0 are not found in {mcnp}. Is it MCNP file?")
 
 
