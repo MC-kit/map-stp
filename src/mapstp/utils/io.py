@@ -1,7 +1,7 @@
 """Input/output utility methods."""
 from __future__ import annotations
 
-from typing import Generator, TextIO, Union
+from typing import Iterator, TextIO, Union
 
 import os
 import sys
@@ -11,7 +11,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from loguru import logger
-from mapstp.utils.re import CELL_START_PATTERN, MCNP_SECTIONS_SEPARATOR_PATTERN
+from mapstp.utils.re import (
+    CELL_START_PATTERN,
+    MCNP_SECTIONS_SEPARATOR_PATTERN,
+    VOID_CELL_START_PATTERN,
+)
 
 PathLike = Union[str, Path, os.PathLike]
 
@@ -54,16 +58,36 @@ def find_first_cell_number(mcnp: str | Path) -> int:
         for line in stream:
             match = CELL_START_PATTERN.search(line)
             if match:
-                cell_start = line[: match.end()]
-                return int(cell_start.split()[0])
-    raise ValueError(f"Cells with material 0 are not found in {mcnp}. Is it MCNP file?")
+                return int(match["number"])
+    raise ValueError(f"Cells are not found in {mcnp}. Is it MCNP file?")
+
+
+def find_first_void_cell_number(mcnp: str | Path) -> int:
+    """Find the first void cell number in MCNP model.
+
+    Args:
+        mcnp: an input MCNP model file name
+
+    Returns:
+        the first void cell number
+
+    Raises:
+        ValueError: if the cell is not found in the `mcnp` file.
+    """
+    _mcnp = Path(mcnp)
+    with _mcnp.open(encoding="cp1251") as stream:
+        for line in stream:
+            match = VOID_CELL_START_PATTERN.search(line)
+            if match:
+                return int(match["number"])
+    raise ValueError(f"Void cells are not found in {mcnp}. Is it MCNP file?")
 
 
 @contextmanager
 def select_output(
     override: bool,
     output: PathLike | None = None,
-) -> Generator[TextIO, None, None]:
+) -> Iterator[TextIO]:
     """Select stream for output.
 
     If the `output` is specified, then checks if we can override it.
@@ -79,7 +103,7 @@ def select_output(
     if output:
         p = Path(output)
         can_override(p, override)
-        _output: TextIO = p.open(mode="w", encoding="cp1251")
+        _output: TextIO = p.open(mode="w", encoding="utf8")
         logger.info("Tagged mcnp will be saved to {}", p)
     else:
         _output = sys.stdout

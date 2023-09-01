@@ -22,6 +22,8 @@ to the meta information provided in the STP.
 """
 from __future__ import annotations
 
+import json
+
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -30,9 +32,9 @@ import click
 from mapstp import __name__ as package_name
 from mapstp import __summary__, __version__
 from mapstp.cli.logging import init_logger, logger
-from mapstp.excel import create_excel
 from mapstp.materials import get_used_materials, load_materials_map
 from mapstp.merge import join_paths, merge_paths
+from mapstp.save_table import combine_cell_table, create_excel, create_sql
 from mapstp.utils.io import can_override, find_first_cell_number, select_output
 from mapstp.workflow import create_path_info
 
@@ -83,6 +85,22 @@ to the meta information provided in the STP.
     help="Excel file to write the component paths",
 )
 @click.option(
+    "--sql",
+    "-s",
+    metavar="<sql-file>",
+    type=click.Path(dir_okay=False),
+    required=False,
+    help="SQLite3 file to write the component paths table",
+)
+@click.option(
+    "--volumes",
+    "-v",
+    metavar="<volumes-json>",
+    type=click.Path(dir_okay=False),
+    required=False,
+    help="Volumes JSON file to load to SQLite3 database and excel",
+)
+@click.option(
     "--materials",
     metavar="<materials-file>",
     type=click.Path(dir_okay=False, exists=True),
@@ -113,7 +131,7 @@ to the meta information provided in the STP.
     type=click.INT,
     required=False,
     help="Number to start cell numbering in the Excel file "
-    "(default: the first cell number in `mcnp` file, if specified, otherwise 1)",
+    "(default: the first cell number in `mcnp` file, if the file is specified, otherwise 1)",
 )
 @click.argument("stp", metavar="<stp-file>", type=click.Path(dir_okay=False, exists=True))
 @click.argument(
@@ -130,6 +148,8 @@ def mapstp(  # noqa: PLR0913
     override: bool,
     output,
     excel,
+    sql,
+    volumes,
     materials,
     materials_index,
     separator,
@@ -143,7 +163,9 @@ def mapstp(  # noqa: PLR0913
         ctx: context object
         override: override existing files if exist, if false - raise exception
         output: where to store resulting mcnp
-        excel: excel to store mapping cell->tags, stp path
+        excel: excel to store mapping cell->tags, stp path, volume(if available)
+        sql: as above but in SQLite3 table 'cell_info'
+        volumes: json file with cell volumes generated from SpaceClaim
         materials: file with MCNP materials
         materials_index: excel with list of mnemonics mapping to material numbers from `materials` file
         separator: character to separate parts of stp path on output, default(/)
@@ -167,13 +189,18 @@ def mapstp(  # noqa: PLR0913
         with select_output(override, output) as _output:
             joined_paths = join_paths(paths, separator)
             merge_paths(_output, joined_paths, path_info, _mcnp, used_materials_text)
-    if excel:
-        if not start_cell_number:
-            start_cell_number = find_first_cell_number(mcnp) if mcnp else 1
-        _excel = Path(excel)
-        can_override(_excel, override)
-        create_excel(_excel, paths, path_info, separator, start_cell_number)
-        logger.info("Accompanying excel is saved to {}", _excel)
+    stp_path = Path(stp)
+    if not start_cell_number:
+        start_cell_number = find_first_cell_number(mcnp) if mcnp else 1
+    volumes_map = json.dumps(Path(volumes).read_text()) if volumes else None
+    cell_info = combine_cell_table(paths, path_info, separator, start_cell_number, volumes_map)
+    _excel = Path(excel) if excel else Path(stp_path.stem + ".xlsx")
+    can_override(_excel, override)
+    create_excel(_excel, cell_info)
+    logger.info("Accompanying excel is saved to {}", _excel)
+    _sql = Path(sql) if sql else Path(stp_path.stem + ".sqlite")
+    can_override(_sql, override)
+    create_sql(_sql, cell_info)
     logger.success("mapstp finished")
 
 

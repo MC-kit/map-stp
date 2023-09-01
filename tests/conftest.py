@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator
+
+import os
 
 from pathlib import Path
 
@@ -30,3 +32,21 @@ def paths_ei(data) -> list[list[str]]:
     _stp = Path(data / "test-extract-info.stp")
     products, links = parse_path(_stp)
     return create_bodies_paths(products, links)
+
+
+@pytest.fixture()
+def cd_tmpdir(tmp_path: Path) -> Iterator[Path]:
+    """Temporarily switch to temp directory.
+
+    Args:
+        tmp_path: pytest fixture for temp directory path
+
+    Yields:
+        temporary path
+    """
+    old_dir = Path.cwd()
+    os.chdir(tmp_path)
+    try:
+        yield tmp_path
+    finally:
+        os.chdir(old_dir)

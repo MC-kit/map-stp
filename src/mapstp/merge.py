@@ -6,7 +6,7 @@ if specified in STP paths.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generator, Iterable, TextIO
+from typing import TYPE_CHECKING, Iterable, Iterator, TextIO
 
 import math
 
@@ -52,20 +52,20 @@ def extract_number_and_density(row: int, path_info: pd.DataFrame) -> tuple[int, 
     Returns:
         number and density or None, if not available
     """
-    number, density, factor = path_info.iloc[row][["number", "density", "factor"]]
+    material_number, density, factor = path_info.iloc[row][["material_number", "density", "factor"]]
 
     def _validate(expr, msg):
         if not expr:
             raise PathInfoError(msg, row, path_info)
 
-    if not is_defined(number):
+    if not is_defined(material_number):
         return None  # void space
 
     _validate(
         is_defined(density),
-        f"The `density` value is not defined for material number {number}.",
+        f"The `density` value is not defined for material number {material_number}.",
     )
-    _validate(number > 0, "The values in `number` column are to be positive.")
+    _validate(material_number > 0, "The values in `number` column are to be positive.")
     _validate(density >= 0.0, "The values in `density` column cannot be negative.")
 
     if is_defined(factor):
@@ -75,7 +75,7 @@ def extract_number_and_density(row: int, path_info: pd.DataFrame) -> tuple[int, 
         )
         density *= factor
 
-    return number, density
+    return material_number, density
 
 
 def _correct_first_line(
@@ -87,8 +87,10 @@ def _correct_first_line(
     nd = extract_number_and_density(current_path_idx, path_info)
 
     if nd is not None:
-        number, density = nd
-        return _line[: match_end - 1] + f" {int(number)} {-density:.5g}" + _line[match_end:]
+        material_number, density = nd
+        return (
+            _line[: match_end - 1] + f" {int(material_number)} {-density:.5g}" + _line[match_end:]
+        )
 
     return _line
 
@@ -113,7 +115,7 @@ class _Merger:
         self.current_path_idx += 1
         return f"      $ stp: {self.paths[i]}"
 
-    def merge_lines(self) -> Generator[str, None, None]:
+    def merge_lines(self) -> Iterator[str]:
         for line in self.mcnp_lines:
             match = CELL_START_PATTERN.match(line)
             if match:
@@ -129,7 +131,7 @@ class _Merger:
                 self.paths_length,
             )
 
-    def _on_cell_start(self, line, match) -> Generator[str, None, None]:
+    def _on_cell_start(self, line, match) -> Iterator[str]:
         if self.first_cell:
             line = self._on_first_cell(line, match)
         else:
@@ -159,7 +161,7 @@ def _merge_lines(
     paths: list[str],
     path_info: pd.DataFrame,
     mcnp_lines: Iterable[str],
-) -> Generator[str, None, None]:
+) -> Iterator[str]:
     merger = _Merger(paths, path_info, mcnp_lines)
     yield from merger.merge_lines()
 

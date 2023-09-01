@@ -23,24 +23,24 @@ def test_merger(data):
 def test_extract_number_and_density(number, density, factor, expected):
     ndf_table = pd.DataFrame.from_records(
         data=[(number, density, factor)],
-        columns=["number", "density", "factor"],
+        columns=["material_number", "density", "factor"],
     )
     actual = m.extract_number_and_density(0, ndf_table)
     assert expected == actual
 
 
 @pytest.mark.parametrize(
-    "number,density,factor,exception",
+    "material_number,density,factor,exception",
     [
         (-1, 7.93, pd.NA, m.PathInfoError),
         (1, -7.93, np.NAN, m.PathInfoError),
         (1, 2.0, -2.0, m.PathInfoError),
     ],
 )
-def test_extract_number_and_density_bad_path(number, density, factor, exception):
+def test_extract_number_and_density_bad_path(material_number, density, factor, exception):
     ndf_table = pd.DataFrame.from_records(
-        data=[(number, density, factor)],
-        columns=["number", "density", "factor"],
+        data=[(material_number, density, factor)],
+        columns=["material_number", "density", "factor"],
     )
     with pytest.raises(exception):
         m.extract_number_and_density(0, ndf_table)

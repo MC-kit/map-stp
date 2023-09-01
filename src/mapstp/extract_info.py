@@ -1,7 +1,7 @@
 """Extract meta information from paths given in an STP file."""
 from __future__ import annotations
 
-from typing import Generator
+from typing import Iterator
 
 import re
 
@@ -58,21 +58,25 @@ def extract_path_info(paths: list[list[str]], material_index: pd.DataFrame) -> p
     """
     return pd.DataFrame.from_records(
         _records(paths, material_index),
-        columns=["number", "density", "factor", "rwcl"],
+        columns=["material_number", "density", "factor", "rwcl"],
     )
 
 
 def _records(
     paths,
     material_index,
-) -> Generator[tuple[int | None, float | None, float | None, str | None], None, None]:
+) -> Iterator[tuple[int | None, float | None, float | None, str | None]]:
     for path in paths:
         meta_info = _extract_meta_info_from_path(path)
         if meta_info.mnemonic:
-            density, number = _define_material_number_and_density(material_index, meta_info, path)
+            density, material_number = _define_material_number_and_density(
+                material_index,
+                meta_info,
+                path,
+            )
         else:
-            number = density = None
-        yield number, density, meta_info.factor, meta_info.rwcl
+            material_number = density = None
+        yield material_number, density, meta_info.factor, meta_info.rwcl
 
 
 def _define_material_number_and_density(
@@ -81,7 +85,7 @@ def _define_material_number_and_density(
     path,
 ) -> tuple[float | None, int | None]:
     try:
-        number: int | None = int(material_index.loc[meta_info.mnemonic]["number"])
+        material_number: int | None = int(material_index.loc[meta_info.mnemonic]["number"])
     except KeyError:
         raise KeyError(
             f"The mnemonic {meta_info.mnemonic!r} "
@@ -99,7 +103,7 @@ def _define_material_number_and_density(
             f"The density for mnemonic {meta_info.mnemonic!r} "
             "in the material index is to be positive.",
         )
-    return density, number
+    return density, material_number
 
 
 def _extract_meta_info_from_path(path) -> _MetaInfoCollector:

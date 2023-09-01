@@ -146,7 +146,7 @@ def materials_spec_mapper(materials_map: dict[int, str]) -> Callable[[int], str]
                 text = (
                     f"m{used_number}  "
                     "$ dummy: material was not provided to mapstp\n"
-                    "        1.001.31c  1.0\n"
+                    "        1001.31c  1.0\n"
                 )
             return text
         return ""
@@ -164,7 +164,7 @@ def get_used_materials(materials_map: dict[int, str], path_info: pd.DataFrame) -
     Returns:
         All the used materials specs to be used as part of MCNP model text.
     """
-    values = path_info["number"].to_numpy()
+    values = path_info["material_number"].to_numpy()
     used_numbers = sorted({int(m) for m in values if not np.isnan(m)})
     used_materials_texts = list(map(materials_spec_mapper(materials_map), used_numbers))
     return "".join(used_materials_texts)

@@ -8,6 +8,7 @@ import re
 from dataclasses import dataclass, field
 
 from mapstp.exceptions import FileError, STPParserError
+from mapstp.utils import decode_russian
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -149,7 +150,7 @@ class Link(Numbered):
             STPParserError: on invalid input
         """
         match = _LINK_PATTERN.search(text)
-        if not match:
+        if not match:  # pragma: no cover
             raise STPParserError(f"not a 'Next assembly usage' line: {text!r}")
         number = int(match["digits"])
         name = match["name"]
@@ -179,7 +180,7 @@ class Body(Numbered):
             STPParserError: on invalid input
         """
         match = _BODY_PATTERN.search(text)
-        if not match:
+        if not match:  # pragma: no cover
             raise STPParserError(f"not a 'solid brep' line: {text!r}")
         number = int(match["digits"])
         name = match["name"]
@@ -214,15 +215,16 @@ def parse(inp: TextIO) -> ParseResult:
     for line_no_minus_3, line in enumerate(inp):
         match = _SELECT_PATTERN.search(line)
         if match:
+            _line = decode_russian(line)
             try:
                 may_have_components = _process_line(
                     match,
-                    line,
+                    _line,
                     links,
                     may_have_components,
                     products,
                 )
-            except STPParserError as exception:
+            except STPParserError as exception:  # pragma: no cover
                 raise FileError(f"Error in line {line_no_minus_3 + 3}") from exception
     return products, links
 
@@ -237,14 +239,14 @@ def _process_line(match, line, links, may_have_components: bool, products) -> bo
         if may_have_components:
             product = Product.from_string(line)
             products.append(product)
-    else:
+    else:  # pragma: no cover
         msg = "Shouldn't be here, check _SELECT_PATTERN"
         raise STPParserError(msg)
     return may_have_components
 
 
 def _add_link(line, links, may_have_components):
-    if not may_have_components:
+    if not may_have_components:  # pragma: no cover
         msg = "Unexpected `link` is found in `simple` STP"
         raise STPParserError(msg)
     link = Link.from_string(line)

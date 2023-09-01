@@ -3,8 +3,11 @@ from __future__ import annotations
 
 import re
 
-CELL_START_PATTERN = re.compile(r"^\s{0,5}\d+\s+0")
-"""Line starts with number followed with 0."""
+CELL_START_PATTERN = re.compile(r"^\s{0,5}(?P<number>\d+)\s+\d")
+"""Line starts with two numbers."""
+
+VOID_CELL_START_PATTERN = re.compile(r"^\s{0,5}(?P<number>\d+)\s+0\s")
+"""Line starts with a number and following zero."""
 
 CELLS_END_PATTERN = re.compile(r"^\s*$")
 """Empty line.
