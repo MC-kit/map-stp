@@ -244,6 +244,10 @@ def _print_control_cards_with_used_materials(
 def join_paths(paths: list[list[str]], separator: str = "/") -> list[str]:
     """Collect rows of strings to string.
 
+    Note:
+        omit the first part in a stp path, which is duplicated in
+        all the stp paths, to be consistent with names in volumes.json.
+
     Args:
         paths: list of stp paths defined as list of strings
         separator: character to be used as separator
@@ -251,4 +255,4 @@ def join_paths(paths: list[list[str]], separator: str = "/") -> list[str]:
     Returns:
         list of joined stp paths
     """
-    return [separator.join(path) for path in paths]
+    return [separator.join(path[1:]) for path in paths]

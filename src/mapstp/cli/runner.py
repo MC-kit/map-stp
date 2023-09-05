@@ -31,7 +31,7 @@ import click
 
 from mapstp import __name__ as package_name
 from mapstp import __summary__, __version__
-from mapstp.cli.logging import init_logger, logger
+from mapstp.cli.mapstp_logging import init_logger, logger
 from mapstp.materials import get_used_materials, load_materials_map
 from mapstp.merge import join_paths, merge_paths
 from mapstp.save_table import combine_cell_table, create_excel, create_sql
@@ -183,17 +183,17 @@ def mapstp(  # noqa: PLR0913
     paths, path_info = create_path_info(materials_index, stp)
     materials_map = load_materials_map(materials) if materials else None
     used_materials_text = get_used_materials(materials_map, path_info) if materials_map else None
+    joined_paths = join_paths(paths, separator)
     if mcnp:
         _mcnp = Path(mcnp)
         logger.info("Tagging model {}", mcnp)
         with select_output(override, output) as _output:
-            joined_paths = join_paths(paths, separator)
             merge_paths(_output, joined_paths, path_info, _mcnp, used_materials_text)
     stp_path = Path(stp)
     if not start_cell_number:
         start_cell_number = find_first_cell_number(mcnp) if mcnp else 1
-    volumes_map = json.dumps(Path(volumes).read_text()) if volumes else None
-    cell_info = combine_cell_table(paths, path_info, separator, start_cell_number, volumes_map)
+    volumes_map = json.loads(Path(volumes).read_text()) if volumes else None
+    cell_info = combine_cell_table(joined_paths, path_info, start_cell_number, volumes_map)
     _excel = Path(excel) if excel else Path(stp_path.stem + ".xlsx")
     can_override(_excel, override)
     create_excel(_excel, cell_info)

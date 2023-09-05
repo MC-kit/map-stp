@@ -14,18 +14,16 @@ if TYPE_CHECKING:
 
 
 def combine_cell_table(
-    paths: list[list[str]],
+    joined_paths: list[list[str]],
     path_info: pd.DataFrame,
-    separator: str = "/",
     start_cell_number: int = 1,
     volumes_map: dict[str, float] | None = None,
 ) -> pd.DataFrame:
     """Combine table with information associated with cells.
 
     Args:
-        paths: STP paths for each cell
+        joined_paths: STP paths for each cell
         path_info: number, density, factor for each cell
-        separator: character to separate STP path parts, default "/"
         start_cell_number: number to start cell numbering in the Excel, default 1
         volumes_map: json with cell volumes, optional
 
@@ -33,14 +31,15 @@ def combine_cell_table(
          The dataframe with cell, material, density, factor, rwcl id, STP path and volume.
     """
     temp_df = path_info.copy()
-    temp_df["STP path"] = [separator.join(x) for x in paths]
-    temp_df["cell"] = list(range(start_cell_number, len(paths) + start_cell_number))
+    temp_df["STP path"] = joined_paths
+    paths_length = len(joined_paths)
+    temp_df["cell"] = list(range(start_cell_number, paths_length + start_cell_number))
     columns = ["cell", "material_number", "density", "factor", "rwcl", "volume", "STP path"]
     if volumes_map:
-        temp_df["volume"] = np.empty((len(paths),), dtype=float)
-        temp_df.set_index("STP path")
+        temp_df["volume"] = np.empty((paths_length,), dtype=float)
+        temp_df = temp_df.set_index("STP path")
         for k, v in volumes_map.items():
-            temp_df.loc[k].volume = v
+            temp_df.loc[k[1:], "volume"] = v  # omit the first '/'
         temp_df = temp_df.reset_index()
     else:
         temp_df["volume"] = None
@@ -64,14 +63,17 @@ def create_excel(
         cell_info.to_excel(xlsx, sheet_name="Cells")
 
 
-# noinspection SqlNoDataSourceInspection
+# noinspection SqlNoDataSourceInspection,SqlResolve
 def create_sql(
     sql: Path,
     cell_info: pd.DataFrame,
 ) -> None:
     """Write Excel file presenting information for each cell.
 
-     The information includes material number, density, fraction applied, rwcl id, and STP path.
+    The information includes material number, density, fraction applied, rwcl id, and STP path.
+
+    Note:
+        stp_path is not unique: cells corresponding to linked bodies have the same stp path
 
     Args:
         sql: output SQLite3 file name
@@ -92,7 +94,6 @@ def create_sql(
                 volume real,
                 stp_path text
             );
-            create unique index ix_cell_info_stp on cell_info(stp_path);
             """,
         )
         cur.executemany(
