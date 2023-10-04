@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 logger = getLogger()
 
 
-def is_defined(number: int | float | None) -> bool:
+def is_defined(number: float | None) -> bool:
     """Check if number coming from a DataFrame object cell is not None or NaN.
 
     Args:
@@ -245,7 +245,8 @@ def join_paths(paths: list[list[str]], separator: str = "/") -> list[str]:
     """Collect rows of strings to string.
 
     Note:
-        omit the first part in a stp path, which is duplicated in
+        if stp path contains more than one part,
+        then omit the first part, which in that case is duplicated in
         all the stp paths, to be consistent with names in volumes.json.
 
     Args:
@@ -255,4 +256,10 @@ def join_paths(paths: list[list[str]], separator: str = "/") -> list[str]:
     Returns:
         list of joined stp paths
     """
-    return [separator.join(path[1:]) for path in paths]
+
+    def select_unique_parts(path: list[str]) -> list[str]:
+        if len(path) > 1:
+            return path[1:]
+        return path
+
+    return [separator.join(select_unique_parts(path)) for path in paths]
