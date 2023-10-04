@@ -642,6 +642,17 @@ files = [
 ]
 
 [[package]]
+name = "eradicate"
+version = "2.3.0"
+description = "Removes commented-out code."
+optional = false
+python-versions = "*"
+files = [
+    {file = "eradicate-2.3.0-py3-none-any.whl", hash = "sha256:2b29b3dd27171f209e4ddd8204b70c02f0682ae95eecb353f10e8d72b149c63e"},
+    {file = "eradicate-2.3.0.tar.gz", hash = "sha256:06df115be3b87d0fc1c483db22a2ebb12bcf40585722810d809cc770f5031c37"},
+]
+
+[[package]]
 name = "et-xmlfile"
 version = "1.1.0"
 description = "An implementation of lxml.xmlfile for the standard library"
@@ -890,6 +901,22 @@ files = [
 [package.dependencies]
 flake8 = ">=3"
 pydocstyle = ">=2.1"
+
+[[package]]
+name = "flake8-eradicate"
+version = "1.5.0"
+description = "Flake8 plugin to find commented out code"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "flake8_eradicate-1.5.0-py3-none-any.whl", hash = "sha256:18acc922ad7de623f5247c7d5595da068525ec5437dd53b22ec2259b96ce9d22"},
+    {file = "flake8_eradicate-1.5.0.tar.gz", hash = "sha256:aee636cb9ecb5594a7cd92d67ad73eb69909e5cc7bd81710cf9d00970f3983a6"},
+]
+
+[package.dependencies]
+attrs = "*"
+eradicate = ">=2.0,<3.0"
+flake8 = ">5"
 
 [[package]]
 name = "flake8-expression-complexity"
@@ -2926,23 +2953,24 @@ files = [
 
 [[package]]
 name = "ruff-lsp"
-version = "0.0.24"
+version = "0.0.40"
 description = "A Language Server Protocol implementation for Ruff."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "ruff_lsp-0.0.24-py3-none-any.whl", hash = "sha256:71207b0a64f40577db3e9aef0b1331fcf4122f9b98bba66b905d41706d639e65"},
-    {file = "ruff_lsp-0.0.24.tar.gz", hash = "sha256:d617bf19893c3bd2ea3d71f79aeede196b91ca08831b53a727e24d4f63f29f3a"},
+    {file = "ruff_lsp-0.0.40-py3-none-any.whl", hash = "sha256:8be548244252cef9ad5f6379fbe944d78ba24c09de28c390220d4a98168a6908"},
+    {file = "ruff_lsp-0.0.40.tar.gz", hash = "sha256:15e7b4a500a11cca34040348a689830ea5739dc2edb0ad51a05deec293bfacf7"},
 ]
 
 [package.dependencies]
 lsprotocol = ">=2023.0.0a1"
+packaging = ">=23.1"
 pygls = ">=1.0.1"
-ruff = ">=0.0.253"
+ruff = ">=0.0.274"
 typing-extensions = "*"
 
 [package.extras]
-dev = ["black (==22.12.0)", "mypy (==0.991)", "python-lsp-jsonrpc (==1.0.0)"]
+dev = ["mypy (==1.4.1)", "pip-tools (>=6.13.0,<7.0.0)", "pytest (>=7.3.1,<8.0.0)", "pytest-asyncio (==0.21.1)", "python-lsp-jsonrpc (==1.0.0)"]
 
 [[package]]
 name = "setuptools"
@@ -3654,4 +3682,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "52ee910ca1e45aaf33f29cd3f0b572c73c57a289fbe3a3ba44e1ae18c1307d39"
+content-hash = "0f2bb66dac9294eccb07e9463d5eef2b4108d101b9fc0c3be306eaac297ecc35"
