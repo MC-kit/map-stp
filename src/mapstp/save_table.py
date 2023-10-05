@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 def combine_cell_table(
-    joined_paths: list[list[str]],
+    joined_paths: list[str],
     path_info: pd.DataFrame,
     start_cell_number: int = 1,
     volumes_map: dict[str, float] | None = None,
