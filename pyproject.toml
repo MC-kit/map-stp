@@ -36,10 +36,10 @@ Chnagelog = "https://github.com/MC-kit/mapstp/releases"
 
 
 [tool.poetry.dependencies]
-python = ">=3.9,<4.0"
+python = ">=3.9,<3.13"
 click = ">=8.0.4"
 loguru = ">=0.6.0"
-numpy = ">=1.24.2"
+numpy = ">=1.26.0"
 openpyxl = ">=3.0.9"
 pandas = ">=2.0.0"
 
@@ -220,7 +220,6 @@ log_date_format = "%Y-%m-%d %H:%M:%S"
 quiet = true
 options = ""
 
-# [tool.coverage]
 [tool.coverage.paths]
 source = ["src", ".nox/*/site-packages"]
 
