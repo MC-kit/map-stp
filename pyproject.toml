@@ -396,11 +396,11 @@ ignore = [
     "ANN102", # ANN102 Missing type annotation for cls in classmethod
     # "ANN201", # Missing return type annotation for public function `mesh2com`
     "ANN202", # ANN202 Missing return type annotation for protected function: ... dispatching
-    "ANN204", # ANN204 Missing return type annotation for special method
+    # "ANN204", # ANN204 Missing return type annotation for special method
 
     # "ARG001", # Unused function argument: `expected`
 
-    "B905",   # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.8, 3.9
+    "B905",   # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.9
 
     # "C812",   # C812 Missing trailing comma: black compatibility
     # "C901",   # too complex - ...
