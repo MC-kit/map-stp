@@ -43,7 +43,7 @@ class _Loader:
     def _in_material_card(self) -> bool:
         return self.material_no > 0
 
-    def _process_line(self, line) -> None:
+    def _process_line(self, line: str) -> None:
         if self._in_material_card:
             match = CARD_PATTERN.search(line)
             if not match:

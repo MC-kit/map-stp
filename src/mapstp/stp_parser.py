@@ -230,7 +230,13 @@ def parse(inp: TextIO) -> ParseResult:
     return products, links
 
 
-def _process_line(match, line, links, may_have_components: bool, products) -> bool:
+def _process_line(
+    match: re.Match,
+    line: str,
+    links: list[Link],
+    may_have_components: bool,
+    products: list[Product],
+) -> bool:
     group = match.lastgroup
     if group == "solid":
         may_have_components = _process_body(line, may_have_components, products)
@@ -246,7 +252,7 @@ def _process_line(match, line, links, may_have_components: bool, products) -> bo
     return may_have_components
 
 
-def _add_link(line, links, may_have_components):
+def _add_link(line: str, links: list[Link], may_have_components: bool) -> None:
     if not may_have_components:  # pragma: no cover
         msg = "Unexpected `link` is found in `simple` STP"
         raise STPParserError(msg)
@@ -254,7 +260,7 @@ def _add_link(line, links, may_have_components):
     links.append((link.src, link.dst))
 
 
-def _process_body(line: str, may_have_components: bool, products) -> bool:
+def _process_body(line: str, may_have_components: bool, products: list[Product]) -> bool:
     body = Body.from_string(line)
     if not products:
         # Case for STP without components, just bodies

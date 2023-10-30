@@ -390,8 +390,8 @@ select= [
 
 # Ignore rules that currently fail on the codebase
 ignore = [
-    "ANN001", # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
-    "ANN002", # ANN002 Missing type annotation for *drop_items: ... as above
+    # "ANN001", # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
+    # "ANN002", # ANN002 Missing type annotation for *drop_items: ... as above
     "ANN101", # ANN101 Missing type annotation for self in method
     "ANN102", # ANN102 Missing type annotation for cls in classmethod
     # "ANN201", # Missing return type annotation for public function `mesh2com`
@@ -400,7 +400,7 @@ ignore = [
 
     # "ARG001", # Unused function argument: `expected`
 
-    "B905",   # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.9
+    # "B905",   # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.9
 
     # "C812",   # C812 Missing trailing comma: black compatibility
     # "C901",   # too complex - ...
@@ -519,6 +519,7 @@ exclude = [
 "__init__.py" = ["E402"]
 "benchmarks/*" = ["S101"]
 "noxfile.py" = ["ANN"]
+"cli/*" = ["ANN001"]
 "tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104",  "PLR2004", "S101"]
 "tools/*" = ["T201", "INP001", "S603", "S607"]
 

@@ -66,8 +66,8 @@ def extract_path_info(paths: list[list[str]], material_index: pd.DataFrame) -> p
 
 
 def _records(
-    paths,
-    material_index,
+    paths: list[str],
+    material_index: pd.DataFrame,
 ) -> Iterator[tuple[int | None, float | None, float | None, str | None]]:
     for path in paths:
         meta_info = _extract_meta_info_from_path(path)
@@ -83,9 +83,9 @@ def _records(
 
 
 def _define_material_number_and_density(
-    material_index,
-    meta_info,
-    path,
+    material_index: pd.DataFrame,
+    meta_info: _MetaInfoCollector,
+    path: list[str],
 ) -> tuple[float | None, int | None]:
     try:
         material_number: int | None = int(material_index.loc[meta_info.mnemonic]["number"])
@@ -109,7 +109,7 @@ def _define_material_number_and_density(
     return density, material_number
 
 
-def _extract_meta_info_from_path(path) -> _MetaInfoCollector:
+def _extract_meta_info_from_path(path: list[str]) -> _MetaInfoCollector:
     meta_info = _MetaInfoCollector()
     for i, part in enumerate(path):
         match = _META_PATTERN.match(part)

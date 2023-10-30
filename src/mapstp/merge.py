@@ -21,8 +21,12 @@ from mapstp.utils.io import read_mcnp_sections
 from mapstp.utils.re import CELL_START_PATTERN
 
 if TYPE_CHECKING:
+    import re
+
     from collections.abc import Iterable, Iterator
     from pathlib import Path
+
+    from mapstp.utils.io import MCNPSections
 
 logger = getLogger()
 
@@ -55,7 +59,7 @@ def extract_number_and_density(row: int, path_info: pd.DataFrame) -> tuple[int, 
     """
     material_number, density, factor = path_info.iloc[row][["material_number", "density", "factor"]]
 
-    def _validate(expr, msg):
+    def _validate(expr: bool, msg: str):
         if not expr:
             raise PathInfoError(msg, row, path_info)
 
@@ -132,7 +136,7 @@ class _Merger:
                 self.paths_length,
             )
 
-    def _on_cell_start(self, line, match) -> Iterator[str]:
+    def _on_cell_start(self, line: str, match: re.Match) -> Iterator[str]:
         if self.first_cell:
             line = self._on_first_cell(line, match)
         else:
@@ -141,7 +145,7 @@ class _Merger:
                 yield self.format_comment()
         yield line
 
-    def _on_next_cell(self, line: str, match) -> str:
+    def _on_next_cell(self, line: str, match: re.Match) -> str:
         first_cell_line_info_row = self.current_path_idx + 1
         if first_cell_line_info_row < self.paths_length:
             line = _correct_first_line(
@@ -152,7 +156,7 @@ class _Merger:
             )
         return line
 
-    def _on_first_cell(self, line: str, match) -> str:
+    def _on_first_cell(self, line: str, match: re.Match) -> str:
         line = _correct_first_line(line, match.end(), self.current_path_idx, self.path_info)
         self.first_cell = False
         return line
@@ -199,17 +203,22 @@ def merge_paths(
     _print_other_sections(mcnp_sections, output, used_materials_text)
 
 
-def _print_other_sections(mcnp_sections, output, used_materials_text) -> None:
+def _print_other_sections(
+    mcnp_sections: MCNPSections,
+    output: TextIO,
+    used_materials_text: str,
+) -> None:
     surfaces = mcnp_sections.surfaces
     if surfaces:
         print(surfaces, file=output, end="")
         print("\n\n", file=output, end="")
 
         cards = mcnp_sections.cards
+        remainder = mcnp_sections.remainder
         if cards:
             _print_control_cards_with_used_materials(
                 cards,
-                mcnp_sections,
+                remainder,
                 output,
                 used_materials_text,
             )
@@ -223,10 +232,10 @@ def _print_other_sections(mcnp_sections, output, used_materials_text) -> None:
 
 
 def _print_control_cards_with_used_materials(
-    cards,
-    mcnp_sections,
-    output,
-    used_materials_text,
+    cards: str,
+    remainder: str | None,
+    output: TextIO,
+    used_materials_text: str,
 ) -> None:
     if used_materials_text:
         used_materials_text = used_materials_text.strip()
@@ -237,7 +246,6 @@ def _print_control_cards_with_used_materials(
     else:
         print(cards, file=output, end="")
     print("\n\n", file=output)
-    remainder = mcnp_sections.remainder
     if remainder:
         print(remainder, file=output, end="")
 

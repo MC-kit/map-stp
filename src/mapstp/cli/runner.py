@@ -144,24 +144,24 @@ to the meta information provided in the STP.
 @click.help_option()
 @click.pass_context
 def mapstp(  # noqa: PLR0913
-    ctx,
+    ctx: dict,
     override: bool,
-    output,
-    excel,
-    sql,
-    volumes,
-    materials,
-    materials_index,
-    separator,
-    start_cell_number,
-    stp,
-    mcnp,
+    output: str,
+    excel: str,
+    sql: str,
+    volumes: str | None,
+    materials: str | None,
+    materials_index: str | None,
+    separator: str,
+    start_cell_number: int | None,
+    stp: str,
+    mcnp: str,
 ) -> None:
     """Transfers meta information from STP to MCNP model and Excel.
 
     Args:
         ctx: context object
-        override: override existing files if exist, if false - raise exception
+        override: override existing files if any, if false - raise exception
         output: where to store resulting mcnp
         excel: excel to store mapping cell->tags, stp path, volume(if available)
         sql: as above but in SQLite3 table 'cell_info'
@@ -170,7 +170,7 @@ def mapstp(  # noqa: PLR0913
         materials_index: excel with list of mnemonics mapping to material numbers from `materials` file
         separator: character to separate parts of stp path on output, default(/)
         start_cell_number: number of cell to start mapping
-        stp: STP file correspoinding to the input model
+        stp: STP file corresponding to the input model
         mcnp: input MCNP model - to be tagged in output
     """
     if not (mcnp or excel):
