@@ -6,7 +6,7 @@ if specified in STP paths.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable, Iterator, TextIO
+from typing import TYPE_CHECKING, TextIO
 
 import math
 
@@ -21,6 +21,7 @@ from mapstp.utils.io import read_mcnp_sections
 from mapstp.utils.re import CELL_START_PATTERN
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
     from pathlib import Path
 
 logger = getLogger()

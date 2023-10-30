@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING
 
 import os
 
@@ -14,6 +14,8 @@ from mapstp.tree import create_bodies_paths
 from mapstp.utils.resource import path_resolver
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     import pandas as pd
 
 

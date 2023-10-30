@@ -1,7 +1,7 @@
 """Extract meta information from paths given in an STP file."""
 from __future__ import annotations
 
-from typing import Iterator
+from typing import TYPE_CHECKING
 
 import re
 
@@ -12,6 +12,9 @@ import numpy as np
 import pandas as pd
 
 _META_PATTERN = re.compile(r".*\[(?P<meta>[^]]+)]")
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 @dataclass

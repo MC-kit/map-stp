@@ -1,7 +1,7 @@
 """Data structures and algorithms to store and process STP nodes and their links."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable, Iterator, cast
+from typing import TYPE_CHECKING, cast
 
 from dataclasses import dataclass
 
@@ -9,6 +9,8 @@ from mapstp.exceptions import STPParserError
 from mapstp.stp_parser import LeafProduct, make_index
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
+
     from mapstp.stp_parser import LinksList, Product
 
 

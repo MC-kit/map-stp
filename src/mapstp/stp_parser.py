@@ -1,7 +1,7 @@
 """The module defines methods and classes to parse STP file and represent parsing results."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable, List, TextIO, Tuple
+from typing import TYPE_CHECKING, TextIO
 
 import re
 
@@ -11,6 +11,7 @@ from mapstp.exceptions import FileError, STPParserError
 from mapstp.utils import decode_russian
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from pathlib import Path
 
 # Hint: check patterns on https://pythex.org/
@@ -187,8 +188,8 @@ class Body(Numbered):
         return cls(number, name)
 
 
-LinksList = List[Tuple[int, int]]
-ParseResult = Tuple[List[Product], LinksList]
+LinksList = list[tuple[int, int]]
+ParseResult = tuple[list[Product], LinksList]
 
 _VALID_FIRST_LINE = "ISO-10303-21;\n"
 _VALID_THIRD_LINE = "FILE_DESCRIPTION(('STEP AP214'),'1');\n"

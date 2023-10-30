@@ -1,7 +1,7 @@
 """Input/output utility methods."""
 from __future__ import annotations
 
-from typing import Iterator, TextIO, Union
+from typing import TYPE_CHECKING, TextIO, Union
 
 import os
 import sys
@@ -16,6 +16,9 @@ from mapstp.utils.re import (
     MCNP_SECTIONS_SEPARATOR_PATTERN,
     VOID_CELL_START_PATTERN,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 PathLike = Union[str, Path, os.PathLike]
 

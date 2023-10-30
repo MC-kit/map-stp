@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable
+from typing import TYPE_CHECKING
 
 import re
 import sqlite3 as sq
@@ -16,6 +16,9 @@ from mapstp.cli.runner import __summary__, __version__, mapstp
 from mapstp.materials import load_materials_map
 from mapstp.utils.io import find_first_cell_number, find_first_void_cell_number, read_mcnp_sections
 from mapstp.utils.re import MATERIAL_PATTERN, VOID_CELL_START_PATTERN
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 # noinspection PyTypeChecker
