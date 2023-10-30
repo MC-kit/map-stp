@@ -59,6 +59,7 @@ tomli = { version = ">=2.0.1", python="<3.11" }
 pre-commit = ">=2.15.0"
 rstcheck = ">=6.1.2"
 pydocstringformatter = ">=0.7.3"
+pyupgrade = ">=3.15.0"
 
 [tool.poetry.group.black.dependencies]
 black = ">=22.8.0"
@@ -144,7 +145,7 @@ ruff = ">=0.0.259"
 [tool.isort]
 atomic = true
 ensure_newline_before_comments = true
-known_first_party = "src"
+known_first_party = "mapstp"
 known_third_party = "mpl_toolkits,matplotlib,numpy,scipy"
 known_typing = "typing,types,typing_extensions,mypy,mypy_extensions"
 sections = "FUTURE,TYPING,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
@@ -314,7 +315,6 @@ context=5
 [tool.tryceratops]
 include = ["src"]
 experimental = true
-
 
 [tool.pydocstringformatter]
 write = true
