@@ -452,8 +452,8 @@ ignore = [
     # "F823",  # Local variable `VARIABLE` referenced before assignment
     # "F841",  # Local variable `VARIABLE` is assigned to but never used
 
-    # "FBT001",  # Boolean positional arg in function definition (TODO!)
-    # "FBT002",  # Boolean default value in function definition (TODO!)
+    # "FBT001",  # Boolean positional arg in function definition
+    # "FBT002",  # Boolean default value in function definition
     # "FBT003",  # Boolean positional value in function call
 
     "I001",    # import order is controlled by isort
