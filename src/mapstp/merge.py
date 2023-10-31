@@ -59,24 +59,24 @@ def extract_number_and_density(row: int, path_info: pd.DataFrame) -> tuple[int, 
     """
     material_number, density, factor = path_info.iloc[row][["material_number", "density", "factor"]]
 
-    def _validate(expr: bool, msg: str):
-        if not expr:
+    def _validate(*, res: bool, msg: str):
+        if not res:
             raise PathInfoError(msg, row, path_info)
 
     if not is_defined(material_number):
         return None  # void space
 
     _validate(
-        is_defined(density),
-        f"The `density` value is not defined for material number {material_number}.",
+        res=is_defined(density),
+        msg=f"The `density` value is not defined for material number {material_number}.",
     )
-    _validate(material_number > 0, "The values in `number` column are to be positive.")
-    _validate(density >= 0.0, "The values in `density` column cannot be negative.")
+    _validate(res=material_number > 0, msg="The values in `number` column are to be positive.")
+    _validate(res=density >= 0.0, msg="The values in `density` column cannot be negative.")
 
     if is_defined(factor):
         _validate(
-            factor >= 0.0,
-            "The values in `factor` column cannot be negative.",
+            res=factor >= 0.0,
+            msg="The values in `factor` column cannot be negative.",
         )
         density *= factor
 
@@ -109,18 +109,18 @@ class _Merger:
     current_path_idx: int = field(init=False, default=0)
     paths_length: int = field(init=False)
 
-    def __post_init__(self) -> None:
+    def __post_init__(self: _Merger) -> None:
         self.first_cell = True
         self.cells_over = False
         self.current_path_idx = 0
         self.paths_length = len(self.paths)
 
-    def format_comment(self) -> str:
-        i = self.current_path_idx
-        self.current_path_idx += 1
-        return f"      $ stp: {self.paths[i]}"
+    def merge_lines(self: _Merger) -> Iterator[str]:
+        """Add information to MCNP cells.
 
-    def merge_lines(self) -> Iterator[str]:
+        Yields:
+            line from a cell descriptions or added information
+        """
         for line in self.mcnp_lines:
             match = CELL_START_PATTERN.match(line)
             if match:
@@ -128,7 +128,7 @@ class _Merger:
             else:
                 yield line
         if self.current_path_idx < self.paths_length:
-            yield self.format_comment()
+            yield self._format_comment()
         if self.current_path_idx != self.paths_length:
             logger.warning(
                 "Only {} cells merged, STP specifies {} bodies.",
@@ -136,16 +136,21 @@ class _Merger:
                 self.paths_length,
             )
 
-    def _on_cell_start(self, line: str, match: re.Match) -> Iterator[str]:
+    def _format_comment(self: _Merger) -> str:
+        i = self.current_path_idx
+        self.current_path_idx += 1
+        return f"      $ stp: {self.paths[i]}"
+
+    def _on_cell_start(self: _Merger, line: str, match: re.Match) -> Iterator[str]:
         if self.first_cell:
             line = self._on_first_cell(line, match)
         else:
             line = self._on_next_cell(line, match)
             if self.current_path_idx < self.paths_length:
-                yield self.format_comment()
+                yield self._format_comment()
         yield line
 
-    def _on_next_cell(self, line: str, match: re.Match) -> str:
+    def _on_next_cell(self: _Merger, line: str, match: re.Match) -> str:
         first_cell_line_info_row = self.current_path_idx + 1
         if first_cell_line_info_row < self.paths_length:
             line = _correct_first_line(
@@ -156,7 +161,7 @@ class _Merger:
             )
         return line
 
-    def _on_first_cell(self, line: str, match: re.Match) -> str:
+    def _on_first_cell(self: _Merger, line: str, match: re.Match) -> str:
         line = _correct_first_line(line, match.end(), self.current_path_idx, self.path_info)
         self.first_cell = False
         return line
@@ -206,7 +211,7 @@ def merge_paths(
 def _print_other_sections(
     mcnp_sections: MCNPSections,
     output: TextIO,
-    used_materials_text: str,
+    used_materials_text: str | None,
 ) -> None:
     surfaces = mcnp_sections.surfaces
     if surfaces:
@@ -235,7 +240,7 @@ def _print_control_cards_with_used_materials(
     cards: str,
     remainder: str | None,
     output: TextIO,
-    used_materials_text: str,
+    used_materials_text: str | None,
 ) -> None:
     if used_materials_text:
         used_materials_text = used_materials_text.strip()

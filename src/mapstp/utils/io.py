@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 PathLike = Union[str, Path, os.PathLike]
 
 
-def can_override(path: Path, override: bool) -> Path:
+def can_override(path: Path, *, override: bool) -> Path:
     """Check if it's allowed to override a `path`.
 
     Args:
@@ -37,10 +37,11 @@ def can_override(path: Path, override: bool) -> Path:
         FileExistsError: if file exists, but override is not allowed.
     """
     if not override and path.exists():
-        raise FileExistsError(
+        msg = (
             f"File {path} already exists."
-            "Consider to use '--override' command line option or remove the file.",
+            "Consider to use '--override' command line option or remove the file."
         )
+        raise FileExistsError(msg)
     return path
 
 
@@ -62,7 +63,8 @@ def find_first_cell_number(mcnp: str | Path) -> int:
             match = CELL_START_PATTERN.search(line)
             if match:
                 return int(match["number"])
-    raise ValueError(f"Cells are not found in {mcnp}. Is it MCNP file?")
+    msg = f"Cells are not found in {mcnp}. Is it MCNP file?"
+    raise ValueError(msg)
 
 
 def find_first_void_cell_number(mcnp: str | Path) -> int:
@@ -83,21 +85,23 @@ def find_first_void_cell_number(mcnp: str | Path) -> int:
             match = VOID_CELL_START_PATTERN.search(line)
             if match:
                 return int(match["number"])
-    raise ValueError(f"Void cells are not found in {mcnp}. Is it MCNP file?")
+    msg = f"Void cells are not found in {mcnp}. Is it MCNP file?"
+    raise ValueError(msg)
 
 
 @contextmanager
 def select_output(
-    override: bool,
     output: PathLike | None = None,
+    *,
+    override: bool,
 ) -> Iterator[TextIO]:
     """Select stream for output.
 
     If the `output` is specified, then checks if we can override it.
 
     Args:
-        override: permission to override, if `output` file exists
         output: optional file name for output stream
+        override: permission to override, if `output` file exists
 
     Yields:
         stdout, if `output` file name is  not specified (None),
@@ -105,7 +109,7 @@ def select_output(
     """
     if output:
         p = Path(output)
-        can_override(p, override)
+        can_override(p, override=override)
         _output: TextIO = p.open(mode="w", encoding="utf8")
         logger.info("Tagged mcnp will be saved to {}", p)
     else:

@@ -35,15 +35,15 @@ class _Loader:
         init=False,
     )
 
-    def __post_init__(self) -> None:
+    def __post_init__(self: _Loader) -> None:
         for line in self.stream:
             self._process_line(line)
 
     @property
-    def _in_material_card(self) -> bool:
+    def _in_material_card(self: _Loader) -> bool:
         return self.material_no > 0
 
-    def _process_line(self, line: str) -> None:
+    def _process_line(self: _Loader, line: str) -> None:
         if self._in_material_card:
             match = CARD_PATTERN.search(line)
             if not match:
@@ -54,18 +54,20 @@ class _Loader:
         else:
             self._check_if_material_line(line)
 
-    def _append(self, line: str) -> None:
+    def _append(self: _Loader, line: str) -> None:
         if self.material_no > 0:
             self.materials_dict[self.material_no].append(line)
 
-    def _check_if_material_line(self, line: str) -> bool:
+    def _check_if_material_line(self: _Loader, line: str) -> bool:
         match = MATERIAL_PATTERN.search(line)
         if match:
             self.material_no = int(match["material"])
             if self.material_no <= 0:
-                raise ValueError(f"Wrong material number {self.material_no} found")
+                msg = f"Wrong material number {self.material_no} found"
+                raise ValueError(msg)
             if self.material_no in self.materials_dict:
-                raise ValueError(f"Material number {self.material_no} is duplicated")
+                msg = f"Material number {self.material_no} is duplicated"
+                raise ValueError(msg)
             self._append(line)
             return True
         return False  # skipping other cards and prepending text

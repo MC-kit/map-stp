@@ -11,7 +11,7 @@ from mapstp.stp_parser import LeafProduct, make_index
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
 
-    from mapstp.stp_parser import LinksList, Product
+    from mapstp.stp_parser import Link, LinksList, Product
 
 
 @dataclass
@@ -27,7 +27,7 @@ class Node:
     product: Product
     parent: Node | None = None
 
-    def collect_parents(self) -> Iterator[Product]:
+    def collect_parents(self: Node) -> Iterator[Product]:
         """Iterate through the parents of the node from root parent to this node.
 
         Yields:
@@ -44,7 +44,7 @@ class Tree:
     Indexes and stores results of STP file parsing.
     """
 
-    def __init__(self, products: Iterable[Product], links: LinksList) -> None:
+    def __init__(self: Tree, products: Iterable[Product], links: LinksList) -> None:
         """Create tree from objects found in an STP file.
 
         Args:
@@ -57,7 +57,7 @@ class Tree:
         for link in links:
             self._create_nodes_from_link(link)
 
-    def create_bodies_paths(self) -> list[list[str]]:
+    def create_bodies_paths(self: Tree) -> list[list[str]]:
         """Create list of paths for each body in STP file.
 
         A path is in turn a list of strings - parts of the path.
@@ -67,7 +67,7 @@ class Tree:
         """
         bodies_paths = []
         for link in self._body_links:
-            src, dst = link
+            src, dst = link.src, link.dst
             product = self._product_index[dst]
             if product.is_leaf:
                 node = self._node_index[src]
@@ -81,8 +81,8 @@ class Tree:
                     )  # TODO dvp: add transliteration for Russian names
         return bodies_paths
 
-    def _create_nodes_from_link(self, link: tuple[int, int]) -> None:
-        src, dst = link
+    def _create_nodes_from_link(self: Tree, link: Link) -> None:
+        src, dst = link.src, link.dst
         product = self._product_index[dst]
         parent = self._node_index.get(src)
         if parent is None:
@@ -92,7 +92,12 @@ class Tree:
         else:
             self._add_or_update_intermediate_node(dst, parent, product)
 
-    def _add_or_update_intermediate_node(self, dst: int, parent: Node, product: Product) -> None:
+    def _add_or_update_intermediate_node(
+        self: Tree,
+        dst: int,
+        parent: Node,
+        product: Product,
+    ) -> None:
         node = self._node_index.get(dst)
         if node is None:
             self._create_node(product, parent)
@@ -101,7 +106,7 @@ class Tree:
                 raise STPParserError
             node.parent = parent
 
-    def _create_node(self, product: Product, parent: Node | None = None) -> Node:
+    def _create_node(self: Tree, product: Product, parent: Node | None = None) -> Node:
         """Create and register a node.
 
         Args:

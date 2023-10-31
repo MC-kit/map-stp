@@ -392,8 +392,8 @@ select= [
 ignore = [
     # "ANN001", # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
     # "ANN002", # ANN002 Missing type annotation for *drop_items: ... as above
-    "ANN101", # ANN101 Missing type annotation for self in method
-    "ANN102", # ANN102 Missing type annotation for cls in classmethod
+    # "ANN101", # ANN101 Missing type annotation for self in method
+    # "ANN102", # ANN102 Missing type annotation for cls in classmethod
     # "ANN201", # Missing return type annotation for public function `mesh2com`
     "ANN202", # ANN202 Missing return type annotation for protected function: ... dispatching
     # "ANN204", # ANN204 Missing return type annotation for special method
@@ -420,8 +420,8 @@ ignore = [
 
     # "E203",   # E203: Whitespace before ‘:'
     # "E401",  # Multiple imports on one line
-    "E402",  # Module level import not at top of file
-    "E501",  # Line too long (<LENGTH> > 100 characters)
+    # "E402",  # Module level import not at top of file
+    # "E501",  # Line too long (<LENGTH> > 100 characters)
     # "E701",  # Multiple statements on one line (colon)
     # "E702",  # Multiple statements on one line (semicolon)
     # "E703",  # Statement ends with an unnecessary semicolon
@@ -437,7 +437,7 @@ ignore = [
     # "E743",  # Ambiguous function name: `<FUNCTION>`
 
     # "EM101",   # Exception must not use a string literal, assign to variable first
-    "EM102",   # Exception must not use an f-string literal, assign to variable first
+    # "EM102",   # Exception must not use an f-string literal, assign to variable first
 
     # "N803",    # Argument name `R` should be lowercase
     # "N806",    # Variable `D` in function should be lowercase
@@ -452,7 +452,7 @@ ignore = [
     # "F823",  # Local variable `VARIABLE` referenced before assignment
     # "F841",  # Local variable `VARIABLE` is assigned to but never used
 
-    "FBT001",  # Boolean positional arg in function definition (TODO!)
+    # "FBT001",  # Boolean positional arg in function definition (TODO!)
     # "FBT002",  # Boolean default value in function definition (TODO!)
     # "FBT003",  # Boolean positional value in function call
 
@@ -484,7 +484,7 @@ ignore = [
 
     # "TCH001",  # Move application import `mckit.utils.named` into a type-checking block
 
-    "TRY003",  #  Avoid specifying long messages outside the exception class
+    # "TRY003",  #  Avoid specifying long messages outside the exception class
 
     # "W503",  # Line break before binary operator: for compatibility with black settings
 ]
@@ -527,6 +527,9 @@ exclude = [
 # Unlike Flake8, default to a complexity level of 10.
 max-complexity = 10
 
+[tool.ruff.flake8-annotations]
+mypy-init-return = true  # skip return type for __init__() methods
+
 [tool.ruff.flake8-type-checking]
 strict = true
 
@@ -540,5 +543,4 @@ required-imports = ["from __future__ import annotations"]
 parametrize-names-type = "csv"
 
 [tool.ruff.pydocstyle]
-# Use Google-style docstrings.
-convention = "google"
+convention = "google"  # Use Google-style docstrings.

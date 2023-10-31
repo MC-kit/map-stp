@@ -18,7 +18,7 @@ from loguru import logger
 class InterceptHandler(logging.Handler):
     """Send events from standard logging to loguru."""
 
-    def emit(self, record: logging.LogRecord) -> None:
+    def emit(self: InterceptHandler, record: logging.LogRecord) -> None:
         """See :meth:`logging.Handler.emit`.
 
         Args:

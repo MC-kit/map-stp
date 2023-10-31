@@ -72,10 +72,12 @@ class _ParserTestResult:
     links: list[tuple[int, int]]
     case: str
 
-    def check(self, components, numbers, links):
+    def check(self, components, numbers, links: list[Link]) -> None:
         assert self.components == components, f"Wrong components, case: {self.case}"
         assert self.numbers == numbers, f"Wrong numbers, case: {self.case}"
-        assert self.links == links, f"Wrong links, case: {self.case}"
+        assert all(
+            a[0] == b.src and a[1] == b.dst for a, b in zip(self.links, links)
+        ), f"Wrong links, case: {self.case}"
 
 
 @pytest.mark.parametrize(

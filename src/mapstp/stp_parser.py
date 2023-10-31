@@ -1,7 +1,7 @@
 """The module defines methods and classes to parse STP file and represent parsing results."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TextIO
+from typing import TYPE_CHECKING, TextIO, cast
 
 import re
 
@@ -53,7 +53,7 @@ class Product(Numbered):
     name: str
 
     @property
-    def is_leaf(self) -> bool:
+    def is_leaf(self: Product) -> bool:
         """Tell if this product is the last in an STP path.
 
         The Leaf products may have bodies and can be shared between multiple paths in STP.
@@ -64,7 +64,7 @@ class Product(Numbered):
         return False
 
     @classmethod
-    def from_string(cls, text: str) -> Product:
+    def from_string(cls: type[Product], text: str) -> Product:
         """Create Product from a text string.
 
         Args:
@@ -78,23 +78,11 @@ class Product(Numbered):
         """
         match = _PRODUCT_PATTERN.search(text)
         if not match:
-            raise STPParserError(f"not a 'Product' line: {text!r}")
+            msg = f"not a 'Product' line: {text!r}"
+            raise STPParserError(msg)
         number = int(match["digits"])
         name = match["name"]
         return cls(number, name)
-
-    def append(self, body: Body) -> None:
-        """Append body to this product.
-
-        Only applicable to LeafProduct.
-
-        Args:
-            body: what to append
-
-        Raises:
-            NotImplementedError: always, should be implemented in a subclass
-        """
-        raise NotImplementedError(f"Cannot add a Body object to {self}")
 
 
 # noinspection PyClassHasNoInit
@@ -105,7 +93,7 @@ class LeafProduct(Product):
     bodies: list[Body] = field(default_factory=list)
 
     @property
-    def is_leaf(self) -> bool:
+    def is_leaf(self: Product) -> bool:
         """Tell if this product is the last in an STP path.
 
         The Leaf products may have bodies and can be shared between multiple paths in STP.
@@ -115,7 +103,7 @@ class LeafProduct(Product):
         """
         return True
 
-    def append(self, body: Body) -> None:
+    def append(self: LeafProduct, body: Body) -> None:
         """Append body to this product.
 
         Only applicable to LeafProduct.
@@ -136,7 +124,7 @@ class Link(Numbered):
     dst: int
 
     @classmethod
-    def from_string(cls, text: str) -> Link:
+    def from_string(cls: type[Link], text: str) -> Link:
         """Parse STP line with NEXT_OCCURRENCE_USAGE.
 
         The line specifies a source->destination link between products.
@@ -152,7 +140,8 @@ class Link(Numbered):
         """
         match = _LINK_PATTERN.search(text)
         if not match:  # pragma: no cover
-            raise STPParserError(f"not a 'Next assembly usage' line: {text!r}")
+            msg = f"not a 'Next assembly usage' line: {text!r}"
+            raise STPParserError(msg)
         number = int(match["digits"])
         name = match["name"]
         src = int(match["src"])
@@ -168,7 +157,7 @@ class Body(Numbered):
     name: str
 
     @classmethod
-    def from_string(cls, text: str) -> Body:
+    def from_string(cls: type[Body], text: str) -> Body:
         """Parse MANIFOLD_SOLID_BREP line.
 
         Args:
@@ -182,13 +171,14 @@ class Body(Numbered):
         """
         match = _BODY_PATTERN.search(text)
         if not match:  # pragma: no cover
-            raise STPParserError(f"not a 'solid brep' line: {text!r}")
+            msg = f"not a 'solid brep' line: {text!r}"
+            raise STPParserError(msg)
         number = int(match["digits"])
         name = match["name"]
         return cls(number, name)
 
 
-LinksList = list[tuple[int, int]]
+LinksList = list[Link]
 ParseResult = tuple[list[Product], LinksList]
 
 _VALID_FIRST_LINE = "ISO-10303-21;\n"
@@ -222,11 +212,12 @@ def parse(inp: TextIO) -> ParseResult:
                     match,
                     _line,
                     links,
-                    may_have_components,
                     products,
+                    may_have_components=may_have_components,
                 )
             except STPParserError as exception:  # pragma: no cover
-                raise FileError(f"Error in line {line_no_minus_3 + 3}") from exception
+                msg = f"Error in line {line_no_minus_3 + 3}"
+                raise FileError(msg) from exception
     return products, links
 
 
@@ -234,14 +225,15 @@ def _process_line(
     match: re.Match,
     line: str,
     links: list[Link],
-    may_have_components: bool,
     products: list[Product],
+    *,
+    may_have_components: bool,
 ) -> bool:
     group = match.lastgroup
     if group == "solid":
-        may_have_components = _process_body(line, may_have_components, products)
+        may_have_components = _process_body(line, products, may_have_components=may_have_components)
     elif group == "link":
-        _add_link(line, links, may_have_components)
+        _add_link(line, links, may_have_components=may_have_components)
     elif group == "product":
         if may_have_components:
             product = Product.from_string(line)
@@ -252,24 +244,26 @@ def _process_line(
     return may_have_components
 
 
-def _add_link(line: str, links: list[Link], may_have_components: bool) -> None:
+def _add_link(line: str, links: list[Link], *, may_have_components: bool) -> None:
     if not may_have_components:  # pragma: no cover
         msg = "Unexpected `link` is found in `simple` STP"
         raise STPParserError(msg)
     link = Link.from_string(line)
-    links.append((link.src, link.dst))
+    links.append(link)
 
 
-def _process_body(line: str, may_have_components: bool, products: list[Product]) -> bool:
+def _process_body(line: str, products: list[Product], *, may_have_components: bool) -> bool:
     body = Body.from_string(line)
     if not products:
         # Case for STP without components, just bodies
         products.append(LeafProduct(0, "dummy"))
         may_have_components = False
     last_product = products[-1]
-    if not last_product.is_leaf:
-        products[-1] = last_product = LeafProduct(last_product.number, last_product.name)
-    last_product.append(body)
+    if last_product.is_leaf:
+        leaf = cast(LeafProduct, last_product)
+    else:
+        products[-1] = leaf = LeafProduct(last_product.number, last_product.name)
+    leaf.append(body)
     return may_have_components
 
 
@@ -284,17 +278,19 @@ def check_header(inp: TextIO) -> None:
     """
     line = next(inp)
     if line != _VALID_FIRST_LINE:
-        raise FileError(
+        msg = (
             "Not a valid STP file: the expected first row "
-            f"{_VALID_FIRST_LINE[:-1]}, actual {line}",
+            f"{_VALID_FIRST_LINE[:-1]}, actual {line}"
         )
+        raise FileError(msg)
     next(inp)
     line = next(inp)
     if line != _VALID_THIRD_LINE:
-        raise FileError(
+        msg = (
             "STP protocol is not AP214, the expected third row "
-            f"{_VALID_THIRD_LINE}, actual {line}",
+            f"{_VALID_THIRD_LINE}, actual {line}"
         )
+        raise FileError(msg)
 
 
 def parse_path(inp: Path) -> ParseResult:

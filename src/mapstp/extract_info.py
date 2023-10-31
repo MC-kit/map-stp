@@ -23,7 +23,7 @@ class _MetaInfoCollector:
     factor: float | None = None
     rwcl: str | None = None
 
-    def update(self, pars: dict[str, str]) -> None:
+    def update(self: _MetaInfoCollector, pars: dict[str, str]) -> None:
         """Revise meta information collected on traversing along an STP branch.
 
         Args:
@@ -66,7 +66,7 @@ def extract_path_info(paths: list[list[str]], material_index: pd.DataFrame) -> p
 
 
 def _records(
-    paths: list[str],
+    paths: list[list[str]],
     material_index: pd.DataFrame,
 ) -> Iterator[tuple[int | None, float | None, float | None, str | None]]:
     for path in paths:
@@ -90,22 +90,25 @@ def _define_material_number_and_density(
     try:
         material_number: int | None = int(material_index.loc[meta_info.mnemonic]["number"])
     except KeyError:
-        raise KeyError(
+        msg = (
             f"The mnemonic {meta_info.mnemonic!r} "
             "is not specified in the material index. "
-            f"See the STP path: {'/'.join(path)}",
-        ) from None
+            f"See the STP path: {'/'.join(path)}"
+        )
+        raise KeyError(msg) from None
     density = material_index.loc[meta_info.mnemonic]["density"]
     if np.isnan(density):
-        raise ValueError(
+        msg = (
             f"The density for mnemonic {meta_info.mnemonic!r} "
-            "is not specified in the material index.",
+            "is not specified in the material index."
         )
+        raise ValueError(msg)
     if density < 0.0:
-        raise ValueError(
+        msg = (
             f"The density for mnemonic {meta_info.mnemonic!r} "
-            "in the material index is to be positive.",
+            "in the material index is to be positive."
         )
+        raise ValueError(msg)
     return density, material_number
 
 
@@ -124,7 +127,8 @@ def _extract_meta_info(i: int, match: re.Match, part: str, path: list[str]) -> d
     try:
         pars: dict[str, str] = dict(map(_create_pair, meta.split()))
     except ValueError as _ex:
-        raise ValueError(f"On path {path} part #{i}: {part}") from _ex
+        msg = f"On path {path} part #{i}: {part}"
+        raise ValueError(msg) from _ex
     return pars
 
 

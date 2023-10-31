@@ -53,10 +53,11 @@ def get_project_name() -> str:
     """
     pyproject_path = search_upwards_for_file("pyproject.toml")
     if pyproject_path is None:
-        raise OSError(
+        msg = (
             "Illegal directory: cannot find file pyproject.toml "
-            f"from current directory: {Path.cwd()}",
+            f"from current directory: {Path.cwd()}"
         )
+        raise OSError(msg)
     pyproject = tomli.loads(pyproject_path.read_text())
     name = pyproject["tool"]["poetry"]["name"].replace("-", "_")
     print(f"Package {name} is found in {pyproject_path.absolute()}")

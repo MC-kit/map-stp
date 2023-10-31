@@ -18,7 +18,7 @@ class FileError(MyError):
 class STPParserError(MyError):
     """STP parser syntax error."""
 
-    def __init__(self, message: str = "The STP is invalid") -> None:
+    def __init__(self: STPParserError, message: str = "The STP is invalid") -> None:
         """Create STP parsing specific exception.
 
         Args:
@@ -30,7 +30,7 @@ class STPParserError(MyError):
 class PathInfoError(MyError):
     """Error on extracting information for labels specified in STP paths."""
 
-    def __init__(self, message: str, row: int, path_info: pd.DataFrame) -> None:
+    def __init__(self: PathInfoError, message: str, row: int, path_info: pd.DataFrame) -> None:
         """Create exception object with information on location in path_info caused the error.
 
         Args:

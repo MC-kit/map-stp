@@ -144,34 +144,35 @@ to the meta information provided in the STP.
 @click.help_option()
 @click.pass_context
 def mapstp(  # noqa: PLR0913
-    ctx: dict,
-    override: bool,
+    ctx: click.Context,
     output: str,
     excel: str,
     sql: str,
     volumes: str | None,
     materials: str | None,
-    materials_index: str | None,
+    materials_index: str,
     separator: str,
     start_cell_number: int | None,
     stp: str,
     mcnp: str,
+    *,
+    override: bool,
 ) -> None:
     """Transfers meta information from STP to MCNP model and Excel.
 
     Args:
         ctx: context object
-        override: override existing files if any, if false - raise exception
         output: where to store resulting mcnp
         excel: excel to store mapping cell->tags, stp path, volume(if available)
         sql: as above but in SQLite3 table 'cell_info'
         volumes: json file with cell volumes generated from SpaceClaim
         materials: file with MCNP materials
-        materials_index: excel with list of mnemonics mapping to material numbers from `materials` file
+        materials_index: excel with mnemonics mapping to materials and densities
         separator: character to separate parts of stp path on output, default(/)
         start_cell_number: number of cell to start mapping
         stp: STP file corresponding to the input model
         mcnp: input MCNP model - to be tagged in output
+        override: override existing files if any, if false - raise exception
     """
     if not (mcnp or excel):
         msg = "Nor `excel`, neither `mcnp` parameter is specified - nothing to do"
@@ -187,7 +188,7 @@ def mapstp(  # noqa: PLR0913
     if mcnp:
         _mcnp = Path(mcnp)
         logger.info("Tagging model {}", mcnp)
-        with select_output(override, output) as _output:
+        with select_output(output, override=override) as _output:
             merge_paths(_output, joined_paths, path_info, _mcnp, used_materials_text)
     stp_path = Path(stp)
     if not start_cell_number:
@@ -195,11 +196,11 @@ def mapstp(  # noqa: PLR0913
     volumes_map = json.loads(Path(volumes).read_text()) if volumes else None
     cell_info = combine_cell_table(joined_paths, path_info, start_cell_number, volumes_map)
     _excel = Path(excel) if excel else Path(stp_path.stem + ".xlsx")
-    can_override(_excel, override)
+    can_override(_excel, override=override)
     create_excel(_excel, cell_info)
     logger.info("Accompanying excel is saved to {}", _excel)
     _sql = Path(sql) if sql else Path(stp_path.stem + ".sqlite")
-    can_override(_sql, override)
+    can_override(_sql, override=override)
     create_sql(_sql, cell_info)
     logger.success("mapstp finished")
 
