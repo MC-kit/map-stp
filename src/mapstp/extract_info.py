@@ -11,19 +11,19 @@ import numpy as np
 
 import pandas as pd
 
-_META_PATTERN = re.compile(r".*\[(?P<meta>[^]]+)]")
+_META_PATTERN = re.compile(r"\[(?P<meta>[^]]+)]")
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
 @dataclass
-class _MetaInfoCollector:
+class MetaInfoCollector:
     mnemonic: str | None = None
     factor: float | None = None
     rwcl: str | None = None
 
-    def update(self: _MetaInfoCollector, pars: dict[str, str]) -> None:
+    def update(self: MetaInfoCollector, pars: dict[str, str]) -> None:
         """Revise meta information collected on traversing along an STP branch.
 
         Args:
@@ -48,7 +48,7 @@ class _MetaInfoCollector:
             self.rwcl = t
 
 
-def extract_path_info(paths: list[list[str]], material_index: pd.DataFrame) -> pd.DataFrame:
+def extract_path_info(paths: list[str], material_index: pd.DataFrame) -> pd.DataFrame:
     """Extract meta information from `paths` and associate corresponding data with each path.
 
     Args:
@@ -66,13 +66,13 @@ def extract_path_info(paths: list[list[str]], material_index: pd.DataFrame) -> p
 
 
 def _records(
-    paths: list[list[str]],
+    paths: list[str],
     material_index: pd.DataFrame,
 ) -> Iterator[tuple[int | None, float | None, float | None, str | None]]:
     for path in paths:
-        meta_info = _extract_meta_info_from_path(path)
+        meta_info = extract_meta_info_from_path(path)
         if meta_info.mnemonic:
-            density, material_number = _define_material_number_and_density(
+            density, material_number = define_material_number_and_density(
                 material_index,
                 meta_info,
                 path,
@@ -82,10 +82,10 @@ def _records(
         yield material_number, density, meta_info.factor, meta_info.rwcl
 
 
-def _define_material_number_and_density(
+def define_material_number_and_density(
     material_index: pd.DataFrame,
-    meta_info: _MetaInfoCollector,
-    path: list[str],
+    meta_info: MetaInfoCollector,
+    path: str,
 ) -> tuple[float | None, int | None]:
     try:
         material_number: int | None = int(material_index.loc[meta_info.mnemonic]["number"])
@@ -93,7 +93,7 @@ def _define_material_number_and_density(
         msg = (
             f"The mnemonic {meta_info.mnemonic!r} "
             "is not specified in the material index. "
-            f"See the STP path: {'/'.join(path)}"
+            f"See the STP path: {path}"
         )
         raise KeyError(msg) from None
     density = material_index.loc[meta_info.mnemonic]["density"]
@@ -112,26 +112,24 @@ def _define_material_number_and_density(
     return density, material_number
 
 
-def _extract_meta_info_from_path(path: list[str]) -> _MetaInfoCollector:
-    meta_info = _MetaInfoCollector()
-    for i, part in enumerate(path):
-        match = _META_PATTERN.match(part)
-        if match:
-            pars = _extract_meta_info(i, match, part, path)
+def extract_meta_info_from_path(path: str) -> MetaInfoCollector:
+    meta_info = MetaInfoCollector()
+    found = _META_PATTERN.findall(path)
+    if found:
+        for meta in found:
+            pars = _extract_meta_info(meta, path)
             meta_info.update(pars)
     return meta_info
 
 
-def _extract_meta_info(i: int, match: re.Match, part: str, path: list[str]) -> dict[str, str]:
-    meta = match["meta"]
+def _extract_meta_info(meta: str, path: str) -> dict[str, str]:
     try:
-        pars: dict[str, str] = dict(map(_create_pair, meta.split()))
+        pars: dict[str, str] = dict(_create_pair(t) for t in meta.split())
     except ValueError as _ex:
-        msg = f"On path {path} part #{i}: {part}"
+        msg = f"On path {path}"
         raise ValueError(msg) from _ex
     return pars
 
 
-def _create_pair(x: str) -> tuple[str, str]:
-    a, b = x.split("-", 1)  # type: str, str
-    return a, b
+def _create_pair(meta_part: str) -> tuple[str, str]:
+    return meta_part.split("-", maxsplit=1)

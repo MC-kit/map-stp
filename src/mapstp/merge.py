@@ -102,7 +102,6 @@ def _correct_first_line(
 
 @dataclass
 class _Merger:
-    paths: list[str]
     path_info: pd.DataFrame
     mcnp_lines: Iterable[str]
     first_cell: bool = field(init=False, default=True)
@@ -113,7 +112,7 @@ class _Merger:
         self.first_cell = True
         self.cells_over = False
         self.current_path_idx = 0
-        self.paths_length = len(self.paths)
+        self.paths_length = len(self.path_info)
 
     def merge_lines(self: _Merger) -> Iterator[str]:
         """Add information to MCNP cells.
@@ -139,7 +138,8 @@ class _Merger:
     def _format_comment(self: _Merger) -> str:
         i = self.current_path_idx
         self.current_path_idx += 1
-        return f"      $ stp: {self.paths[i]}"
+        # TODO dvp: add volume here
+        return f"      $ stp: {self.path_info.iloc[i].path}"
 
     def _on_cell_start(self: _Merger, line: str, match: re.Match) -> Iterator[str]:
         if self.first_cell:
@@ -168,17 +168,15 @@ class _Merger:
 
 
 def _merge_lines(
-    paths: list[str],
     path_info: pd.DataFrame,
     mcnp_lines: Iterable[str],
 ) -> Iterator[str]:
-    merger = _Merger(paths, path_info, mcnp_lines)
+    merger = _Merger(path_info, mcnp_lines)
     yield from merger.merge_lines()
 
 
 def merge_paths(
     output: TextIO,
-    paths: list[str],
     path_info: pd.DataFrame,
     mcnp: Path,
     used_materials_text: str | None = None,
@@ -200,7 +198,7 @@ def merge_paths(
     cells = mcnp_sections.cells
     lines = cells.split("\n")
 
-    for line in _merge_lines(paths, path_info, lines):
+    for line in _merge_lines(path_info, lines):
         print(line, file=output)
 
     print(file=output)

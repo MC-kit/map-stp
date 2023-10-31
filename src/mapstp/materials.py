@@ -6,6 +6,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable, TextIO
 
+import sqlite3 as sq
+
 from collections import defaultdict
 from dataclasses import dataclass, field
 from logging import getLogger
@@ -170,5 +172,26 @@ def get_used_materials(materials_map: dict[int, str], path_info: pd.DataFrame) -
     """
     values = path_info["material_number"].to_numpy()
     used_numbers = sorted({int(m) for m in values if not np.isnan(m)})
+    used_materials_texts = list(map(materials_spec_mapper(materials_map), used_numbers))
+    return "".join(used_materials_texts)
+
+
+def get_used_materials_sql(con: sq.Connection, materials_map: dict[int, str]) -> str:
+    """Collect text of used materials specifications.
+
+    Args:
+        con: database connection
+        materials_map: map material number -> spec.
+    """
+    used_numbers = [
+        x[0]
+        for x in con.execute(
+            """
+            select distinct  material
+            from cells
+            order by material
+            """,
+        )
+    ]
     used_materials_texts = list(map(materials_spec_mapper(materials_map), used_numbers))
     return "".join(used_materials_texts)

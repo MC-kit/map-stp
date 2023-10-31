@@ -80,6 +80,7 @@ class _ParserTestResult:
         ), f"Wrong links, case: {self.case}"
 
 
+# @pytest.mark.xfail(reason="Switching to SQL DB from SpaceClaim")
 @pytest.mark.parametrize(
     "stp,expected",
     [
@@ -104,7 +105,7 @@ class _ParserTestResult:
         (
             "test3a.stp",
             _ParserTestResult(
-                ["Component1", "Component11", "test3", "Component''s 2 replacement"],
+                ["Component1", "Component11", "test3a", "Component''s 2 replacement"],
                 [81, 91, 94, 110],
                 [(81, 91), (94, 81), (94, 110)],
                 "Same as above, but with apostrophe ('') in a component name",
@@ -176,8 +177,8 @@ def test_stp_parser1(data, stp, expected):
 @dataclass
 class _CreateBodiesPathsResult:
     length: int
-    first_path: list[str]
-    last_path: list[str]
+    first_path: str
+    last_path: str
 
     def check(self, stp, paths):
         assert len(paths) == self.length, f"Wrong length of paths found in {stp}"
@@ -192,38 +193,32 @@ class _CreateBodiesPathsResult:
             "test1.stp",
             _CreateBodiesPathsResult(
                 3,
-                ["test1", "Component1", "Body1"],
-                ["test1", "Component2", "Body3"],
+                "test1/Component1/Твердое тело1",
+                "test1/Component2/Твердое тело2",
             ),
         ),
         (
             "test3.stp",
             _CreateBodiesPathsResult(
                 3,
-                ["test3", "Component1", "Component11", "Body1"],
-                ["test3", "Component2", "Body3"],
+                "test3/Component1/Component11/Твердое тело1",
+                "test3/Component2/Твердое тело2",
             ),
         ),
         (
             "test-4-4-components-1-body.stp",
             _CreateBodiesPathsResult(
                 5,
-                ["test-4-4-components-1-body", "Component1", "Component1-1.2", "Body3"],
-                ["test-4-4-components-1-body", "Component5", "Component1-1.2", "Body3"],
+                "test-4-4-components-1-body/Component1/Component1-1.2/Body3",
+                "test-4-4-components-1-body/Component5/Component1-1.2/Body3",
             ),
         ),
         (
             "test-5-3-components-1-body.stp",
             _CreateBodiesPathsResult(
                 3,
-                [
-                    "test-5-3-components-1-body",
-                    "Component6",
-                    "Pattern",
-                    "Component7",
-                    "Solid",
-                ],
-                ["test-5-3-components-1-body", "Component9", "Component7", "Solid"],
+                "test-5-3-components-1-body/Component6/Pattern/Component7/Solid",
+                "test-5-3-components-1-body/Component9/Component7/Solid",
             ),
         ),
     ],

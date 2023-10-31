@@ -19,22 +19,22 @@ def test_load_materials_index(materials):
     "paths,expected,msg",
     [
         (
-            [["aaa [m-LH]", "bbb", "ccc0"]],
+            ["aaa [m-LH]/bbb/ccc0"],
             [(2, 0.14822, None, None)],
             "Just material (LiH)",
         ),
         (
-            [["aaa [m-LH]", "bbb[f-0.9]", "ccc0"]],
+            ["aaa [m-LH]/bbb[f-0.9]/ccc0"],
             [(2, 0.14822, 0.9, None)],
             "Material and factor",
         ),
         (
-            [["aaa [m-LH]", "bbb[f-0.99]", "ccc0[r-PBS55]"]],
+            ["aaa [m-LH]/bbb[f-0.99]/ccc0[r-PBS55]"],
             [(2, 0.14822, 0.99, "PBS55")],
             "Material, factor, and RWCL id",
         ),
         (
-            [["aaa [m-LH].1", "bbb[f-0.99]", "ccc0[r-PBS55]"]],
+            ["aaa [m-LH].1/bbb[f-0.99]/ccc0[r-PBS55]"],
             [(2, 0.14822, 0.99, "PBS55")],
             "Should recognize material label, which is not at the end of name.",
         ),
@@ -55,7 +55,7 @@ def test_extract_info(materials, paths, expected, msg):
     "paths,exception,msg",
     [
         (
-            [["aaa [m-Unknown]", "bbb", "ccc0"]],
+            ["aaa [m-Unknown]/bbb/ccc0"],
             KeyError,
             "The mnemonic 'Unknown' is not specified in the material index. ",
         ),
@@ -70,7 +70,7 @@ def test_extract_info_with_missed_material(materials, paths, exception, msg):
     "paths,exception,msg",
     [
         (
-            [["aaa [m-LH]", "bbb", "ccc0"]],
+            ["aaa [m-LH]/bbb/ccc0"],
             ValueError,
             "The density for mnemonic 'LH' is not specified in the material index.",
         ),
@@ -87,7 +87,7 @@ def test_extract_info_with_missed_density(materials, paths, exception, msg):
     "paths,exception,msg",
     [
         (
-            [["aaa [m-LH]", "bbb", "ccc0"]],
+            ["aaa [m-LH]/bbb/ccc0"],
             ValueError,
             "The density for mnemonic 'LH' in the material index is to be positive.",
         ),

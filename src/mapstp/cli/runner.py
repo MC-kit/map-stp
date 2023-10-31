@@ -22,7 +22,7 @@ to the meta information provided in the STP.
 """
 from __future__ import annotations
 
-import json
+import sqlite3 as sq
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -32,11 +32,11 @@ import click
 from mapstp import __name__ as package_name
 from mapstp import __summary__, __version__
 from mapstp.cli.mapstp_logging import init_logger, logger
-from mapstp.materials import get_used_materials, load_materials_map
-from mapstp.merge import join_paths, merge_paths
-from mapstp.save_table import combine_cell_table, create_excel, create_sql
+from mapstp.materials import get_used_materials_sql, load_materials_map
+from mapstp.merge import merge_paths
+from mapstp.save_table import create_excel
 from mapstp.utils.io import can_override, find_first_cell_number, select_output
-from mapstp.workflow import create_path_info
+from mapstp.workflow_sql import create_cells_table, load_path_info
 
 
 # TODO dvp: add customized configuring from a configuration toml-file.
@@ -90,15 +90,7 @@ to the meta information provided in the STP.
     metavar="<sql-file>",
     type=click.Path(dir_okay=False),
     required=False,
-    help="SQLite3 file to write the component paths table",
-)
-@click.option(
-    "--volumes",
-    "-v",
-    metavar="<volumes-json>",
-    type=click.Path(dir_okay=False),
-    required=False,
-    help="Volumes JSON file to load to SQLite3 database and excel",
+    help="SQLite3 file with the model information",
 )
 @click.option(
     "--materials",
@@ -119,26 +111,19 @@ to the meta information provided in the STP.
     "(default: file from the package internal data corresponding to ITER C-model)",
 )
 @click.option(
-    "--separator",
-    metavar="<separator>",
-    type=click.STRING,
-    default="/",
-    help="String to separate components in the STP path",
-)
-@click.option(
     "--start-cell-number",
     metavar="<number>",
     type=click.INT,
+    default=1,
     required=False,
-    help="Number to start cell numbering in the Excel file "
+    help="Number to start cell numbering in the output data"
     "(default: the first cell number in `mcnp` file, if the file is specified, otherwise 1)",
 )
-@click.argument("stp", metavar="<stp-file>", type=click.Path(dir_okay=False, exists=True))
 @click.argument(
     "mcnp",
     metavar="[mcnp-file]",
     type=click.Path(dir_okay=False, exists=True),
-    required=False,
+    required=True,
 )
 @click.version_option(__version__, prog_name=package_name)
 @click.help_option()
@@ -148,12 +133,9 @@ def mapstp(  # noqa: PLR0913
     output: str,
     excel: str,
     sql: str,
-    volumes: str | None,
     materials: str | None,
     materials_index: str,
-    separator: str,
     start_cell_number: int | None,
-    stp: str,
     mcnp: str,
     *,
     override: bool,
@@ -165,12 +147,9 @@ def mapstp(  # noqa: PLR0913
         output: where to store resulting mcnp
         excel: excel to store mapping cell->tags, stp path, volume(if available)
         sql: as above but in SQLite3 table 'cell_info'
-        volumes: json file with cell volumes generated from SpaceClaim
         materials: file with MCNP materials
         materials_index: excel with mnemonics mapping to materials and densities
-        separator: character to separate parts of stp path on output, default(/)
         start_cell_number: number of cell to start mapping
-        stp: STP file corresponding to the input model
         mcnp: input MCNP model - to be tagged in output
         override: override existing files if any, if false - raise exception
     """
@@ -181,28 +160,28 @@ def mapstp(  # noqa: PLR0913
     logger.info("Running mapstp {}", __version__)
     cfg = ctx.ensure_object(Config)
     cfg.override = override
-    paths, path_info = create_path_info(materials_index, stp)
-    materials_map = load_materials_map(materials) if materials else None
-    used_materials_text = get_used_materials(materials_map, path_info) if materials_map else None
-    joined_paths = join_paths(paths, separator)
-    if mcnp:
+    if not start_cell_number:
+        start_cell_number = find_first_cell_number(mcnp)
+    con = sq.connect(sql)
+    try:
+        create_cells_table(con, materials_index, start_cell_number)
+        if materials:
+            materials_map = load_materials_map(materials)
+            used_materials_text = get_used_materials_sql(con, materials_map)
+        else:
+            used_materials_text = None
         _mcnp = Path(mcnp)
         logger.info("Tagging model {}", mcnp)
         with select_output(output, override=override) as _output:
-            merge_paths(_output, joined_paths, path_info, _mcnp, used_materials_text)
-    stp_path = Path(stp)
-    if not start_cell_number:
-        start_cell_number = find_first_cell_number(mcnp) if mcnp else 1
-    volumes_map = json.loads(Path(volumes).read_text()) if volumes else None
-    cell_info = combine_cell_table(joined_paths, path_info, start_cell_number, volumes_map)
-    _excel = Path(excel) if excel else Path(stp_path.stem + ".xlsx")
-    can_override(_excel, override=override)
-    create_excel(_excel, cell_info)
-    logger.info("Accompanying excel is saved to {}", _excel)
-    _sql = Path(sql) if sql else Path(stp_path.stem + ".sqlite")
-    can_override(_sql, override=override)
-    create_sql(_sql, cell_info)
-    logger.success("mapstp finished")
+            path_info = load_path_info(con)
+            merge_paths(_output, path_info, _mcnp, used_materials_text)
+        _excel = Path(excel) if excel else Path(_mcnp.stem + "-cells.xlsx")
+        can_override(_excel, override=override)
+        create_excel(_excel, path_info)
+        logger.info("Accompanying excel is saved to {}", _excel)
+        logger.success("mapstp finished")
+    finally:
+        con.close()
 
 
 if __name__ == "__main__":

@@ -57,27 +57,25 @@ class Tree:
         for link in links:
             self._create_nodes_from_link(link)
 
-    def create_bodies_paths(self: Tree) -> list[list[str]]:
+    def create_bodies_paths(self: Tree) -> list[str]:
         """Create list of paths for each body in STP file.
-
-        A path is in turn a list of strings - parts of the path.
 
         Returns:
             The list of paths.
         """
-        bodies_paths = []
+        bodies_paths: list[str] = []
         for link in self._body_links:
             src, dst = link.src, link.dst
             product = self._product_index[dst]
             if product.is_leaf:
                 node = self._node_index[src]
-                path = [parent.name for parent in node.collect_parents()]
+                path: list[str] = [parent.name for parent in node.collect_parents()]
                 path.append(product.name)
                 # TODO dvp: design flaw: separate indexes for
                 #           Products and LeafProducts to avoid cast
                 for b in cast(LeafProduct, product).bodies:
                     bodies_paths.append(
-                        [*path, b.name],
+                        "/".join([*path, b.name]),
                     )  # TODO dvp: add transliteration for Russian names
         return bodies_paths
 
@@ -121,10 +119,8 @@ class Tree:
         return node
 
 
-def create_bodies_paths(products: Iterable[Product], links: LinksList) -> list[list[str]]:
+def create_bodies_paths(products: Iterable[Product], links: LinksList) -> list[str]:
     """Create list of paths for each body in STP file.
-
-    A path is in turn a list of strings - parts of the path.
 
     Args:
         products: list of product found on parsing STP
@@ -150,6 +146,6 @@ def create_bodies_paths(products: Iterable[Product], links: LinksList) -> list[l
     bodies_paths = []
 
     for b in product.bodies:
-        bodies_paths.append([b.name])  # TODO dvp: add transliteration for Russian names
+        bodies_paths.append(b.name)  # TODO dvp: add transliteration for Russian names
 
     return bodies_paths
