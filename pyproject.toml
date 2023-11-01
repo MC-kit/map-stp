@@ -511,6 +511,7 @@ exclude = [
   "*.egg-info",
   ".cache",
   "notebooks/dvp/*.py",
+  "src/mapstp/data/*.py",
 ]
 # Assume Python 3.10.
 # target-version = "py310"
