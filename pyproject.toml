@@ -521,7 +521,7 @@ exclude = [
 "benchmarks/*" = ["S101"]
 "noxfile.py" = ["ANN"]
 "cli/*" = ["ANN001"]
-"tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104",  "PLR2004", "S101"]
+"tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104",  "PLR2004", "RUF001", "S101"]
 "tools/*" = ["T201", "INP001", "S603", "S607"]
 
 [tool.ruff.mccabe]
