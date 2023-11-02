@@ -9,8 +9,8 @@ SEARCH_RUSSIAN_RE = re.compile(r"\\X2\\([0-9A-F]+)\\X0\\")
 
 def _replace_stp_encoding(match_result: re.Match[str]) -> str:
     encoded = match_result.group(1)
-    splitted = [encoded[4 * i : 4 * i + 4] for i in range(len(encoded) // 4)]
-    decoded = [DECODING_TABLE[code] for code in splitted]
+    split = [encoded[4 * i : 4 * i + 4] for i in range(len(encoded) // 4)]
+    decoded = [DECODING_TABLE[code] for code in split]
     return "".join(decoded)
 
 
