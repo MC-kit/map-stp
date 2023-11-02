@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 # Hint: check patterns on https://pythex.org/
 
 _NUMBERED = r"^#(?P<digits>\d+)="
-_NAME = r"'(?P<name>(?:''|[^'])+)'"
+_NAME = r"'(?P<name>[^']*)'"
 
 _SELECT_PATTERN = re.compile(
     _NUMBERED + r"(?P<solid>MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)|"
@@ -35,6 +35,7 @@ _LINK_PATTERN = re.compile(
 _BODY_PATTERN = re.compile(
     _NUMBERED + r"(?:MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)\(" + _NAME + r",.*\);",
 )
+# ^#(?P<digits>\d+)=(?:MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)\('(?P<name>([^']*))',.*\);
 
 
 # noinspection PyClassHasNoInit
@@ -206,7 +207,7 @@ def parse(inp: TextIO) -> ParseResult:
     for line_no_minus_3, line in enumerate(inp):
         match = _SELECT_PATTERN.search(line)
         if match:
-            _line = decode_russian(line)
+            _line = decode_russian(line.rstrip())
             try:
                 may_have_components = _process_line(
                     match,
