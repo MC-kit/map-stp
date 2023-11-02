@@ -12,5 +12,7 @@
 *.docx binary
 *.xlsx binary
 *.png binary
+*.so binary
 *.dll binary
 *.pyd binary
+*.sqlite binary

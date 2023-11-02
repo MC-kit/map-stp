@@ -209,16 +209,16 @@ class _CreateBodiesPathsResult:
             "test-4-4-components-1-body.stp",
             _CreateBodiesPathsResult(
                 5,
-                "test-4-4-components-1-body/Component1/Component1-1.2/Body3",
-                "test-4-4-components-1-body/Component5/Component1-1.2/Body3",
+                "test-4-4-components-1-body/Component1/Component1-1.2/Твердое тело1",
+                "test-4-4-components-1-body/Component5/Component1-1.2/Твердое тело1",
             ),
         ),
         (
             "test-5-3-components-1-body.stp",
             _CreateBodiesPathsResult(
                 3,
-                "test-5-3-components-1-body/Component6/Pattern/Component7/Solid",
-                "test-5-3-components-1-body/Component9/Component7/Solid",
+                "test-5-3-components-1-body/Component6/Pattern/Component7/Твердое тело1",
+                "test-5-3-components-1-body/Component9/Component7/Твердое тело1",
             ),
         ),
     ],

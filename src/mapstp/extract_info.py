@@ -19,6 +19,8 @@ if TYPE_CHECKING:
 
 @dataclass
 class MetaInfoCollector:
+    """Helper to store mta information from a path."""
+
     mnemonic: str | None = None
     factor: float | None = None
     rwcl: str | None = None
@@ -87,6 +89,16 @@ def define_material_number_and_density(
     meta_info: MetaInfoCollector,
     path: str,
 ) -> tuple[float | None, int | None]:
+    """Define material number and density from a material index for given meta info.
+
+    Args:
+        material_index: table mapping material mnemonics to material number and density
+        meta_info: ... collected from the `path`
+        path: ... for diagnostics
+
+    Returns:
+        density and material
+    """
     try:
         material_number: int | None = int(material_index.loc[meta_info.mnemonic]["number"])
     except KeyError:
@@ -106,13 +118,21 @@ def define_material_number_and_density(
     if density < 0.0:
         msg = (
             f"The density for mnemonic {meta_info.mnemonic!r} "
-            "in the material index is to be positive."
+            "in the material index is not to be negative."
         )
         raise ValueError(msg)
     return density, material_number
 
 
 def extract_meta_info_from_path(path: str) -> MetaInfoCollector:
+    """Extract meta information from an STP path.
+
+    Args:
+        path: ... to body with `[m-...]` tags
+
+    Returns:
+        Collected meta info map.
+    """
     meta_info = MetaInfoCollector()
     found = _META_PATTERN.findall(path)
     if found:

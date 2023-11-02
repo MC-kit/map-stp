@@ -119,7 +119,7 @@ def test_commenting_with_sql_to_stdout(cd_tmpdir, runner, data):
         catch_exceptions=False,
     )
     assert result.exit_code == 0, result.output
-    assert "$ stp: /Component1/Твердое тело1" in result.output
+    assert "$ stp: test1/Component1/Твердое тело1" in result.output
 
 
 # noinspection SqlResolve
@@ -250,8 +250,6 @@ def test_info_assignment_with_sql(runner, cd_tmpdir, data):
             str(output),
             "--excel",
             str(excel),
-            "--start-cell-number",
-            "2000",
             "--sql",
             str(sql),
             str(mcnp),
@@ -266,7 +264,7 @@ def test_info_assignment_with_sql(runner, cd_tmpdir, data):
     assert len(stp_comment_lines) == 5
     assert "Inconel718" in stp_comment_lines[3]
     first_void_lines = list(extract_first_void_cell_lines(lines))
-    assert len(first_void_lines) == 2
+    assert len(first_void_lines) == 6
 
 
 @pytest.mark.skip(reason="STP")

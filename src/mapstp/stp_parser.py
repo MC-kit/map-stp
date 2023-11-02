@@ -17,7 +17,9 @@ if TYPE_CHECKING:
 # Hint: check patterns on https://pythex.org/
 
 _NUMBERED = r"^#(?P<digits>\d+)="
-_NAME = r"'(?P<name>[^']*)'"
+
+# Should match names like 'Component''s 2 replacement'
+_NAME = r"'(?P<name>(''|[^'])+)'"
 
 _SELECT_PATTERN = re.compile(
     _NUMBERED + r"(?P<solid>MANIFOLD_SOLID_BREP|BREP_WITH_VOIDS)|"

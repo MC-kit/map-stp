@@ -35,8 +35,8 @@ from mapstp.cli.mapstp_logging import init_logger, logger
 from mapstp.materials import get_used_materials_sql, load_materials_map
 from mapstp.merge import merge_paths
 from mapstp.save_table import create_excel
-from mapstp.utils.io import can_override, find_first_cell_number, select_output
-from mapstp.workflow_sql import create_cells_table, load_path_info
+from mapstp.utils.io import can_override, select_output
+from mapstp.workflow_sql import load_path_info, save_meta_info_from_paths
 
 
 # TODO dvp: add customized configuring from a configuration toml-file.
@@ -110,15 +110,6 @@ to the meta information provided in the STP.
     help="Excel file containing materials mnemonics and corresponding references for MCNP model "
     "(default: file from the package internal data corresponding to ITER C-model)",
 )
-@click.option(
-    "--start-cell-number",
-    metavar="<number>",
-    type=click.INT,
-    default=1,
-    required=False,
-    help="Number to start cell numbering in the output data"
-    "(default: the first cell number in `mcnp` file, if the file is specified, otherwise 1)",
-)
 @click.argument(
     "mcnp",
     metavar="[mcnp-file]",
@@ -135,7 +126,6 @@ def mapstp(  # noqa: PLR0913
     sql: str,
     materials: str | None,
     materials_index: str,
-    start_cell_number: int | None,
     mcnp: str,
     *,
     override: bool,
@@ -149,7 +139,6 @@ def mapstp(  # noqa: PLR0913
         sql: as above but in SQLite3 table 'cell_info'
         materials: file with MCNP materials
         materials_index: excel with mnemonics mapping to materials and densities
-        start_cell_number: number of cell to start mapping
         mcnp: input MCNP model - to be tagged in output
         override: override existing files if any, if false - raise exception
     """
@@ -160,11 +149,9 @@ def mapstp(  # noqa: PLR0913
     logger.info("Running mapstp {}", __version__)
     cfg = ctx.ensure_object(Config)
     cfg.override = override
-    if not start_cell_number:
-        start_cell_number = find_first_cell_number(mcnp)
     con = sq.connect(sql)
     try:
-        create_cells_table(con, materials_index, start_cell_number)
+        save_meta_info_from_paths(con, materials_index)
         if materials:
             materials_map = load_materials_map(materials)
             used_materials_text = get_used_materials_sql(con, materials_map)
