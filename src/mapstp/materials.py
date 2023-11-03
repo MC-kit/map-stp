@@ -6,8 +6,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable, TextIO
 
-import sqlite3 as sq
-
 from collections import defaultdict
 from dataclasses import dataclass, field
 from logging import getLogger
@@ -18,6 +16,8 @@ import numpy as np
 from mapstp.utils.re import CARD_PATTERN, MATERIAL_PATTERN
 
 if TYPE_CHECKING:
+    import sqlite3 as sq
+
     from collections.abc import Generator, Iterable
 
     import pandas as pd
@@ -187,8 +187,9 @@ def get_used_materials_sql(con: sq.Connection, materials_map: dict[int, str]) ->
         x[0]
         for x in con.execute(
             """
-            select distinct  material
+            select distinct material
             from cells
+            where material not null
             order by material
             """,
         )
