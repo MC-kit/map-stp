@@ -127,7 +127,7 @@ class _Merger:
             else:
                 yield line
         if self.current_path_idx < self.paths_length:
-            yield self._format_comment()
+            yield from self._format_volume_and_comment()
         if self.current_path_idx != self.paths_length:
             logger.warning(
                 "Only {} cells merged, STP specifies {} bodies.",
@@ -135,11 +135,12 @@ class _Merger:
                 self.paths_length,
             )
 
-    def _format_comment(self: _Merger) -> str:
+    def _format_volume_and_comment(self: _Merger) -> Iterator[str]:
         i = self.current_path_idx
         self.current_path_idx += 1
-        # TODO dvp: add volume here
-        return f"      $ stp: {self.path_info.iloc[i].path}"
+        rec = self.path_info.iloc[i]
+        yield f"      vol={rec.volume}"
+        yield f"      $ stp: {rec.path}"
 
     def _on_cell_start(self: _Merger, line: str, match: re.Match) -> Iterator[str]:
         if self.first_cell:
@@ -147,7 +148,7 @@ class _Merger:
         else:
             line = self._on_next_cell(line, match)
             if self.current_path_idx < self.paths_length:
-                yield self._format_comment()
+                yield from self._format_volume_and_comment()
         yield line
 
     def _on_next_cell(self: _Merger, line: str, match: re.Match) -> str:
