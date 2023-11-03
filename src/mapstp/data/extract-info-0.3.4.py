@@ -12,11 +12,14 @@ import sys
 
 from os.path import splitext
 
-__version__ = "0.3.2"
+__version__ = "0.3.4"
 
 #
 # Changes
 # -------
+#
+# 0.3.4 - dvp
+#     Fix name modification reporting
 #
 # 0.3.3 - dvp
 #     Fix column names on CSV output
@@ -81,7 +84,8 @@ def scan_bodies(model):  # noqa: ANN201
     bodies_table = []
     names_modified = False
     for body in bodies:
-        path, names_modified = _make_unique_path(body, paths_seen)
+        path, modified = _make_unique_path(body, paths_seen)
+        names_modified |= modified
         shape = body.Shape
         vol = shape.Volume * 1.0e6  # m^3 -> cm^3
         bounding_box = shape.GetBoundingBox(Matrix.Identity, tight=True)  # noqa: F821
@@ -113,8 +117,7 @@ def _make_unique_path(body, paths_seen):
         names_modified = True
         path = _get_path(body)
 
-    if names_modified:
-        paths_seen.add(path)
+    paths_seen.add(path)
 
     return path, names_modified
 
