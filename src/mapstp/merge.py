@@ -94,7 +94,9 @@ def _correct_first_line(
     if nd is not None:
         material_number, density = nd
         return (
-            _line[: match_end - 1] + f" {int(material_number)} {-density:.5g}" + _line[match_end:]
+            _line[: match_end - 1]
+            + f" {int(material_number)} {-density:.5g}\n     "
+            + _line[match_end:].strip()
         )
 
     return _line
@@ -189,7 +191,6 @@ def merge_paths(
 
     Args:
         output: stream to print to
-        paths: list of STP paths for each cell
         path_info: table with other information on cells:
                   material number, density, density correction factor.
         mcnp:   The input MCNP file name.
