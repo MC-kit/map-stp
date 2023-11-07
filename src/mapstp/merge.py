@@ -44,24 +44,24 @@ def is_defined(number: float | None) -> bool:
     return number is not None and number is not pd.NA and not math.isnan(number)
 
 
-def extract_number_and_density(row: int, path_info: pd.DataFrame) -> tuple[int, float] | None:
-    """Extract material number and density from a `path_info` for a given `row`.
+def extract_number_and_density(cell: int, path_info: pd.DataFrame) -> tuple[int, float] | None:
+    """Extract material number and density from a `path_info` for a given `cell`.
 
     Validate the values: number, if provided, is to be positive, density - not
     negative.
 
     Args:
-        row: point the row in `path_info`
+        cell: index in `path_info`
         path_info: table of data extracted from materials index for a given STP path.
 
     Returns:
         number and density or None, if not available
     """
-    material_number, density, factor = path_info.iloc[row][["material_number", "density", "factor"]]
+    material_number, density, factor = path_info.loc[cell][["material_number", "density", "factor"]]
 
     def _validate(*, res: bool, msg: str):
         if not res:
-            raise PathInfoError(msg, row, path_info)
+            raise PathInfoError(msg, cell, path_info)
 
     if not is_defined(material_number):
         return None  # void space
@@ -86,18 +86,21 @@ def extract_number_and_density(row: int, path_info: pd.DataFrame) -> tuple[int, 
 def _correct_first_line(
     _line: str,
     match_end: int,
-    current_path_idx: int,
+    current_cell: int,
     path_info: pd.DataFrame,
 ) -> str:
-    nd = extract_number_and_density(current_path_idx, path_info)
+    nd = extract_number_and_density(current_cell, path_info)
 
     if nd is not None:
         material_number, density = nd
-        return (
-            _line[: match_end - 1]
-            + f" {int(material_number)} {-density:.5g}\n     "
-            + _line[match_end:].strip()
+        line_with_material_and_density = (
+            _line[: match_end - 1] + f" {int(material_number)} {-density:.5g}"
         )
+        remainder = _line[match_end:].strip()
+        if remainder:
+            line_with_material_and_density += "\n" + " " * max(match_end, 5) + remainder
+
+        _line = line_with_material_and_density
 
     return _line
 
@@ -107,14 +110,8 @@ class _Merger:
     path_info: pd.DataFrame
     mcnp_lines: Iterable[str]
     first_cell: bool = field(init=False, default=True)
-    current_path_idx: int = field(init=False, default=0)
-    paths_length: int = field(init=False)
-
-    def __post_init__(self: _Merger) -> None:
-        self.first_cell = True
-        self.cells_over = False
-        self.current_path_idx = 0
-        self.paths_length = len(self.path_info)
+    cells_over: bool = field(init=False, default=True)
+    current_cell: int = field(init=False, default=0)
 
     def merge_lines(self: _Merger) -> Iterator[str]:
         """Add information to MCNP cells.
@@ -128,45 +125,41 @@ class _Merger:
                 yield from self._on_cell_start(line, match)
             else:
                 yield line
-        if self.current_path_idx < self.paths_length:
+        if self.is_current_cell_specified():
             yield from self._format_volume_and_comment()
-        if self.current_path_idx != self.paths_length:
-            logger.warning(
-                "Only {} cells merged, STP specifies {} bodies.",
-                self.current_path_idx,
-                self.paths_length,
-            )
+
+    def is_current_cell_specified(self: _Merger) -> bool:
+        """Check if current cell needs to update the first line and add a comment.
+
+        Returns:
+            True, if current cell needs to update the first line and add a comment, False otherwise.
+        """
+        return self.current_cell in self.path_info.index
 
     def _format_volume_and_comment(self: _Merger) -> Iterator[str]:
-        i = self.current_path_idx
-        self.current_path_idx += 1
-        rec = self.path_info.iloc[i]
+        rec = self.path_info.loc[self.current_cell][["volume", "path"]]
         yield f"      vol={rec.volume}"
         yield f"      $ stp: {rec.path}"
 
     def _on_cell_start(self: _Merger, line: str, match: re.Match) -> Iterator[str]:
         if self.first_cell:
-            line = self._on_first_cell(line, match)
-        else:
             line = self._on_next_cell(line, match)
-            if self.current_path_idx < self.paths_length:
+            self.first_cell = False
+        else:
+            if self.is_current_cell_specified():
                 yield from self._format_volume_and_comment()
+            line = self._on_next_cell(line, match)
         yield line
 
     def _on_next_cell(self: _Merger, line: str, match: re.Match) -> str:
-        first_cell_line_info_row = self.current_path_idx + 1
-        if first_cell_line_info_row < self.paths_length:
+        self.current_cell = int(match["number"])
+        if self.is_current_cell_specified():
             line = _correct_first_line(
                 line,
                 match.end(),
-                first_cell_line_info_row,
+                self.current_cell,
                 self.path_info,
             )
-        return line
-
-    def _on_first_cell(self: _Merger, line: str, match: re.Match) -> str:
-        line = _correct_first_line(line, match.end(), self.current_path_idx, self.path_info)
-        self.first_cell = False
         return line
 
 

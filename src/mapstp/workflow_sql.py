@@ -95,4 +95,4 @@ def load_path_info(con: sq.Connection) -> pd.DataFrame:
             cell
         """,
         con,
-    )
+    ).set_index("cell")
