@@ -39,10 +39,10 @@ jobs:
       !contains(github.event.head_commit.message, '[skip_ci]')
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4.7.1
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
 
@@ -58,7 +58,7 @@ jobs:
 
       - name: Load poetry cache
         id: cached-poetry-dependencies
-        uses: actions/cache@v3.3.2
+        uses: actions/cache@v3
         with:
           path: |
             .cache/pypoetry
@@ -84,12 +84,12 @@ jobs:
     needs: lint
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
       - name: Set up Python
-        uses: actions/setup-python@v4.7.1
+        uses: actions/setup-python@v5
         with:
           python-version:  ${{ env.DEFAULT_PYTHON }}
 
@@ -105,11 +105,11 @@ jobs:
 
       - name: Load poetry cache
         id: cached-poetry-dependencies
-        uses: actions/cache@v3.3.2
+        uses: actions/cache@v3
         with:
           path: |
             .cache/pypoetry
-          key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          key: poetry-${{ runner.os }}-${{ env.DEFAULT_PYTHON }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install Poetry
         run: |
@@ -136,11 +136,11 @@ jobs:
     steps:
 
       - name: Checkout repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-python@v4.7.1
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
@@ -157,11 +157,11 @@ jobs:
 
       - name: Load poetry cache
         id: cached-poetry-dependencies
-        uses: actions/cache@v3.3.2
+        uses: actions/cache@v3
         with:
           path: |
             .cache/pypoetry
-          key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          key: poetry-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install Poetry
         run: |
@@ -186,10 +186,10 @@ jobs:
     steps:
 
       - name: Check out the repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4.7.1
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
 
@@ -200,11 +200,11 @@ jobs:
 
       - name: Load poetry cache
         id: cached-poetry-dependencies
-        uses: actions/cache@v3.3.2
+        uses: actions/cache@v3
         with:
           path: |
             .cache/pypoetry
-          key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          key: poetry-${{ runner.os }}-${{ env.DEFAULT_PYTHON }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install Poetry
         run: |

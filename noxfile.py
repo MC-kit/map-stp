@@ -188,7 +188,7 @@ def isort(s: Session) -> None:
         "profiles/*.py",
         "adhoc/*.py",
     ]
-    cwd = Path()
+    cwd = Path.cwd()
     files_to_process: list[str] = [
         str(x) for x in sum((list(cwd.glob(p)) for p in search_patterns), [])
     ]
