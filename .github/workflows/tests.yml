@@ -91,7 +91,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version:  ${{ env.DEFAULT_PYTHON }}
+          python-version: ${{ env.DEFAULT_PYTHON }}
 
       - name: Use frozen pip version
         run: |
@@ -130,8 +130,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.9', '3.10', '3.11', '3.12']
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        python-version: [ '3.9', '3.10', '3.11', '3.12' ]
 
     steps:
 
