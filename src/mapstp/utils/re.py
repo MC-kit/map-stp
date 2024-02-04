@@ -1,9 +1,10 @@
 """The regular expressions to be used in various modules."""
+
 from __future__ import annotations
 
 import re
 
-CELL_START_PATTERN = re.compile(r"^\s{0,5}(?P<number>\d+)\s+\d")
+CELL_START_PATTERN = re.compile(r"^\s{0,5}(?P<number>\d+)\s+(?P<material>\d+)\s+")
 """Line starts with two numbers."""
 
 VOID_CELL_START_PATTERN = re.compile(r"^\s{0,5}(?P<number>\d+)\s+0\s")

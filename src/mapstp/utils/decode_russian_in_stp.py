@@ -1,4 +1,5 @@
 """Convert encoded Russian texts in STP branches to string."""
+
 from __future__ import annotations
 
 import re

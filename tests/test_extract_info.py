@@ -78,7 +78,7 @@ def test_extract_info_with_missed_material(materials, paths, exception, msg):
 )
 def test_extract_info_with_missed_density(materials, paths, exception, msg):
     materials_without_density = materials.loc[["LH"]]
-    materials_without_density.density = np.NaN
+    materials_without_density.density = np.nan
     with pytest.raises(exception, match=msg):
         extract_path_info(paths, materials_without_density)
 

@@ -1,4 +1,5 @@
 """Utility module to specify exception hierarchy for all tee package."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

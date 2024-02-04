@@ -1,4 +1,5 @@
 """Major methods to create accompanying Excel output file."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

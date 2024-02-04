@@ -2,6 +2,7 @@
 
 The storage is produced with extract-volumes script from SpaceClaim.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

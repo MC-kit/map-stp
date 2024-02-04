@@ -260,6 +260,9 @@ def test_info_assignment_with_sql(runner, cd_tmpdir, data):
     assert output.exists(), f"Should create output file {output}"
     with output.open(encoding="cp1251") as stream:
         lines = list(stream.readlines())
+    assert (
+        "           ( -2005 2010 2006 -2017 -2009 2018)\n" in lines
+    ), "The specification should be wrapped after material insertion to the first line"
     stp_comment_lines = list(extract_stp_comment_lines(lines))
     assert len(stp_comment_lines) == 5
     assert "Inconel718" in stp_comment_lines[3]

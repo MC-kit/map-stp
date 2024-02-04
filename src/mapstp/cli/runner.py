@@ -20,6 +20,7 @@ as end of line comments after corresponding cells with prefix
 "sep:". The material numbers and densities are set according
 to the meta information provided in the STP.
 """
+
 from __future__ import annotations
 
 import sqlite3 as sq

@@ -1,4 +1,5 @@
 """Nox sessions."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
@@ -59,7 +60,7 @@ def find_my_name() -> str:
 package: Final = find_my_name()
 locations: Final = f"src/{package}", "tests", "./noxfile.py", "docs/source/conf.py"
 
-supported_pythons: Final = "3.9", "3.10", "3.11"
+supported_pythons: Final = "3.9", "3.10", "3.11", "3.12"
 
 
 def _update_hook(hook: Path, virtualenv: str, s: Session) -> None:
@@ -188,10 +189,8 @@ def isort(s: Session) -> None:
         "profiles/*.py",
         "adhoc/*.py",
     ]
-    cwd = Path()
-    files_to_process: list[str] = [
-        str(x) for x in sum((list(cwd.glob(p)) for p in search_patterns), [])
-    ]
+    cwd = Path.cwd()
+    files_to_process: list[str] = [str(x) for p in search_patterns for x in cwd.glob(p)]
     if files_to_process:
         s.run(
             "poetry",

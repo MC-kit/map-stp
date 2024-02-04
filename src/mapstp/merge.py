@@ -4,6 +4,7 @@ Inserts end comments with information about path in STP
 corresponding to a cell and sets materials and densities,
 if specified in STP paths.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, TextIO
@@ -94,7 +95,7 @@ def _correct_first_line(
     if nd is not None:
         material_number, density = nd
         line_with_material_and_density = (
-            _line[: match_end - 1] + f" {int(material_number)} {-density:.5g}"
+            _line[: match_end - 1].split()[0] + f" {int(material_number)} {-density:.5g}"
         )
         remainder = _line[match_end:].strip()
         if remainder:
@@ -153,7 +154,7 @@ class _Merger:
 
     def _on_next_cell(self: _Merger, line: str, match: re.Match) -> str:
         self.current_cell = int(match["number"])
-        if self.is_current_cell_specified():
+        if self.is_current_cell_specified() and int(match["material"]) == 0:
             line = _correct_first_line(
                 line,
                 match.end(),

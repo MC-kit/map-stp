@@ -1,4 +1,5 @@
 """The `mapstp` package utility subpackages."""
+
 from __future__ import annotations
 
 from .decode_russian_in_stp import decode_russian

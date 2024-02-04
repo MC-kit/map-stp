@@ -3,6 +3,7 @@
 Use imported methods to organize other workflows in notebooks or dependant packages.
 Check the methods defined here as templates for other workflows.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

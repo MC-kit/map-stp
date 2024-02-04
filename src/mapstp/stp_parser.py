@@ -1,4 +1,5 @@
 """The module defines methods and classes to parse STP file and represent parsing results."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, TextIO, cast

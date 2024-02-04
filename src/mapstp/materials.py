@@ -2,6 +2,7 @@
 
 The map associates material number to its MCNP specification text.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable, TextIO

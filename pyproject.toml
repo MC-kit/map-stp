@@ -20,6 +20,12 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Physics",
 ]
 
@@ -46,7 +52,7 @@ pandas = ">=2.0.0"
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
 nox = ">=2022.1.7"
-tomli = { version = ">=2.0.1", python="<3.11" }
+tomli = { version = ">=2.0.1", python = "<3.11" }
 
 #[tool.poetry.group.profile]
 #optional = true
@@ -79,17 +85,16 @@ coverage = { version = ">=6.1.2", extras = ["toml"] }
 coverage = { version = ">=6.1.2", extras = ["toml"] }
 
 [tool.poetry.group.xdoctest.dependencies]
-xdoctest = {extras = ["colors"], version = ">=0.15.10"}
+xdoctest = { extras = ["colors"], version = ">=0.15.10" }
 
 [tool.poetry.group.typeguard.dependencies]
-typeguard = ">=3.0.2"
-# typeguard = ">=3.0.2"  - pygls, which is required by ruff-lsp, doesn't allow newer version
+typeguard = ">=4.1.5"
 
 [tool.poetry.group.mypy.dependencies]
 mypy = ">=1.2.0"
 pep8-naming = ">=0.12.1"
 types-setuptools = ">=57.4.2"
-numpy = ">=1.23.2"
+numpy = ">=1.26.2"
 
 [tool.poetry.group.flake8.dependencies]
 darglint = ">=1.8.1"
@@ -184,7 +189,7 @@ exclude = '''
   | build
   | build_configs
   | dist
-  | 3rd-party
+  | extern
   | data
   | htmlcov
   | \.egg-info
@@ -212,7 +217,11 @@ filterwarnings = [
     "ignore:.*not typechecking multipledispatch.dispatcher.*UserWarning",
     'ignore:.*io.FileIO \[closed\]',
     'ignore:.*Deprecated call to `pkg_resources.declare_namespace',
-    'ignore:.*Implicit None on return values:DeprecationWarning'
+    'ignore:.*Implicit None on return values:DeprecationWarning',
+    # pandas 2.1.4 at python 3.12
+    'ignore:.*datetime.datetime.utcfromtimestamp\(\) is deprecated:DeprecationWarning',
+    # openpyxl 3.1.2 qt python 3.12
+    'ignore:.*datetime.datetime.utcnow\(\):DeprecationWarning'
 ]
 log_format = "%(asctime)s %(levelname)s %(message)s"
 log_date_format = "%Y-%m-%d %H:%M:%S"
@@ -276,16 +285,18 @@ plugins = ["numpy.typing.mypy_plugin"]
 
 [[tool.mypy.overrides]]
 module = [
+    "IPython.core.magic",
+    "IPython.core.magic_arguments",
     "click",
     "click.testing",
     "loguru",
-    "importlib_metadata",
     "multipledispatch",
     "nox",
     "numpy.testing",
     "pandas",
     "pytest",
     "scipy.constants",
+    "scipy.sparse",
     "tomli",
     "tomllib",
 ]
@@ -310,7 +321,7 @@ ignore = [
 [tool.ipdb]
 # For debugging in jupyterlab and ipython
 # see https://github.com/gotcha/ipdb
-context=5
+context = 5
 
 [tool.tryceratops]
 include = ["src"]
@@ -319,18 +330,18 @@ experimental = true
 [tool.pydocstringformatter]
 write = true
 style = "pep257"
-exclude = ["tools/**","src/**/*_parser.py","src/**/*_tab.py"]
+exclude = ["tools/**", "src/**/*_parser.py", "src/**/*_tab.py"]
 strip-whitespaces = true
 max-line-length = 100
 summary-quotes-same-line = true
 
 
 [tool.pylint]
-good-names-rgxs=["."]  # a single character variable is okay
-logging-format-style="new"   # use {} in logging messages
-deprecated-modules=["six"]
-extension-pkg-allow-list=["duckdb"]
-disable=[
+good-names-rgxs = ["."]  # a single character variable is okay
+logging-format-style = "new"   # use {} in logging messages
+deprecated-modules = ["six"]
+extension-pkg-allow-list = ["duckdb"]
+disable = [
     "wrong-import-order"  # this is `isort` responsibility
 ]
 
@@ -339,7 +350,7 @@ disable=[
 target-version = "py38"
 #see full list: https://beta.ruff.rs/docs/rules/#pyflakes-f
 #or run 'ruff linter' to see a brief list
-select= [
+lint.select= [
     "A", # flake8-builtins
     "ANN", # flake8-annotations
     "ARG", # flake8-unused-arguments
@@ -389,7 +400,7 @@ select= [
 ]
 
 # Ignore rules that currently fail on the codebase
-ignore = [
+lint.ignore = [
     # "ANN001", # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
     # "ANN002", # ANN002 Missing type annotation for *drop_items: ... as above
     # "ANN101", # ANN101 Missing type annotation for self in method
@@ -496,27 +507,27 @@ line-length = 100
 show-fixes = true
 
 # show source code snippets when reporting violations
-show-source = true
+output-format = "concise"
 
-src = ["src", "test"]
+src = ["src", "tests"]
 
 # Allow unused variables when underscore-prefixed.
 # dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-dummy-variable-rgx = "^_$"
+lint.dummy-variable-rgx = "^_$"
 exclude = [
-  "docs/source/conf.py",
-  "__pycache__",
-  "adhoc",
-  "wrk",
-  "*.egg-info",
-  ".cache",
-  "notebooks/dvp/*.py",
-  "src/mapstp/data/*.py",
+    "docs/source/conf.py",
+    "__pycache__",
+    "adhoc",
+    "wrk",
+    "*.egg-info",
+    ".cache",
+    "notebooks",
+    "src/mapstp/data/*.py",
 ]
 # Assume Python 3.10.
 # target-version = "py310"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402"]
 "benchmarks/*" = ["S101"]
 "noxfile.py" = ["ANN"]
@@ -524,24 +535,24 @@ exclude = [
 "tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104",  "PLR2004", "RUF001", "S101"]
 "tools/*" = ["T201", "INP001", "S603", "S607"]
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
-max-complexity = 10
+max-complexity = 15
 
-[tool.ruff.flake8-annotations]
+[tool.ruff.lint.flake8-annotations]
 mypy-init-return = true  # skip return type for __init__() methods
 
-[tool.ruff.flake8-type-checking]
+[tool.ruff.lint.flake8-type-checking]
 strict = true
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["src"]
 known-third-party = ["mpl_toolkits", "matplotlib", "numpy", "scipy"]
 required-imports = ["from __future__ import annotations"]
 
 
-[tool.ruff.flake8-pytest-style]
+[tool.ruff.lint.flake8-pytest-style]
 parametrize-names-type = "csv"
 
-[tool.ruff.pydocstyle]
-convention = "google"  # Use Google-style docstrings.
+[tool.ruff.lint.pydocstyle]
+convention = "google" # Use Google-style docstrings.
