@@ -153,4 +153,5 @@ def _extract_meta_info(meta: str, path: str) -> dict[str, str]:
 
 
 def _create_pair(meta_part: str) -> tuple[str, str]:
-    return meta_part.split("-", maxsplit=1)
+    a, b = meta_part.split("-", maxsplit=1)
+    return a, b

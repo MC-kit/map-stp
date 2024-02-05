@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     import pandas as pd
 
 
-def create_path_info(materials_index: str, stp: str) -> tuple[list[list[str]], pd.DataFrame]:
+def create_path_info(materials_index: str, stp: str) -> tuple[list[str], pd.DataFrame]:
     """Join information from materials index and stp paths to table.
 
     Args:
