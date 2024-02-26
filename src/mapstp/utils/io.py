@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from loguru import logger
+
 from mapstp.utils.re import (
     CELL_START_PATTERN,
     MCNP_SECTIONS_SEPARATOR_PATTERN,
