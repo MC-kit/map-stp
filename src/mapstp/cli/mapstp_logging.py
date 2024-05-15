@@ -81,4 +81,4 @@ def init_logger(
             diagnose=False,
         )
     if log_path:
-        logger.add(log_path, rotation="100 MB", backtrace=True, diagnose=True)
+        logger.add(log_path, rotation="1 day", retention=3, backtrace=True, diagnose=True)
