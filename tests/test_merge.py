@@ -16,7 +16,7 @@ def test_merger(data):
     "number,density,factor,expected",
     [
         (1, 7.93, pd.NA, (1, 7.93)),
-        (1, 7.93, np.NAN, (1, 7.93)),
+        (1, 7.93, np.nan, (1, 7.93)),
         (1, 2.0, 2.0, (1, 4.0)),
     ],
 )
@@ -33,7 +33,7 @@ def test_extract_number_and_density(number, density, factor, expected):
     "material_number,density,factor,exception",
     [
         (-1, 7.93, pd.NA, m.PathInfoError),
-        (1, -7.93, np.NAN, m.PathInfoError),
+        (1, -7.93, np.nan, m.PathInfoError),
         (1, 2.0, -2.0, m.PathInfoError),
     ],
 )
