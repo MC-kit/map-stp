@@ -10,7 +10,7 @@ from mapstp.exceptions import STPParserError
 from mapstp.stp_parser import LeafProduct, make_index
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Iterator
+    from collections.abc import Generator, Iterable, Iterator
 
     from mapstp.stp_parser import Link, LinksList, Product
 
@@ -64,21 +64,21 @@ class Tree:
         Returns:
             The list of paths.
         """
-        bodies_paths: list[str] = []
-        for link in self._body_links:
-            src, dst = link.src, link.dst
-            product = self._product_index[dst]
-            if product.is_leaf:
-                node = self._node_index[src]
-                path: list[str] = [parent.name for parent in node.collect_parents()]
-                path.append(product.name)
-                # TODO dvp: design flaw: separate indexes for
-                #           Products and LeafProducts to avoid cast
-                for b in cast(LeafProduct, product).bodies:
-                    bodies_paths.append(
-                        "/".join([*path, b.name]),
-                    )  # TODO dvp: add transliteration for Russian names
-        return bodies_paths
+
+        def _scan() -> Generator[str, None, None]:
+            for link in self._body_links:
+                src, dst = link.src, link.dst
+                product = self._product_index[dst]
+                if product.is_leaf:
+                    node = self._node_index[src]
+                    path: list[str] = [parent.name for parent in node.collect_parents()]
+                    path.append(product.name)
+                    # TODO @dvp: design flaw: separate indexes for
+                    #           Products and LeafProducts to avoid cast
+                    for b in cast(LeafProduct, product).bodies:
+                        yield "/".join([*path, b.name])
+
+        return list(_scan())
 
     def _create_nodes_from_link(self: Tree, link: Link) -> None:
         src, dst = link.src, link.dst
@@ -144,9 +144,4 @@ def create_bodies_paths(products: Iterable[Product], links: LinksList) -> list[s
         raise ValueError(msg)
 
     product = cast(LeafProduct, ps[0])
-    bodies_paths = []
-
-    for b in product.bodies:
-        bodies_paths.append(b.name)  # TODO dvp: add transliteration for Russian names
-
-    return bodies_paths
+    return [b.name for b in product.bodies]

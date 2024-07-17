@@ -26,7 +26,7 @@ def test_read_mcnp_sections(data, tmp_path):
     assert sections.remainder is None
     tmp = tmp_path / "test-with-cells-and-surfaces-only.i"
     tmp.parent.mkdir(parents=True, exist_ok=True)
-    tmp.write_text("\n\n".join([sections.cells, sections.surfaces]))
+    tmp.write_text(f"{sections.cells}\n\n{sections.surfaces}")
     sections = read_mcnp_sections(tmp)
     assert sections.cells
     assert sections.surfaces
@@ -39,7 +39,7 @@ def test_read_mcnp_sections_with_remainder(data, tmp_path):
     text = mcnp.read_text()
     tmp = tmp_path / "test.i"
     tmp.parent.mkdir(parents=True, exist_ok=True)
-    tmp.write_text("\n\n".join([text, "remainder\nabc"]))
+    tmp.write_text(f"{text}\n\nremainder\nabc")
     sections = read_mcnp_sections(tmp)
     assert sections.cells
     assert sections.surfaces

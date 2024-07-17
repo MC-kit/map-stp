@@ -9,7 +9,6 @@ import re
 from dataclasses import dataclass
 
 import numpy as np
-
 import pandas as pd
 
 _META_PATTERN = re.compile(r"\[(?P<meta>[^]]+)]")

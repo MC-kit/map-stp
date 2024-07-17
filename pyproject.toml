@@ -19,10 +19,8 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
-    "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -30,7 +28,7 @@ classifiers = [
 ]
 
 [build-system]
-requires = ["poetry-core >= 1.5.2"]
+requires = ["poetry-core >= 1.8.3"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
@@ -42,12 +40,11 @@ Chnagelog = "https://github.com/MC-kit/mapstp/releases"
 
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
-click = ">=8.0.4"
-loguru = ">=0.6.0"
+python = ">=3.10,<3.13"
 numpy = ">=1.26.0"
 openpyxl = ">=3.0.9"
 pandas = ">=2.0.0"
+loguru = "^0.7.2"
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
@@ -66,12 +63,6 @@ pre-commit = ">=2.15.0"
 rstcheck = ">=6.1.2"
 pydocstringformatter = ">=0.7.3"
 pyupgrade = ">=3.15.0"
-
-[tool.poetry.group.black.dependencies]
-black = ">=22.8.0"
-
-[tool.poetry.group.isort.dependencies]
-isort = ">=5.9.3"
 
 [tool.poetry.group.test.dependencies]
 pytest = ">=7.1"
@@ -138,66 +129,12 @@ sphinx-autobuild = ">=2021.3.14"
 
 [tool.poetry.group.pylsp.dependencies]
 pylsp-mypy = ">=0.6.6"
-pyls-isort = ">=0.2.2"
-python-lsp-black = ">=1.2.1"
 pyls-memestra = ">=0.0.16"
 pylsp-rope = ">=0.1.11"
 ruff-lsp = ">=0.0.35"
 
 [tool.poetry.group.ruff.dependencies]
 ruff = ">=0.0.259"
-
-[tool.isort]
-atomic = true
-ensure_newline_before_comments = true
-known_first_party = "mapstp"
-known_third_party = "mpl_toolkits,matplotlib,numpy,scipy,loguru,tqdm,dotenv"
-known_typing = "typing,types,typing_extensions,mypy,mypy_extensions"
-sections = "FUTURE,TYPING,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
-default_section = "FIRSTPARTY"
-use_parentheses = true
-multi_line_output = 3
-line_length = 100
-include_trailing_comma = true
-lines_between_types = 1
-skip_gitignore = true
-skip_glob = ["*-example.py"]
-
-
-# NOTE: you have to use single-quoted strings in TOML for regular expressions.
-# It's the equivalent of r-strings in Python.  Multiline strings are treated as
-# verbose regular expressions by Black.  Use [ ] to denote a significant space
-# character.
-
-[tool.black]
-line-length = 100
-include = '''
-(
-    \.pyi?$
-)
-'''
-exclude = '''
-(
-    \.eggs
-  | \.git
-  | \.mypy_cache
-  | \.pytest_cache
-  | \.nox
-  | \.venv
-  | \.idea
-  | _build
-  | build
-  | build_configs
-  | dist
-  | extern
-  | data
-  | htmlcov
-  | \.egg-info
-  | _tab\.py$
-  | notebooks
-  | wrk
-)
-'''
 
 [tool.pytest.ini_options]
 minversion = "6.2"
@@ -224,9 +161,10 @@ addopts = '''
 --strict-markers
 --ignore setup.py
 --failed-first
+--xdoctest
 '''
 doctest_optionflags = "ELLIPSIS NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES"
-testpaths = ["tests"]
+testpaths = ["tests", "src"]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]
@@ -287,7 +225,7 @@ sort = "Cover"
 # See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
 #     https://dev.to/tusharsadhwani/the-comprehensive-guide-to-mypy-561m
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 # strict = true     # TODO dvp: uncomment this to get strict control
 follow_imports = "silent"
 # namespace_packages = true
@@ -320,6 +258,7 @@ module = [
     "scipy.sparse",
     "tomli",
     "tomllib",
+    "xdoctest",
 ]
 ignore_missing_imports = true
 
@@ -366,37 +305,117 @@ disable = [
     "wrong-import-order"  # this is `isort` responsibility
 ]
 
+[tool.bandit]
+targets = ["src"]
+confidence-level = "MEIDUM"
+severity-level = "MEIDUM"
+exclude_dirs = ["tests", "adhoc", "notebooks", "tools"]
+quiet = true
+skips = ["B101", "B301", "B403"]
+
+[tool.bandit.any_other_function_with_shell_equals_true]
+no_shell = [
+    "os.execl",
+    "os.execle",
+    "os.execlp",
+    "os.execlpe",
+    "os.execv",
+    "os.execve",
+    "os.execvp",
+    "os.execvpe",
+    "os.spawnl",
+    "os.spawnle",
+    "os.spawnlp",
+    "os.spawnlpe",
+    "os.spawnv",
+    "os.spawnve",
+    "os.spawnvp",
+    "os.spawnvpe",
+    "os.startfile"
+]
+shell = [
+    "os.system",
+    "os.popen",
+    "os.popen2",
+    "os.popen3",
+    "os.popen4",
+    "popen2.popen2",
+    "popen2.popen3",
+    "popen2.popen4",
+    "popen2.Popen3",
+    "popen2.Popen4",
+    "commands.getoutput",
+    "commands.getstatusoutput"
+]
+subprocess = [
+    "subprocess.Popen",
+    "subprocess.call",
+    "subprocess.check_call",
+    "subprocess.check_output"
+]
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py310"
+
+line-length = 100
+
+# show an enumeration of all autofixed lint violations
+show-fixes = true
+
+# show source code snippets when reporting violations
+output-format = "concise"
+
+src = ["src", "tests"]
+
+exclude = [
+    "*.egg-info",
+    ".cache",
+    "__pycache__",
+    "adhoc",
+    "docs/source/conf.py",
+    "notebooks",
+    "src/mapstp/data",
+    "wrk",
+]
+
+[tool.ruff.lint]
 #see full list: https://beta.ruff.rs/docs/rules/#pyflakes-f
 #or run 'ruff linter' to see a brief list
-lint.select= [
+select = [
     "A", # flake8-builtins
     "ANN", # flake8-annotations
+    "AIR", # Airflow https://airflow.apache.org/docs/apache-airflow/stable/index.html
     "ARG", # flake8-unused-arguments
+    "ASYNC", # flake8-async
     "B", # flake8-bugbear
     "BLE", # flake8-blind-except
     "C4", # flake8-comprehensions
     "C90", # mccabe
     "COM", # flake8-commas
-    "DJ", # flake8-django
     "D", # pydocstyle
+    "DJ", # flake8-django
     "DTZ", # flake8-datetimez
+    "E", # pycodestyle
     "EM", # flake8-errmsg
     "ERA", # eradicate
-    "E", # pycodestyle
     "EXE", # flake8-executable
-    "FBT", # flake8-boolean-trap  https://adamj.eu/tech/2021/07/10/python-type-hints-how-to-avoid-the-boolean-trap
     "F", # Pyflakes
+    "FA", # flake8-future-annotations
+    "FBT", # flake8-boolean-trap  https://adamj.eu/tech/2021/07/10/python-type-hints-how-to-avoid-the-boolean-trap
+    # "FIX", # flake8-fixme
+    "FLY", # flynt
+    "FURB", # refurb
     "G", # flake8-logging-format
-    "ICN", # flake8-import-conventions
     "I", # isort
+    "ICN", # flake8-import-conventions
     "INP", # flake8-no-pep420
+    "INT", # flake8-gettext
     "ISC", # flake8-implicit-str-concat
+    "LOG", # flake8-log
     "N", # pep8-naming
     "NPY", # NumPy-specific rules
     "PD", # pandas-vet
+    "PERF", # Perflint
     "PGH", # pygrep-hooks
     "PIE", # flake8-pie
     "PL", # Pylint
@@ -410,8 +429,10 @@ lint.select= [
     "S", # flake8-bandit
     "SIM", # flake8-simplify
     "SLF", # flake8-self
+    "SLOT", # flake8-slot
     "T10", # flake8-debugger
     "T20", # flake8-print
+    # "TD", # flake8-todos
     "TCH", # flake8-type-checking
     "TID", # flake8-tidy-imports
     "TRY", # tryceratops
@@ -420,8 +441,10 @@ lint.select= [
     "YTT", # flake8-2020
 ]
 
+#warning: The isort option `isort.split-on-trailing-comma` is incompatible with the formatter `format.skip-magic-trailing-comma=true` option. To avoid unexpected behavior, we recommend either setting `isort.split-on-trailing-comma=false` or `format.skip-magic-trailing-comma=false`.
+
 # Ignore rules that currently fail on the codebase
-lint.ignore = [
+ignore = [
     # "ANN001", # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
     # "ANN002", # ANN002 Missing type annotation for *drop_items: ... as above
     # "ANN101", # ANN101 Missing type annotation for self in method
@@ -432,12 +455,12 @@ lint.ignore = [
 
     # "ARG001", # Unused function argument: `expected`
 
-    # "B905",   # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.9
+    # "B905", # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.9
 
     # "C812",   # C812 Missing trailing comma: black compatibility
     # "C901",   # too complex - ...
 
-    # "COM812", #  [*] Trailing comma missing
+    "COM812", # may cause conflicts when used with the ruff formatter
 
     # "D100",   # Missing docstring in public module
     # "D101",   # Missing docstring in public class
@@ -488,11 +511,12 @@ lint.ignore = [
     # "FBT002",  # Boolean default value in function definition (TODO!)
     # "FBT003",  # Boolean positional value in function call
 
-    "I001", # import order is controlled by isort
+    # "I001", # import order is controlled by isort
     # "I101",
     # "I201",
     # "I202",
     # "INP001",  # File `tools/clear-prev-dist-info.py` is part of an implicit namespace package.
+    "ISC001", # may cause conflicts when used with the ruff formatter
 
     # ignore some questionable pandas-vet warnings
     # "PD005", # use operator instead of method
@@ -521,39 +545,13 @@ lint.ignore = [
     # "W503",  # Line break before binary operator: for compatibility with black settings
 ]
 
-# Same as Black.
-line-length = 100
-
-# show an enumeration of all autofixed lint violations
-show-fixes = true
-
-# show source code snippets when reporting violations
-output-format = "concise"
-
-src = ["src", "tests"]
-
-# Allow unused variables when underscore-prefixed.
-# dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-lint.dummy-variable-rgx = "^_$"
-exclude = [
-    "docs/source/conf.py",
-    "__pycache__",
-    "adhoc",
-    "wrk",
-    "*.egg-info",
-    ".cache",
-    "notebooks",
-    "src/mapstp/data/*.py",
-]
-# Assume Python 3.10.
-# target-version = "py310"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402"]
 "benchmarks/*" = ["S101"]
 "noxfile.py" = ["ANN"]
 "cli/*" = ["ANN001"]
-"tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104",  "PLR2004", "RUF001", "S101"]
+"tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104", "PLR2004", "RUF001", "S101"]
 "tools/*" = ["T201", "INP001", "S603", "S607"]
 
 [tool.ruff.lint.mccabe]
@@ -563,17 +561,37 @@ max-complexity = 15
 [tool.ruff.lint.flake8-annotations]
 mypy-init-return = true  # skip return type for __init__() methods
 
+[tool.ruff.lint.flake8-pytest-style]
+parametrize-names-type = "csv"
+
 [tool.ruff.lint.flake8-type-checking]
 strict = true
 
 [tool.ruff.lint.isort]
 known-first-party = ["src"]
-known-third-party = ["mpl_toolkits", "matplotlib", "numpy", "scipy"]
+known-third-party = ["mpl_toolkits", "matplotlib", "numpy", "scipy", "loguru", "tqdm", "dotenv"]
+default-section = "third-party"
+lines-between-types = 1
 required-imports = ["from __future__ import annotations"]
+case-sensitive = true
+section-order = [
+    "future",
+    "typing",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
+    "testing"
+]
 
 
-[tool.ruff.lint.flake8-pytest-style]
-parametrize-names-type = "csv"
+
+[tool.ruff.lint.isort.sections]
+"typing" = ["typing", "typing_extension"]
+"testing" = ["tests"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google" # Use Google-style docstrings.
+
+[tool.ruff.format]
+docstring-code-format = true

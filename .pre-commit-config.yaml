@@ -15,7 +15,7 @@
 #     https://github.com/pre-commit/pre-commit  for more information
 #     https://pre-commit.com/hooks.html         for more hooks
 default_language_version:
-  python: python3.11
+  python: python3.12
 
 repos:
 
@@ -29,7 +29,7 @@ repos:
       - id: check-json
       - id: check-merge-conflict
       - id: check-shebang-scripts-are-executable
-        exclude: notebooks
+        exclude: notebooks  # jupytext creates python scripts with shebangs but without permissions
       - id: check-symlinks
       - id: check-toml
       - id: check-yaml
@@ -65,30 +65,33 @@ repos:
         exclude: \.idea|\.cache|^notebooks|^extern
         entry: pyupgrade
         args:
-          - --py39-plus
+          - --py310-plus
         language: system
         types: [ python ]
+        stages: [ manual ]
 
-      # Nicely sort imports
-      - id: isort
-        name: isort
-        exclude: tools|\.idea|\.cache|^notebooks|^extern
-        entry: isort
+      # Security check
+      - id: bandit
+        name: bandit
+        entry: bandit
+        args: ["-c", "pyproject.toml"]
         language: system
         types: [ python ]
+        exclude: ^notebooks|^extern
+        stages: [ manual ]
 
-      # Black, the code formatter, natively supports pre-commit
-      - id: black
-        name: black
-        entry: black
+      # Lint and fix Python code (including import sort)
+      - id: ruff
+        name: ruff
+        entry: ruff check --force-exclude --fix --config pyproject.toml
         language: system
         types: [ python ]
         exclude: ^notebooks|^extern
 
-      # Lint and fix Python code
+      # Format Python code
       - id: ruff
-        name: ruff
-        entry: ruff check --force-exclude --fix --config pyproject.toml
+        name: ruff-format
+        entry: ruff format --force-exclude --config pyproject.toml
         language: system
         types: [ python ]
         exclude: ^notebooks|^extern

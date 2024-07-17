@@ -8,10 +8,10 @@ import sqlite3 as sq
 
 from pathlib import Path
 
-from numpy.testing import assert_array_equal
-
 import pandas as pd
 import pytest
+
+from numpy.testing import assert_array_equal
 
 from mapstp.cli.runner import __summary__, __version__, mapstp
 from mapstp.materials import load_materials_map

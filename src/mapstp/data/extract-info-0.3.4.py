@@ -6,6 +6,8 @@ Works fine with SpaceClaim API V17 - V20.
 The API works with IronPython 2.6 through 2.7
 """
 
+from __future__ import annotations
+
 import re
 import sqlite3 as sq
 import sys
@@ -96,7 +98,7 @@ def scan_bodies(model):  # noqa: ANN201
         )  # m -> cm
         cell = len(bodies_table) + 1
         bodies_table.append((cell, vol, minx, miny, minz, maxx, maxy, maxz, path))
-        print("% 5.1f%%" % (100.0 * cell / size) + ": " + path)  # noqa: FS001
+        print("% 5.1f%%" % (100.0 * cell / size) + ": " + path)
 
     return bodies_table, names_modified
 

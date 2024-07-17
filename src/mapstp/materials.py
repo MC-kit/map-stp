@@ -5,7 +5,7 @@ The map associates material number to its MCNP specification text.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, TextIO
+from typing import TYPE_CHECKING, TextIO
 
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -19,7 +19,7 @@ from mapstp.utils.re import CARD_PATTERN, MATERIAL_PATTERN
 if TYPE_CHECKING:
     import sqlite3 as sq
 
-    from collections.abc import Generator, Iterable
+    from collections.abc import Callable, Generator, Iterable
 
     import pandas as pd
 
