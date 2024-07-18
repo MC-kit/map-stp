@@ -45,6 +45,7 @@ numpy = ">=1.26.0"
 openpyxl = ">=3.0.9"
 pandas = ">=2.0.0"
 loguru = "^0.7.2"
+click = "^8.1.7"
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
