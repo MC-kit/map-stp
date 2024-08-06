@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 nox.options.sessions = (
     "pre-commit",
     "mypy",
+    "ruff-format",
     "ruff",
     "xdoctest",
     "tests",
@@ -150,14 +151,6 @@ def typeguard(s: Session) -> None:
     """Runtime type checking using Typeguard."""
     s.run("poetry", "install", "--only", "main,test,typeguard", external=True)
     s.run("pytest", "--typeguard-packages=src", *s.posargs, external=True)
-
-
-@session
-def lint(s: Session) -> None:
-    """Lint using flake8."""
-    s.run("poetry", "install", "--no-root", "--only", "flake8", external=True)
-    args = s.posargs or locations
-    s.run("flake8", *args)
 
 
 @session
