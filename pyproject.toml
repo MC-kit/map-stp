@@ -303,7 +303,7 @@ logging-format-style = "new"   # use {} in logging messages
 deprecated-modules = ["six"]
 extension-pkg-allow-list = ["duckdb"]
 disable = [
-    "wrong-import-order"  # this is `isort` responsibility
+    "wrong-import-order"  # this is `ruff format` responsibility
 ]
 
 [tool.bandit]
@@ -512,7 +512,7 @@ ignore = [
     # "FBT002",  # Boolean default value in function definition (TODO!)
     # "FBT003",  # Boolean positional value in function call
 
-    # "I001", # import order is controlled by isort
+    # "I001",
     # "I101",
     # "I201",
     # "I202",
