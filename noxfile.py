@@ -23,7 +23,6 @@ nox.options.sessions = (
     "mypy",
     "ruff-format",
     "ruff",
-    "xdoctest",
     "tests",
     "docs-build",
 )
