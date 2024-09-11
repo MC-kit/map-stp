@@ -72,6 +72,7 @@ pytest-cov = ">=4.0"
 # pytest-mock = ">=3.9"
 # pytest-randomly = ">=3.12"
 coverage = { version = ">=6.1.2", extras = ["toml"] }
+xdoctest = { extras = ["colors"], version = ">=0.15.10" }
 
 [tool.poetry.group.coverage.dependencies]
 coverage = { version = ">=6.1.2", extras = ["toml"] }
