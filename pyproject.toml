@@ -190,20 +190,14 @@ sort = "Cover"
 #     https://dev.to/tusharsadhwani/the-comprehensive-guide-to-mypy-561m
 [tool.mypy]
 python_version = "3.12"
-# strict = true     # TODO dvp: uncomment this to get strict control
+strict = true
 follow_imports = "silent"
-# namespace_packages = true
-warn_return_any = true
-warn_unused_configs = true
-show_error_codes = true
-enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
-disable_error_code = ["annotation-unchecked"]
-show_error_context = true
-error_summary = true
-warn_redundant_casts = true
-warn_unreachable = true
-warn_unused_ignores = true
+disallow_untyped_defs = true
 files = "src/mapstp/**/*.py"
+exclude = '''(?x)(
+    data/.*\.py$     # python files given as data (for SpaceClaim)
+  | cli/runner\.py$  # mypy doesn't like decorators
+  )'''
 plugins = ["numpy.typing.mypy_plugin"]
 
 [[tool.mypy.overrides]]

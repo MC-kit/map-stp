@@ -24,7 +24,7 @@ from mapstp.utils.re import CELL_START_PATTERN
 if TYPE_CHECKING:
     import re
 
-    from collections.abc import Iterable, Iterator
+    from collections.abc import Generator, Iterable, Iterator
     from pathlib import Path
 
     from mapstp.utils.io import MCNPSections
@@ -60,7 +60,7 @@ def extract_number_and_density(cell: int, path_info: pd.DataFrame) -> tuple[int,
     """
     material_number, density, factor = path_info.loc[cell][["material_number", "density", "factor"]]
 
-    def _validate(*, res: bool, msg: str):
+    def _validate(*, res: bool, msg: str) -> None:
         if not res:
             raise PathInfoError(msg, cell, path_info)
 
@@ -137,12 +137,14 @@ class _Merger:
         """
         return self.current_cell in self.path_info.index
 
-    def _format_volume_and_comment(self: _Merger) -> Iterator[str]:
+    def _format_volume_and_comment(self: _Merger) -> Generator[str, None, None]:
         rec = self.path_info.loc[self.current_cell][["volume", "path"]]
         yield f"      vol={rec.volume}"
         yield f"      $ stp: {rec.path}"
 
-    def _on_cell_start(self: _Merger, line: str, match: re.Match) -> Iterator[str]:
+    def _on_cell_start(
+        self: _Merger, line: str, match: re.Match[str]
+    ) -> Generator[str, None, None]:
         if self.first_cell:
             line = self._on_next_cell(line, match)
             self.first_cell = False
@@ -152,7 +154,7 @@ class _Merger:
             line = self._on_next_cell(line, match)
         yield line
 
-    def _on_next_cell(self: _Merger, line: str, match: re.Match) -> str:
+    def _on_next_cell(self: _Merger, line: str, match: re.Match[str]) -> str:
         self.current_cell = int(match["number"])
         if self.is_current_cell_specified() and int(match["material"]) == 0:
             line = _correct_first_line(

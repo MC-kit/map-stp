@@ -226,7 +226,7 @@ def parse(inp: TextIO) -> ParseResult:
 
 
 def _process_line(
-    match: re.Match,
+    match: re.Match[str],
     line: str,
     links: list[Link],
     products: list[Product],
