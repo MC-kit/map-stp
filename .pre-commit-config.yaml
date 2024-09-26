@@ -79,7 +79,6 @@ repos:
           - --py310-plus
         language: system
         types: [ python ]
-        stages: [ manual ]
 
       # # Format Python code
       # - id: ruff
@@ -98,12 +97,12 @@ repos:
       #   exclude: ^notebooks|^extern
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.3
+    rev: v0.6.7
     hooks:
       - id: ruff
         exclude: ^notebooks|^extern
       - id: ruff-format
-        exclude: ^notebooks|^extern
+        exclude: ^notebooks|^extern|ipynb$
 
   - repo: https://github.com/python-poetry/poetry
     rev: "1.8.0"

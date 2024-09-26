@@ -41,7 +41,7 @@ Chnagelog = "https://github.com/MC-kit/mapstp/releases"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
-numpy = ">=1.26.0"
+numpy = ">=1.26.2"
 openpyxl = ">=3.0.9"
 pandas = ">=2.0.0"
 loguru = "^0.7.2"
@@ -193,7 +193,7 @@ python_version = "3.12"
 strict = true
 follow_imports = "silent"
 disallow_untyped_defs = true
-files = "src/mapstp/**/*.py"
+files = "src/**/*.py"
 exclude = '''(?x)(
     data/.*\.py$     # python files given as data (for SpaceClaim)
   | cli/runner\.py$  # mypy doesn't like decorators
@@ -211,6 +211,7 @@ module = [
     "nox",
     "numpy.testing",
     "pandas",
+    "polars",
     "pytest",
     "scipy.constants",
     "scipy.sparse",
