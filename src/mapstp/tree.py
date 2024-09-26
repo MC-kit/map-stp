@@ -65,7 +65,7 @@ class Tree:
             The list of paths.
         """
 
-        def _scan() -> Generator[str, None, None]:
+        def _scan() -> Generator[str]:
             for link in self._body_links:
                 src, dst = link.src, link.dst
                 product = self._product_index[dst]

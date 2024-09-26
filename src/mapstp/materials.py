@@ -110,7 +110,7 @@ def load_materials_map(materials: str | Path) -> MaterialsDict:
         return load_materials_map_from_stream(stream)
 
 
-def drop_material_cards(lines: Iterable[str]) -> Generator[str, None, None]:
+def drop_material_cards(lines: Iterable[str]) -> Generator[str]:
     """Drop lines belonging to material cards.
 
     Used on replacing materials in the model with ones actually used.

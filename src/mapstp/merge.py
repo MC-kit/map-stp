@@ -137,14 +137,12 @@ class _Merger:
         """
         return self.current_cell in self.path_info.index
 
-    def _format_volume_and_comment(self: _Merger) -> Generator[str, None, None]:
+    def _format_volume_and_comment(self: _Merger) -> Generator[str]:
         rec = self.path_info.loc[self.current_cell][["volume", "path"]]
         yield f"      vol={rec.volume}"
         yield f"      $ stp: {rec.path}"
 
-    def _on_cell_start(
-        self: _Merger, line: str, match: re.Match[str]
-    ) -> Generator[str, None, None]:
+    def _on_cell_start(self: _Merger, line: str, match: re.Match[str]) -> Generator[str]:
         if self.first_cell:
             line = self._on_next_cell(line, match)
             self.first_cell = False

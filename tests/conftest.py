@@ -37,7 +37,7 @@ def paths_ei(data) -> list[str]:
 
 
 @pytest.fixture()
-def cd_tmpdir(tmp_path: Path) -> Generator[Path, None, None]:
+def cd_tmpdir(tmp_path: Path) -> Generator[Path]:
     """Temporarily switch to temp directory.
 
     Args:

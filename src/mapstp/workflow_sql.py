@@ -42,7 +42,7 @@ def save_meta_info_from_paths(con: sq.Connection, materials_index: str) -> None:
     ).fetchall()
 
     def _iter_records() -> (
-        Generator[tuple[int | None, float | None, float | None, str | None, int | None], None, None]
+        Generator[tuple[int | None, float | None, float | None, str | None, int | None]]
     ):
         for cell, path in records:
             meta_info = extract_meta_info_from_path(path)
