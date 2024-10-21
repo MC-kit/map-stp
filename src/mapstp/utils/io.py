@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TextIO
+from typing import TYPE_CHECKING, Any, TextIO
 
 import os
 import sys
@@ -22,7 +22,7 @@ from mapstp.utils.re import (
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-PathLike = str | Path | os.PathLike
+PathLike = str | Path | os.PathLike[Any]
 
 
 def can_override(path: Path, *, override: bool) -> Path:
