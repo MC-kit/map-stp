@@ -24,6 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Physics",
 ]
 
@@ -40,8 +41,8 @@ Chnagelog = "https://github.com/MC-kit/mapstp/releases"
 
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
-numpy = ">=1.26.2"
+python = ">=3.10,<3.14"
+numpy = ">=2.0"
 openpyxl = ">=3.0.9"
 pandas = ">=2.0.0"
 loguru = "^0.7.2"

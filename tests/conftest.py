@@ -36,7 +36,7 @@ def paths_ei(data) -> list[str]:
     return create_bodies_paths(products, links)
 
 
-@pytest.fixture()
+@pytest.fixture
 def cd_tmpdir(tmp_path: Path) -> Generator[Path]:
     """Temporarily switch to temp directory.
 
