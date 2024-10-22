@@ -1,15 +1,15 @@
 """Code to load materials index."""
+
 from __future__ import annotations
 
 from typing import cast
 
+from importlib.resources import files
 from pathlib import Path
 
 import pandas as pd
 
-from mapstp.utils.resource import path_resolver
-
-PACKAGE_DATA: Path = cast(Path, path_resolver("mapstp")("data"))
+PACKAGE_DATA: Path = cast(Path, files("mapstp").joinpath("data"))
 
 
 def load_materials_index(materials_index: str | None = None) -> pd.DataFrame:

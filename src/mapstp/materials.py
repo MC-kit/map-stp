@@ -2,9 +2,10 @@
 
 The map associates material number to its MCNP specification text.
 """
+
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Dict, Generator, Iterable, TextIO
+from typing import TYPE_CHECKING, TextIO
 
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -16,9 +17,13 @@ import numpy as np
 from mapstp.utils.re import CARD_PATTERN, MATERIAL_PATTERN
 
 if TYPE_CHECKING:
+    import sqlite3 as sq
+
+    from collections.abc import Callable, Generator, Iterable
+
     import pandas as pd
 
-MaterialsDict = Dict[int, str]
+MaterialsDict = dict[int, str]
 """Mapping material number -> material MCNP text."""
 
 logger = getLogger()
@@ -33,15 +38,15 @@ class _Loader:
         init=False,
     )
 
-    def __post_init__(self) -> None:
+    def __post_init__(self: _Loader) -> None:
         for line in self.stream:
             self._process_line(line)
 
     @property
-    def _in_material_card(self) -> bool:
+    def _in_material_card(self: _Loader) -> bool:
         return self.material_no > 0
 
-    def _process_line(self, line) -> None:
+    def _process_line(self: _Loader, line: str) -> None:
         if self._in_material_card:
             match = CARD_PATTERN.search(line)
             if not match:
@@ -52,18 +57,20 @@ class _Loader:
         else:
             self._check_if_material_line(line)
 
-    def _append(self, line: str) -> None:
+    def _append(self: _Loader, line: str) -> None:
         if self.material_no > 0:
             self.materials_dict[self.material_no].append(line)
 
-    def _check_if_material_line(self, line: str) -> bool:
+    def _check_if_material_line(self: _Loader, line: str) -> bool:
         match = MATERIAL_PATTERN.search(line)
         if match:
             self.material_no = int(match["material"])
             if self.material_no <= 0:
-                raise ValueError(f"Wrong material number {self.material_no} found")
+                msg = f"Wrong material number {self.material_no} found"
+                raise ValueError(msg)
             if self.material_no in self.materials_dict:
-                raise ValueError(f"Material number {self.material_no} is duplicated")
+                msg = f"Material number {self.material_no} is duplicated"
+                raise ValueError(msg)
             self._append(line)
             return True
         return False  # skipping other cards and prepending text
@@ -103,7 +110,7 @@ def load_materials_map(materials: str | Path) -> MaterialsDict:
         return load_materials_map_from_stream(stream)
 
 
-def drop_material_cards(lines: Iterable[str]) -> Generator[str, None, None]:
+def drop_material_cards(lines: Iterable[str]) -> Generator[str]:
     """Drop lines belonging to material cards.
 
     Used on replacing materials in the model with ones actually used.
@@ -146,7 +153,7 @@ def materials_spec_mapper(materials_map: dict[int, str]) -> Callable[[int], str]
                 text = (
                     f"m{used_number}  "
                     "$ dummy: material was not provided to mapstp\n"
-                    "        1.001.31c  1.0\n"
+                    "        1001.31c  1.0\n"
                 )
             return text
         return ""
@@ -164,7 +171,29 @@ def get_used_materials(materials_map: dict[int, str], path_info: pd.DataFrame) -
     Returns:
         All the used materials specs to be used as part of MCNP model text.
     """
-    values = path_info["number"].to_numpy()
+    values = path_info["material_number"].to_numpy()
     used_numbers = sorted({int(m) for m in values if not np.isnan(m)})
+    used_materials_texts = list(map(materials_spec_mapper(materials_map), used_numbers))
+    return "".join(used_materials_texts)
+
+
+def get_used_materials_sql(con: sq.Connection, materials_map: dict[int, str]) -> str:
+    """Collect text of used materials specifications.
+
+    Args:
+        con: database connection
+        materials_map: map material number -> spec.
+    """
+    used_numbers = [
+        x[0]
+        for x in con.execute(
+            """
+            select distinct material
+            from cells
+            where material not null
+            order by material
+            """,
+        )
+    ]
     used_materials_texts = list(map(materials_spec_mapper(materials_map), used_numbers))
     return "".join(used_materials_texts)

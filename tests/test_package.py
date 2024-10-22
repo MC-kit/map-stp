@@ -16,7 +16,8 @@ def find_version_from_project_toml():
             _line = line.strip()
             if _line.startswith("version"):
                 return _line.split("=")[1].strip().strip('"')
-        raise ValueError(f"Cannot find item 'version' in {toml_path}")
+        msg = f"Cannot find item 'version' in {toml_path}"
+        raise ValueError(msg)
 
 
 _VERSION_NORM_PATTERN = re.compile(r"-(?P<letter>.)[^.]*\.(?P<prepatch>.*)$")

@@ -1,5 +1,5 @@
 ==========================================================
-*mapstp*: link STP and MCNP models
+*mapstp*: Tag cells in MCNP models
 ==========================================================
 
 |Maintained| |License| |Versions| |PyPI| |Docs|

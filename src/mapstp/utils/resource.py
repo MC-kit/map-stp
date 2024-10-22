@@ -1,14 +1,10 @@
 """Utility methods to access a package data."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import sys
-
-if sys.version_info >= (3, 9):
-    from importlib.resources import files
-else:
-    from importlib_resources import files  # pragma: no cover
+from importlib.resources import files
 
 if TYPE_CHECKING:
     from collections.abc import Callable

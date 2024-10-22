@@ -1,26 +1,31 @@
 """Extract meta information from paths given in an STP file."""
+
 from __future__ import annotations
 
-from typing import Generator
+from typing import TYPE_CHECKING
 
 import re
 
 from dataclasses import dataclass
 
 import numpy as np
-
 import pandas as pd
 
-_META_PATTERN = re.compile(r".*\[(?P<meta>[^]]+)]")
+_META_PATTERN = re.compile(r"\[(?P<meta>[^]]+)]")
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 @dataclass
-class _MetaInfoCollector:
+class MetaInfoCollector:
+    """Helper to store mta information from a path."""
+
     mnemonic: str | None = None
     factor: float | None = None
     rwcl: str | None = None
 
-    def update(self, pars: dict[str, str]) -> None:
+    def update(self: MetaInfoCollector, pars: dict[str, str]) -> None:
         """Revise meta information collected on traversing along an STP branch.
 
         Args:
@@ -45,7 +50,7 @@ class _MetaInfoCollector:
             self.rwcl = t
 
 
-def extract_path_info(paths: list[list[str]], material_index: pd.DataFrame) -> pd.DataFrame:
+def extract_path_info(paths: list[str], material_index: pd.DataFrame) -> pd.DataFrame:
     """Extract meta information from `paths` and associate corresponding data with each path.
 
     Args:
@@ -58,69 +63,94 @@ def extract_path_info(paths: list[list[str]], material_index: pd.DataFrame) -> p
     """
     return pd.DataFrame.from_records(
         _records(paths, material_index),
-        columns=["number", "density", "factor", "rwcl"],
+        columns=["material_number", "density", "factor", "rwcl"],
     )
 
 
 def _records(
-    paths,
-    material_index,
-) -> Generator[tuple[int | None, float | None, float | None, str | None], None, None]:
+    paths: list[str],
+    material_index: pd.DataFrame,
+) -> Iterator[tuple[int | None, float | None, float | None, str | None]]:
     for path in paths:
-        meta_info = _extract_meta_info_from_path(path)
+        meta_info = extract_meta_info_from_path(path)
         if meta_info.mnemonic:
-            density, number = _define_material_number_and_density(material_index, meta_info, path)
+            density, material_number = define_material_number_and_density(
+                material_index,
+                meta_info,
+                path,
+            )
         else:
-            number = density = None
-        yield number, density, meta_info.factor, meta_info.rwcl
+            material_number = density = None
+        yield material_number, density, meta_info.factor, meta_info.rwcl
 
 
-def _define_material_number_and_density(
-    material_index,
-    meta_info,
-    path,
+def define_material_number_and_density(
+    material_index: pd.DataFrame,
+    meta_info: MetaInfoCollector,
+    path: str,
 ) -> tuple[float | None, int | None]:
+    """Define material number and density from a material index for given meta info.
+
+    Args:
+        material_index: table mapping material mnemonics to material number and density
+        meta_info: ... collected from the `path`
+        path: ... for diagnostics
+
+    Returns:
+        density and material
+    """
     try:
-        number: int | None = int(material_index.loc[meta_info.mnemonic]["number"])
+        material_number: int | None = int(material_index.loc[meta_info.mnemonic]["number"])
     except KeyError:
-        raise KeyError(
+        msg = (
             f"The mnemonic {meta_info.mnemonic!r} "
             "is not specified in the material index. "
-            f"See the STP path: {'/'.join(path)}",
-        ) from None
+            f"See the STP path: {path}"
+        )
+        raise KeyError(msg) from None
     density = material_index.loc[meta_info.mnemonic]["density"]
     if np.isnan(density):
-        raise ValueError(
+        msg = (
             f"The density for mnemonic {meta_info.mnemonic!r} "
-            "is not specified in the material index.",
+            "is not specified in the material index."
         )
+        raise ValueError(msg)
     if density < 0.0:
-        raise ValueError(
+        msg = (
             f"The density for mnemonic {meta_info.mnemonic!r} "
-            "in the material index is to be positive.",
+            "in the material index is not to be negative."
         )
-    return density, number
+        raise ValueError(msg)
+    return density, material_number
 
 
-def _extract_meta_info_from_path(path) -> _MetaInfoCollector:
-    meta_info = _MetaInfoCollector()
-    for i, part in enumerate(path):
-        match = _META_PATTERN.match(part)
-        if match:
-            pars = _extract_meta_info(i, match, part, path)
+def extract_meta_info_from_path(path: str) -> MetaInfoCollector:
+    """Extract meta information from an STP path.
+
+    Args:
+        path: ... to body with `[m-...]` tags
+
+    Returns:
+        Collected meta info map.
+    """
+    meta_info = MetaInfoCollector()
+    found = _META_PATTERN.findall(path)
+    if found:
+        for meta in found:
+            pars = _extract_meta_info(meta, path)
             meta_info.update(pars)
     return meta_info
 
 
-def _extract_meta_info(i: int, match: re.Match, part: str, path: list[str]) -> dict[str, str]:
-    meta = match["meta"]
+def _extract_meta_info(meta: str, path: str) -> dict[str, str]:
     try:
-        pars: dict[str, str] = dict(map(_create_pair, meta.split()))
+        pars: dict[str, str] = dict(_create_pair(t) for t in meta.split())
     except ValueError as _ex:
-        raise ValueError(f"On path {path} part #{i}: {part}") from _ex
+        msg = f"On path {path}"
+        raise ValueError(msg) from _ex
     return pars
 
 
-def _create_pair(x: str) -> tuple[str, str]:
-    a, b = x.split("-", 1)  # type: str, str
+def _create_pair(meta_part: str) -> tuple[str, str]:
+    a, b = meta_part.split("-", maxsplit=1)
     return a, b

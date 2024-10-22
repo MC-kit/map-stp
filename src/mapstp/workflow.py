@@ -3,6 +3,7 @@
 Use imported methods to organize other workflows in notebooks or dependant packages.
 Check the methods defined here as templates for other workflows.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
     import pandas as pd
 
 
-def create_path_info(materials_index: str, stp: str) -> tuple[list[list[str]], pd.DataFrame]:
+def create_path_info(materials_index: str, stp: str) -> tuple[list[str], pd.DataFrame]:
     """Join information from materials index and stp paths to table.
 
     Args:

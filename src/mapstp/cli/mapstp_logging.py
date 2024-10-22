@@ -2,23 +2,24 @@
 
 See https://github.com/Delgan/loguru
 """
+
 from __future__ import annotations
 
 from typing import Final
 
 import logging
+import os
 import sys
 
 from pathlib import Path
 
 from loguru import logger
-from mapstp.config import env
 
 
 class InterceptHandler(logging.Handler):
     """Send events from standard logging to loguru."""
 
-    def emit(self, record: logging.LogRecord) -> None:
+    def emit(self: InterceptHandler, record: logging.LogRecord) -> None:
         """See :meth:`logging.Handler.emit`.
 
         Args:
@@ -45,16 +46,17 @@ log.addHandler(InterceptHandler())
 
 # from loguru._defaults.py
 
-MAPSTP_CONSOLE_LOG_FORMAT: Final[str] = env(
+MAPSTP_CONSOLE_LOG_FORMAT: Final[str] = os.getenv(
     "MAPSTP_CONSOLE_LOG_FORMAT",
-    default="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
+    "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
     "<level>{level: <8}</level> | "
     "<level>{message}</level>",
 )
-MAPSTP_FILE_LOG_PATH: Final[Path] = env(
-    "MAPSTP_FILE_LOG_PATH",
-    converter=Path,
-    default="mapstp.log",
+MAPSTP_FILE_LOG_PATH: Final[Path] = Path(
+    os.getenv(
+        "MAPSTP_FILE_LOG_PATH",
+        "mapstp.log",
+    ),
 )
 
 
@@ -79,4 +81,4 @@ def init_logger(
             diagnose=False,
         )
     if log_path:
-        logger.add(log_path, rotation="100 MB", backtrace=True, diagnose=True)
+        logger.add(log_path, rotation="1 day", retention=3, backtrace=True, diagnose=True)

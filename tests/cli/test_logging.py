@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from logging import WARNING, LogRecord, getLogger
 
-from mapstp.cli.logging import InterceptHandler, init_logger
+from mapstp.cli.mapstp_logging import InterceptHandler, init_logger
 
 
 def test_std_logging_interception(capsys):

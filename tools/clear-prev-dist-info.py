@@ -6,6 +6,7 @@ Should be fixed in poetry 1.2, but it's not available yet.
 Run this if test_package() fails on pytest run
 (mckit of wrong version is found on python site).
 """
+
 from __future__ import annotations
 
 from typing import TypeVar
@@ -53,10 +54,11 @@ def get_project_name() -> str:
     """
     pyproject_path = search_upwards_for_file("pyproject.toml")
     if pyproject_path is None:
-        raise OSError(
+        msg = (
             "Illegal directory: cannot find file pyproject.toml "
-            f"from current directory: {Path.cwd()}",
+            f"from current directory: {Path.cwd()}"
         )
+        raise OSError(msg)
     pyproject = tomli.loads(pyproject_path.read_text())
     name = pyproject["tool"]["poetry"]["name"].replace("-", "_")
     print(f"Package {name} is found in {pyproject_path.absolute()}")
@@ -79,7 +81,7 @@ def clear_previous_distributions_info() -> None:
 def run_poetry_install() -> None:
     """Refresh installation of the package."""
     print("Running `poetry install`.")
-    subprocess.run(["poetry", "install"])
+    subprocess.run(["poetry", "install"], check=True)
 
 
 if __name__ == "__main__":
