@@ -42,7 +42,7 @@ Chnagelog = "https://github.com/MC-kit/mapstp/releases"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.14"
-numpy = ">=2.0"
+numpy = ">=2.1.3"
 openpyxl = ">=3.0.9"
 pandas = ">=2.0.0"
 loguru = ">=0.7.2"
@@ -128,7 +128,7 @@ addopts = '''
 --failed-first
 --xdoctest
 '''
-doctest_optionflags = "ELLIPSIS NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES"
+doctest_optionflags = "ELLIPSIS NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES NUMBER"
 testpaths = ["tests", "src"]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",

@@ -48,7 +48,7 @@ def find_my_name() -> str:
     Raises:
         ValueError: if the pattern is not found.
     """
-    with Path("pyproject.toml").open() as fid:
+    with Path("pyproject.toml").open(encoding="utf8") as fid:
         for line in fid:
             res = NAME_RGX.match(line)
             if res is not None:
