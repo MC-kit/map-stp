@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class MetaInfoCollector:
-    """Helper to store mta information from a path."""
+    """Helper to store meta information from a path."""
 
     mnemonic: str | None = None
     factor: float | None = None
@@ -137,18 +137,18 @@ def extract_meta_info_from_path(path: str) -> MetaInfoCollector:
     found = _META_PATTERN.findall(path)
     if found:
         for meta in found:
-            pars = _extract_meta_info(meta, path)
-            meta_info.update(pars)
+            pairs = _extract_meta_info(meta, path)
+            meta_info.update(pairs)
     return meta_info
 
 
 def _extract_meta_info(meta: str, path: str) -> dict[str, str]:
     try:
-        pars: dict[str, str] = dict(_create_pair(t) for t in meta.split())
+        pairs: dict[str, str] = dict(_create_pair(t) for t in meta.split())
     except ValueError as _ex:
         msg = f"On path {path}"
         raise ValueError(msg) from _ex
-    return pars
+    return pairs
 
 
 def _create_pair(meta_part: str) -> tuple[str, str]:
