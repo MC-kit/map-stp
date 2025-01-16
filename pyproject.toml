@@ -1,22 +1,20 @@
 [project]
 name = "mapstp"
-dynamic = [ "version", "classifiers" ]
+dynamic = ["version", "classifiers"]
 description = "Transfers meta information from STP to MCNP"
 license = { text = "MIT" }
 readme = "README.rst"
 requires-python = ">=3.10"
 authors = [
-  {name="dvp2015", email="dmitri_portnov@yahoo.com"}
+    { name = "dvp2015", email = "dmitri_portnov@yahoo.com" }
 ]
 keywords = ["STP", "MCNP", "SuperMC", "SpaceClaim"]
 dependencies = [
-  "numpy (>=2.1.3)",
-  "polars[all] (>=1.12.0)",
-  "numpy (>=2.1.3)",
-  "openpyxl (>=3.0.9)",
-  "pandas (>=2.0.0)",
-  "loguru (>=0.7.2)",
-  "click (>=8.1.7)"
+    "click (>=8.1.7)",
+    "loguru (>=0.7.2)",
+    "numpy (>=2.1.3)",
+    "openpyxl (>=3.0.9)",
+    "pandas (>=2.0.0)",
 ]
 
 [project.urls]
@@ -35,22 +33,22 @@ build-backend = "poetry.core.masonry.api"
 version = "1.0.2a0"
 packages = [{ include = "mapstp", from = "src" }]
 include = [
-   { path = "noxfile.py", format = "sdist" },
-   { path = "tests", format = "sdist" },
-   { path = "docs", format = "sdist"}
+    { path = "noxfile.py", format = "sdist" },
+    { path = "tests", format = "sdist" },
+    { path = "docs", format = "sdist" }
 ]
 exclude = [
-  { path = "docs/build"}
+    { path = "docs/build" }
 ]
 # Select from PyPI trove classifiers: https://pypi.org/classifiers/
 # about dynamic classifiers in poetry: https://python-poetry.org/docs/pyproject/#classifiers-1
 classifiers = [
-  "Development Status :: 4 - Beta",
-  "Environment :: Console",
-  "Intended Audience :: Developers",
-  "Intended Audience :: Science/Research",
-  "Operating System :: OS Independent",
-  "Topic :: Scientific/Engineering :: Physics",
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Physics",
 ]
 
 
@@ -291,26 +289,26 @@ output-format = "concise"
 src = ["src", "tests"]
 
 exclude = [
-  "*.egg-info",
-  ".direnv",
-  ".cache",
-  ".eggs",
-  ".git",
-  ".git-rewrite",
-  ".mypy_cache",
-  ".nox",
-  ".ruff_cache",
-  ".venv",
-  "__pycache__",
-  "_build",
-  "adhoc",
-  "build",
-  "dist",
-  "docs/source/conf.py",
-  "notebooks",
-  "venv",
-  "src/mapstp/data",
-  "wrk",
+    "*.egg-info",
+    ".direnv",
+    ".cache",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".mypy_cache",
+    ".nox",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+    "_build",
+    "adhoc",
+    "build",
+    "dist",
+    "docs/source/conf.py",
+    "notebooks",
+    "venv",
+    "src/mapstp/data",
+    "wrk",
 ]
 
 [tool.ruff.lint]
