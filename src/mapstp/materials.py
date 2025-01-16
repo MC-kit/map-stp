@@ -14,7 +14,7 @@ from pathlib import Path
 
 import numpy as np
 
-from mapstp.utils.re import CARD_PATTERN, MATERIAL_PATTERN
+from mapstp.utils._re import CARD_PATTERN, MATERIAL_PATTERN
 
 if TYPE_CHECKING:
     import sqlite3 as sq

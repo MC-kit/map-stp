@@ -13,7 +13,7 @@ from pathlib import Path
 
 from loguru import logger
 
-from mapstp.utils.re import (
+from mapstp.utils._re import (
     CELL_START_PATTERN,
     MCNP_SECTIONS_SEPARATOR_PATTERN,
     VOID_CELL_START_PATTERN,

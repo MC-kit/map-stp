@@ -36,7 +36,7 @@ from mapstp.cli.mapstp_logging import init_logger, logger
 from mapstp.materials import get_used_materials_sql, load_materials_map
 from mapstp.merge import merge_paths
 from mapstp.save_table import create_excel
-from mapstp.utils.io import can_override, select_output
+from mapstp.utils._io import can_override, select_output
 from mapstp.workflow_sql import load_path_info, save_meta_info_from_paths
 
 

@@ -283,16 +283,14 @@ def check_header(inp: TextIO) -> None:
     line = next(inp)
     if line != _VALID_FIRST_LINE:
         msg = (
-            "Not a valid STP file: the expected first row "
-            f"{_VALID_FIRST_LINE[:-1]}, actual {line}"
+            f"Not a valid STP file: the expected first row {_VALID_FIRST_LINE[:-1]}, actual {line}"
         )
         raise FileError(msg)
     next(inp)
     line = next(inp)
     if line != _VALID_THIRD_LINE:
         msg = (
-            "STP protocol is not AP214, the expected third row "
-            f"{_VALID_THIRD_LINE}, actual {line}"
+            f"STP protocol is not AP214, the expected third row {_VALID_THIRD_LINE}, actual {line}"
         )
         raise FileError(msg)
 

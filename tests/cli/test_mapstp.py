@@ -15,8 +15,8 @@ from numpy.testing import assert_array_equal
 
 from mapstp.cli.runner import __summary__, __version__, mapstp
 from mapstp.materials import load_materials_map
-from mapstp.utils.io import find_first_cell_number, find_first_void_cell_number, read_mcnp_sections
-from mapstp.utils.re import MATERIAL_PATTERN, VOID_CELL_START_PATTERN
+from mapstp.utils._io import find_first_cell_number, find_first_void_cell_number, read_mcnp_sections
+from mapstp.utils._re import MATERIAL_PATTERN, VOID_CELL_START_PATTERN
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -260,9 +260,9 @@ def test_info_assignment_with_sql(runner, cd_tmpdir, data):
     assert output.exists(), f"Should create output file {output}"
     with output.open(encoding="cp1251") as stream:
         lines = list(stream.readlines())
-    assert (
-        "           ( -2005 2010 2006 -2017 -2009 2018)\n" in lines
-    ), "The specification should be wrapped after material insertion to the first line"
+    assert "           ( -2005 2010 2006 -2017 -2009 2018)\n" in lines, (
+        "The specification should be wrapped after material insertion to the first line"
+    )
     stp_comment_lines = list(extract_stp_comment_lines(lines))
     assert len(stp_comment_lines) == 5
     assert "Inconel718" in stp_comment_lines[3]
@@ -437,9 +437,9 @@ def test_tnes(runner, tmp_path, data):
 
 def check_materials(materials, number_of_materials):
     materials_dict = load_materials_map(materials)
-    assert (
-        len(materials_dict) == number_of_materials
-    ), f"There should be {number_of_materials} materials in {materials}"
+    assert len(materials_dict) == number_of_materials, (
+        f"There should be {number_of_materials} materials in {materials}"
+    )
     for i in range(1, 4):
         assert i in materials_dict
     material_1_first_row = materials_dict[1].split("\n")[1].strip()

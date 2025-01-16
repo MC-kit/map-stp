@@ -18,8 +18,8 @@ import pandas as pd
 
 from mapstp.exceptions import PathInfoError
 from mapstp.materials import drop_material_cards
-from mapstp.utils.io import read_mcnp_sections
-from mapstp.utils.re import CELL_START_PATTERN
+from mapstp.utils._io import read_mcnp_sections
+from mapstp.utils._re import CELL_START_PATTERN
 
 if TYPE_CHECKING:
     import re
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from collections.abc import Generator, Iterable, Iterator
     from pathlib import Path
 
-    from mapstp.utils.io import MCNPSections
+    from mapstp.utils._io import MCNPSections
 
 logger = getLogger()
 
@@ -225,8 +225,7 @@ def _print_other_sections(
             print(used_materials_text, file=output)
     else:
         logger.warning(
-            "There are no surfaces in model, "
-            "skipping surfaces and data cards including materials",
+            "There are no surfaces in model, skipping surfaces and data cards including materials",
         )
 
 

@@ -1,52 +1,64 @@
-[tool.poetry]
+[project]
 name = "mapstp"
-version = "1.0.2a0"
+dynamic = [ "version", "classifiers" ]
 description = "Transfers meta information from STP to MCNP"
-authors = ["dvp <dmitri_portnov@yahoo.com>"]
-license = "MIT"
+license = { text = "MIT" }
+readme = "README.rst"
+requires-python = ">=3.10"
+authors = [
+  {name="dvp2015", email="dmitri_portnov@yahoo.com"}
+]
+keywords = ["STP", "MCNP", "SuperMC", "SpaceClaim"]
+dependencies = [
+  "numpy (>=2.1.3)",
+  "polars[all] (>=1.12.0)",
+  "numpy (>=2.1.3)",
+  "openpyxl (>=3.0.9)",
+  "pandas (>=2.0.0)",
+  "loguru (>=0.7.2)",
+  "click (>=8.1.7)"
+]
+
+[project.urls]
 homepage = "https://github.com/MC-kit/map-stp"
 repository = "https://github.com/MC-kit/map-stp"
 # documentation = "https://mapstp.readthedocs.io
-keywords = ["STP", "MCNP", "SuperMC", "SpaceClaim"]
-readme = "README.rst"
-packages = [
-    { include = "mapstp", from = "src" },
-]
-# Select from PyPI classifiers: https://pypi.org/classifiers/
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Environment :: Console",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Topic :: Scientific/Engineering :: Physics",
-]
 
-[build-system]
-requires = ["poetry-core >= 1.8.3"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
+[project.scripts]
 mapstp = "mapstp.cli.runner:mapstp"
 
-[tool.poetry.urls]
-documentation = "https://mapstp.readthedocs.io"
-Chnagelog = "https://github.com/MC-kit/mapstp/releases"
+[build-system]
+requires = ["poetry-core >= 2.0.0, <3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+version = "1.0.2a0"
+packages = [{ include = "mapstp", from = "src" }]
+include = [
+   { path = "noxfile.py", format = "sdist" },
+   { path = "tests", format = "sdist" },
+   { path = "docs", format = "sdist"}
+]
+exclude = [
+  { path = "docs/build"}
+]
+# Select from PyPI trove classifiers: https://pypi.org/classifiers/
+# about dynamic classifiers in poetry: https://python-poetry.org/docs/pyproject/#classifiers-1
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Physics",
+]
+
+
 
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.14"
-numpy = ">=2.1.3"
-openpyxl = ">=3.0.9"
-pandas = ">=2.0.0"
-loguru = ">=0.7.2"
-click = ">=8.1.7"
+
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
@@ -279,14 +291,26 @@ output-format = "concise"
 src = ["src", "tests"]
 
 exclude = [
-    "*.egg-info",
-    ".cache",
-    "__pycache__",
-    "adhoc",
-    "docs/source/conf.py",
-    "notebooks",
-    "src/mapstp/data",
-    "wrk",
+  "*.egg-info",
+  ".direnv",
+  ".cache",
+  ".eggs",
+  ".git",
+  ".git-rewrite",
+  ".mypy_cache",
+  ".nox",
+  ".ruff_cache",
+  ".venv",
+  "__pycache__",
+  "_build",
+  "adhoc",
+  "build",
+  "dist",
+  "docs/source/conf.py",
+  "notebooks",
+  "venv",
+  "src/mapstp/data",
+  "wrk",
 ]
 
 [tool.ruff.lint]
@@ -294,8 +318,8 @@ exclude = [
 #or run 'ruff linter' to see a brief list
 select = [
     "A", # flake8-builtins
-    "ANN", # flake8-annotations
     "AIR", # Airflow https://airflow.apache.org/docs/apache-airflow/stable/index.html
+    "ANN", # flake8-annotations
     "ARG", # flake8-unused-arguments
     "ASYNC", # flake8-async
     "B", # flake8-bugbear
@@ -303,8 +327,10 @@ select = [
     "C4", # flake8-comprehensions
     "C90", # mccabe
     "COM", # flake8-commas
+    # "CPY", # flake8-copyright
     "D", # pydocstyle
     "DJ", # flake8-django
+    # "DOC", # pydoclint
     "DTZ", # flake8-datetimez
     "E", # pycodestyle
     "EM", # flake8-errmsg
@@ -312,6 +338,7 @@ select = [
     "EXE", # flake8-executable
     "F", # Pyflakes
     "FA", # flake8-future-annotations
+    # "FAST", # FastAPI
     "FBT", # flake8-boolean-trap  https://adamj.eu/tech/2021/07/10/python-type-hints-how-to-avoid-the-boolean-trap
     # "FIX", # flake8-fixme
     "FLY", # flynt
@@ -356,10 +383,8 @@ select = [
 
 # Ignore rules that currently fail on the codebase
 ignore = [
-    # "ANN001", # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
-    # "ANN002", # ANN002 Missing type annotation for *drop_items: ... as above
-    # "ANN101", # ANN101 Missing type annotation for self in method
-    # "ANN102", # ANN102 Missing type annotation for cls in classmethod
+    # "ANN001", # Missing type annotation for function argument: doesn't allow to use functools dispatching
+    # "ANN002", # Missing type annotation for *drop_items: ... as above
     # "ANN201", # Missing return type annotation for public function `mesh2com`
     "ANN202", # ANN202 Missing return type annotation for protected function: ... dispatching
     # "ANN204", # ANN204 Missing return type annotation for special method

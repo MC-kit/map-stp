@@ -24,6 +24,7 @@ repos:
     rev: "v5.0.0"
     hooks:
       - id: check-added-large-files
+        exclude: poetry.lock
       - id: check-ast
       - id: check-case-conflict
       - id: check-executables-have-shebangs
@@ -97,7 +98,7 @@ repos:
       #   exclude: ^notebooks|^extern
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.3
+    rev: v0.9.1
     hooks:
       - id: ruff
         exclude: ^notebooks|^extern
@@ -105,7 +106,7 @@ repos:
         exclude: ^notebooks|^extern|ipynb$
 
   - repo: https://github.com/python-poetry/poetry
-    rev: "1.8.0"
+    rev: "2.0.1"
     hooks:
     - id: poetry-check
     - id: poetry-lock

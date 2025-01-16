@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from mapstp.utils.io import find_first_cell_number, find_first_void_cell_number, read_mcnp_sections
+from mapstp.utils._io import find_first_cell_number, find_first_void_cell_number, read_mcnp_sections
 
 
 def test_find_first_cell_number(data):
