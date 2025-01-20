@@ -1,3 +1,7 @@
+[build-system]
+requires = ["poetry-core >= 2.0.0, <3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [project]
 name = "mapstp"
 dynamic = ["version", "classifiers"]
@@ -25,10 +29,6 @@ repository = "https://github.com/MC-kit/map-stp"
 [project.scripts]
 mapstp = "mapstp.cli.runner:mapstp"
 
-[build-system]
-requires = ["poetry-core >= 2.0.0, <3.0.0"]
-build-backend = "poetry.core.masonry.api"
-
 [tool.poetry]
 version = "1.0.2a0"
 packages = [{ include = "mapstp", from = "src" }]
@@ -51,12 +51,8 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
 ]
 
-
-
-
 [tool.poetry.dependencies]
 python = ">=3.10,<3.14"
-
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
@@ -481,7 +477,7 @@ ignore = [
 
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["E402"]
+"**/__init__.py" = ["E402"]
 "benchmarks/*" = ["S101"]
 "noxfile.py" = ["ANN"]
 "cli/*" = ["ANN001"]
@@ -534,3 +530,11 @@ docstring-code-format = true
 # https://jupytext.readthedocs.io/en/latest/config.html
 # Pair ipynb notebooks to py:percent text notebooks
 formats = "ipynb,md,py:percent"
+
+[tool.creosote]
+paths = ["src", "adhoc"]
+deps-file = "pyproject.toml"
+sections = ["project.dependencies"]
+exclude-deps = [
+    "openpyxl",
+]

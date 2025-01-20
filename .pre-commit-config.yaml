@@ -69,6 +69,15 @@ repos:
       - id: pydocstringformatter
         exclude: _parser\.py$|_tab\.py|extern
 
+  - repo: https://github.com/fredrikaverpil/creosote
+    rev: v4.0.0
+    hooks:
+      - id: creosote
+        args:
+          - '--path=src'
+          - '--deps-file=pyproject.toml'
+          - '--section=project.dependencies'
+
   - repo: local
     hooks:
       # Upgrade Python code
