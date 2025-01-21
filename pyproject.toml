@@ -4,11 +4,10 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "mapstp"
-dynamic = ["version", "classifiers"]
+dynamic = ["version", "classifiers", "requires-python"]
 description = "Transfers meta information from STP to MCNP"
 license = { text = "MIT" }
 readme = "README.rst"
-requires-python = ">=3.10"
 authors = [
     { name = "dvp2015", email = "dmitri_portnov@yahoo.com" }
 ]
