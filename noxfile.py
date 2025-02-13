@@ -221,6 +221,7 @@ def clean(_: Session) -> None:
         ".nox",
         ".pytest_cache",
         ".ruff_cache",
+        "__pycache__",
         "build",
         "htmlcov",
     ]
