@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture(scope="session")
 def data() -> Path:
-    return cast(Path, files("tests").joinpath("data"))
+    return cast("Path", files("tests").joinpath("data"))
 
 
 @pytest.fixture(scope="session")

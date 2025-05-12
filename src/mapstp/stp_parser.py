@@ -264,7 +264,7 @@ def _process_body(line: str, products: list[Product], *, may_have_components: bo
         may_have_components = False
     last_product = products[-1]
     if last_product.is_leaf:
-        leaf = cast(LeafProduct, last_product)
+        leaf = cast("LeafProduct", last_product)
     else:
         products[-1] = leaf = LeafProduct(last_product.number, last_product.name)
     leaf.append(body)
