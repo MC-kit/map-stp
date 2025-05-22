@@ -54,14 +54,12 @@ classifiers = [
 python = ">=3.10,<3.14"
 
 [tool.poetry.group.dev.dependencies]
-Pygments = ">=2.10.0"
 nox = ">=2022.1.7"
 tomli = { version = ">=2.0.1", python = "<3.11" }
 
 [tool.poetry.group.pre_commit.dependencies]
 pre-commit = ">=2.15.0"
 pydocstringformatter = ">=0.7.3"
-pyupgrade = ">=3.15.2"
 
 [tool.poetry.group.test.dependencies]
 pytest = ">=7.1"
