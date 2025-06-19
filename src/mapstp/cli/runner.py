@@ -40,7 +40,6 @@ from mapstp.utils import can_override, select_output
 from mapstp.workflow_sql import load_path_info, save_meta_info_from_paths
 
 
-# TODO dvp: add customized configuring from a configuration toml-file.
 @dataclass
 class Config:
     """Shared configuration."""

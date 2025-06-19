@@ -5,13 +5,11 @@ updates:
   - package-ecosystem: pip
     directory: "/"
     schedule:
-      interval: weekly
-      day: monday
-      time: "11:00"
+      interval: monthly
     labels:
       - "kind/dependencies"
       - "bot"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
     target-branch: devel
 
   - package-ecosystem: "github-actions"
@@ -26,7 +24,7 @@ updates:
       - "github_actions"
       - "kind/dependencies"
       - "bot"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
     target-branch: devel
 
   - package-ecosystem: "gitsubmodule"
@@ -38,5 +36,5 @@ updates:
     labels:
       - "kind/dependencies"
       - "bot"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
     target-branch: devel

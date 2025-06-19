@@ -73,8 +73,6 @@ class Tree:
                     node = self._node_index[src]
                     path: list[str] = [parent.name for parent in node.collect_parents()]
                     path.append(product.name)
-                    # TODO @dvp: design flaw: separate indexes for
-                    #           Products and LeafProducts to avoid cast
                     for b in cast("LeafProduct", product).bodies:
                         yield "/".join([*path, b.name])
 

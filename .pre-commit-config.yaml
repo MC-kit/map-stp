@@ -53,8 +53,6 @@ repos:
         args: [--autofix, --no-ensure-ascii, --no-sort-keys]
         exclude: data|\.ipynb$
       - id: requirements-txt-fixer
-      - id: trailing-whitespace
-        exclude: data|\.ipynb$
 
   # Changes tabs to spaces
   - repo: https://github.com/Lucas-C/pre-commit-hooks
@@ -80,10 +78,12 @@ repos:
       - id: creosote
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.10
+    rev: v0.12.0
     hooks:
-      - id: ruff
+      # linter
+      - id: ruff-check
         exclude: ^notebooks|^extern
+      # formatter 
       - id: ruff-format
         exclude: ^notebooks|^extern|ipynb$
 
