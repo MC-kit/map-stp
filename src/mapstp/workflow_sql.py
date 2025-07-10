@@ -11,7 +11,10 @@ from logging import getLogger
 
 import pandas as pd
 
-from mapstp.extract_info import define_material_number_and_density, extract_meta_info_from_path
+from mapstp.extract_info import (
+    define_material_number_and_density,
+    extract_meta_info_from_path,
+)
 from mapstp.materials_index import load_materials_index
 
 if TYPE_CHECKING:

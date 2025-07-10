@@ -34,7 +34,15 @@ def combine_cell_table(
     temp_df["STP path"] = joined_paths
     paths_length = len(joined_paths)
     temp_df["cell"] = list(range(start_cell_number, paths_length + start_cell_number))
-    columns = ["cell", "material_number", "density", "factor", "rwcl", "volume", "STP path"]
+    columns = [
+        "cell",
+        "material_number",
+        "density",
+        "factor",
+        "rwcl",
+        "volume",
+        "STP path",
+    ]
     if volumes_map:
         temp_df["volume"] = np.empty((paths_length,), dtype=float)
         temp_df = temp_df.set_index("STP path")

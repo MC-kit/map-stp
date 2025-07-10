@@ -31,7 +31,9 @@ class STPParserError(MyError):
 class PathInfoError(MyError):
     """Error on extracting information for labels specified in STP paths."""
 
-    def __init__(self: PathInfoError, message: str, row: int, path_info: pd.DataFrame) -> None:
+    def __init__(
+        self: PathInfoError, message: str, row: int, path_info: pd.DataFrame
+    ) -> None:
         """Create exception object with information on location in path_info caused the error.
 
         Args:
@@ -39,4 +41,6 @@ class PathInfoError(MyError):
             row: row in path_info table
             path_info: the path_info table
         """
-        MyError.__init__(self, message + f" Row #{row}:\n" + f"{path_info.iloc[row].to_dict()}")
+        MyError.__init__(
+            self, message + f" Row #{row}:\n" + f"{path_info.iloc[row].to_dict()}"
+        )

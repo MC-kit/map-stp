@@ -38,7 +38,9 @@ class InterceptHandler(logging.Handler):
             frame = frame.f_back  # type: ignore[assignment]
             depth += 1
 
-        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
+        logger.opt(depth=depth, exception=record.exc_info).log(
+            level, record.getMessage()
+        )
 
 
 # from loguru._defaults.py
@@ -81,4 +83,6 @@ def init_logger(
             diagnose=False,
         )
     if log_path:
-        logger.add(log_path, rotation="1 day", retention=3, backtrace=True, diagnose=True)
+        logger.add(
+            log_path, rotation="1 day", retention=3, backtrace=True, diagnose=True
+        )

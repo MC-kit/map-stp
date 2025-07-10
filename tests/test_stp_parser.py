@@ -4,7 +4,14 @@ from dataclasses import dataclass
 
 import pytest
 
-from mapstp.stp_parser import Body, LeafProduct, Link, Product, STPParserError, parse_path
+from mapstp.stp_parser import (
+    Body,
+    LeafProduct,
+    Link,
+    Product,
+    STPParserError,
+    parse_path,
+)
 from mapstp.tree import create_bodies_paths
 
 
@@ -76,7 +83,8 @@ class _ParserTestResult:
         assert self.components == components, f"Wrong components, case: {self.case}"
         assert self.numbers == numbers, f"Wrong numbers, case: {self.case}"
         assert all(
-            a[0] == b.src and a[1] == b.dst for a, b in zip(self.links, links, strict=False)
+            a[0] == b.src and a[1] == b.dst
+            for a, b in zip(self.links, links, strict=False)
         ), f"Wrong links, case: {self.case}"
 
 
