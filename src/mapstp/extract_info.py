@@ -100,9 +100,7 @@ def define_material_number_and_density(
         density and material
     """
     try:
-        material_number: int | None = int(
-            material_index.loc[meta_info.mnemonic]["number"]
-        )
+        material_number: int | None = int(material_index.loc[meta_info.mnemonic]["number"])
     except KeyError:
         msg = (
             f"The mnemonic {meta_info.mnemonic!r} "

@@ -44,9 +44,7 @@ def is_defined(number: float | None) -> bool:
     return number is not None and number is not pd.NA and not math.isnan(number)
 
 
-def extract_number_and_density(
-    cell: int, path_info: pd.DataFrame
-) -> tuple[int, float] | None:
+def extract_number_and_density(cell: int, path_info: pd.DataFrame) -> tuple[int, float] | None:
     """Extract material number and density from a `path_info` for a given `cell`.
 
     Validate the values: number, if provided, is to be positive, density - not
@@ -59,9 +57,7 @@ def extract_number_and_density(
     Returns:
         number and density or None, if not available
     """
-    material_number, density, factor = path_info.loc[cell][
-        ["material_number", "density", "factor"]
-    ]
+    material_number, density, factor = path_info.loc[cell][["material_number", "density", "factor"]]
 
     def _validate(*, res: bool, msg: str) -> None:
         if not res:
@@ -74,12 +70,8 @@ def extract_number_and_density(
         res=is_defined(density),
         msg=f"The `density` value is not defined for material number {material_number}.",
     )
-    _validate(
-        res=material_number > 0, msg="The values in `number` column are to be positive."
-    )
-    _validate(
-        res=density >= 0.0, msg="The values in `density` column cannot be negative."
-    )
+    _validate(res=material_number > 0, msg="The values in `number` column are to be positive.")
+    _validate(res=density >= 0.0, msg="The values in `density` column cannot be negative.")
 
     if is_defined(factor):
         _validate(
@@ -102,8 +94,7 @@ def _correct_first_line(
     if nd is not None:
         material_number, density = nd
         line_with_material_and_density = (
-            _line[: match_end - 1].split()[0]
-            + f" {int(material_number)} {-density:.5g}"
+            _line[: match_end - 1].split()[0] + f" {int(material_number)} {-density:.5g}"
         )
         remainder = _line[match_end:].strip()
         if remainder:
@@ -150,9 +141,7 @@ class _Merger:
         yield f"      vol={rec.volume}"
         yield f"      $ stp: {rec.path}"
 
-    def _on_cell_start(
-        self: _Merger, line: str, match: re.Match[str]
-    ) -> Generator[str]:
+    def _on_cell_start(self: _Merger, line: str, match: re.Match[str]) -> Generator[str]:
         if self.first_cell:
             line = self._on_next_cell(line, match)
             self.first_cell = False

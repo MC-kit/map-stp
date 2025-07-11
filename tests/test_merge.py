@@ -37,9 +37,7 @@ def test_extract_number_and_density(number, density, factor, expected):
         (1, 2.0, -2.0, m.PathInfoError),
     ],
 )
-def test_extract_number_and_density_bad_path(
-    material_number, density, factor, exception
-):
+def test_extract_number_and_density_bad_path(material_number, density, factor, exception):
     ndf_table = pd.DataFrame.from_records(
         data=[(material_number, density, factor)],
         columns=["material_number", "density", "factor"],

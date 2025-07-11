@@ -21,9 +21,7 @@ def test_load_materials_map(data):
 
 def test_filter_material_cards(data):
     materials = data / "materials-1.txt"
-    filtered_lines = list(
-        drop_material_cards(materials.read_text(encoding="cp1251").split("\n"))
-    )
+    filtered_lines = list(drop_material_cards(materials.read_text(encoding="cp1251").split("\n")))
     assert len(filtered_lines) == 2
     assert filtered_lines[0] == "c test data"
 

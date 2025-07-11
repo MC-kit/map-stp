@@ -967,38 +967,38 @@ analyze = [
     { name = "jupyterlab", specifier = ">=4.2.5" },
     { name = "jupytext", specifier = ">=1.16.4" },
 ]
-coverage = [{ name = "coverage", extras = ["toml"], specifier = ">=6.1.2" }]
+coverage = [{ name = "coverage", extras = ["toml"], specifier = ">=7.9.2" }]
 dev = [
-    { name = "coverage", extras = ["toml"], specifier = ">=6.1.2" },
+    { name = "coverage", extras = ["toml"], specifier = ">=7.9.2" },
     { name = "jupyterlab", specifier = ">=4.2.5" },
     { name = "jupytext", specifier = ">=1.16.4" },
     { name = "mypy", specifier = ">=1.2.0" },
     { name = "pep8-naming", specifier = ">=0.12.1" },
     { name = "pre-commit", specifier = ">=2.15.0" },
     { name = "pydocstringformatter", specifier = ">=0.7.3" },
-    { name = "pytest", specifier = ">=7.1" },
-    { name = "pytest-cov", specifier = ">=4.0" },
+    { name = "pytest", specifier = ">=8.4.1" },
+    { name = "pytest-cov", specifier = ">=6.2.1" },
     { name = "pytest-durations", specifier = ">=1.5.2" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-mock", specifier = ">=3.14.0" },
     { name = "ruff", specifier = ">=0.0.259" },
-    { name = "sphinx", specifier = ">=6.1.3" },
-    { name = "sphinx-autobuild", specifier = ">=2021.3.14" },
-    { name = "sphinx-autodoc-typehints", specifier = ">=1.19.5" },
+    { name = "sphinx", specifier = ">=8.2.3" },
+    { name = "sphinx-autobuild", specifier = ">=2024.10.3" },
+    { name = "sphinx-autodoc-typehints", specifier = ">=3.2.0" },
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0.1" },
     { name = "typeguard", specifier = ">=4.1.5" },
-    { name = "types-setuptools", specifier = ">=57.4.2" },
-    { name = "xdoctest", extras = ["colors"], specifier = ">=0.15.10" },
+    { name = "types-setuptools", specifier = ">=80.9.0.20250529" },
+    { name = "xdoctest", extras = ["colors"], specifier = ">=1.2.0" },
 ]
 docs = [
-    { name = "sphinx", specifier = ">=6.1.3" },
-    { name = "sphinx-autodoc-typehints", specifier = ">=1.19.5" },
+    { name = "sphinx", specifier = ">=8.2.3" },
+    { name = "sphinx-autodoc-typehints", specifier = ">=3.2.0" },
 ]
-docs-auto = [{ name = "sphinx-autobuild", specifier = ">=2021.3.14" }]
+docs-auto = [{ name = "sphinx-autobuild", specifier = ">=2024.10.3" }]
 mypy = [
     { name = "mypy", specifier = ">=1.2.0" },
     { name = "pep8-naming", specifier = ">=0.12.1" },
-    { name = "types-setuptools", specifier = ">=57.4.2" },
+    { name = "types-setuptools", specifier = ">=80.9.0.20250529" },
 ]
 pre-commit = [
     { name = "pre-commit", specifier = ">=2.15.0" },
@@ -1006,16 +1006,16 @@ pre-commit = [
 ]
 ruff = [{ name = "ruff", specifier = ">=0.0.259" }]
 test = [
-    { name = "coverage", extras = ["toml"], specifier = ">=6.1.2" },
-    { name = "pytest", specifier = ">=7.1" },
-    { name = "pytest-cov", specifier = ">=4.0" },
+    { name = "coverage", extras = ["toml"], specifier = ">=7.9.2" },
+    { name = "pytest", specifier = ">=8.4.1" },
+    { name = "pytest-cov", specifier = ">=6.2.1" },
     { name = "pytest-durations", specifier = ">=1.5.2" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-mock", specifier = ">=3.14.0" },
-    { name = "xdoctest", extras = ["colors"], specifier = ">=0.15.10" },
+    { name = "xdoctest", extras = ["colors"], specifier = ">=1.2.0" },
 ]
 typeguard = [{ name = "typeguard", specifier = ">=4.1.5" }]
-xdoctest = [{ name = "xdoctest", extras = ["colors"], specifier = ">=0.15.10" }]
+xdoctest = [{ name = "xdoctest", extras = ["colors"], specifier = ">=1.2.0" }]
 
 [[package]]
 name = "markdown-it-py"
