@@ -15,17 +15,17 @@ default:
 
 # create venv, if not exists
 [group: 'dev']
-venv:
+@venv:
   [ -d .venv ] || uv venv --python {{default_python}}
 
 # build package
 [group: 'dev']
-build: venv
+@build: venv
   uv build
 
 # clean reproducible files
 [group: 'dev']
-clean:
+@clean:
   #!/bin/bash
   to_clean=(
       ".benchmarks"
@@ -49,17 +49,17 @@ clean:
 
 # install package
 [group: 'dev']
-install: build
+@install: build
   uv sync   
 
 # clean build
 [group: 'dev']
-reinstall: clean install
+@reinstall: clean install
 
 
 # Check style and test
 [group: 'dev']
-check: pre-commit test
+@check: pre-commit test
 
 [group: 'dev']
 @bump *args:
@@ -67,11 +67,14 @@ check: pre-commit test
   uv version --bump {{args}}
   git commit -m "bump: version $(uv version)" pyproject.toml uv.lock 
 
-# update dependencies
+# update tools and dependencies
 [group: 'dev']
 @up:
   pre-commit autoupdate
   uv self update
+  uv lock --upgrade
+  pre-commit run -a 
+  pytest
 
 # ruff check and format
 [group: 'dev']
@@ -81,13 +84,13 @@ check: pre-commit test
 
 # test up to the first fail
 [group: 'test']
-test-ff *args:
-  @pytest -vv -x {{args}}
+@test-ff *args:
+  pytest -vv -x {{args}}
 
 # test with clean cache
 [group: 'test']
-test-cache-clear *args:
-  @pytest -vv --emoji --cache-clear {{args}}
+@test-cache-clear *args:
+  pytest -vv --emoji --cache-clear {{args}}
 
 # test fast
 [group: 'test']
