@@ -56,17 +56,17 @@ repos:
 
 
   - repo: https://github.com/fredrikaverpil/creosote
-    rev: v4.0.3
+    rev: v4.1.0
     hooks:
       - id: creosote
 
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.8.9
+    rev: 0.8.13
     hooks:
       - id: uv-lock 
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.8
+    rev: v0.12.10
     hooks:
       # linter
       - id: ruff-check
