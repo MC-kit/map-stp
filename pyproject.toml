@@ -44,44 +44,44 @@ repository = "https://github.com/MC-kit/map-stp"
 mapstp = "mapstp.cli.runner:mapstp"
 
 [dependency-groups]
-dev = [
-    "tomli>=2.0.1 ; python_version < '3.11'",
+dev = [{ include-group = "style" }, { include-group = "test" }]
+style = [
     { include-group = "pre_commit" },
-    { include-group = "test" },
-    { include-group = "coverage" },
-    { include-group = "xdoctest" },
-    { include-group = "typeguard" },
-    { include-group = "mypy" },
-    { include-group = "docs" },
-    { include-group = "docs_auto" },
     { include-group = "ruff" },
-    { include-group = "analyze" },
+    { include-group = "mypy" },
+    { include-group = "lint" },
 ]
-pre_commit = ["pre-commit>=2.15.0", "pydocstringformatter>=0.7.3"]
+pre_commit = [
+    "pre-commit>=2.15.0",
+    "pydocstringformatter>=0.7.3",
+]
+ruff = ["ruff>=0.0.259"]
+mypy = [
+    "mypy>=1.2.0",
+    "pep8-naming>=0.12.1",
+    "types-setuptools>=80.9.0.20250529",
+]
+lint = ["pylint", "pylint-per-file-ignores"]
 test = [
     "pytest>=8.4.1",
     "pytest-cov>=6.2.1",
     "pytest-mock>=3.14.0",
     "pytest-durations>=1.5.2",
     "pytest-emoji>=0.2.0",
-    { include-group = "coverage" },
-    { include-group = "xdoctest" },
+    "xdoctest>=1.2.0",
+    { include-group = "coverage"}  # coverage may be used on its own, see GHA test
 ]
-coverage = ["coverage[toml]>=7.9.2"]
-xdoctest = ["xdoctest[colors]>=1.2.0"]
+coverage = [
+    "coverage[toml]>=7.9.2",
+]
+# environments not in dev
 typeguard = ["typeguard>=4.1.5"]
-mypy = [
-    "mypy>=1.2.0",
-    "pep8-naming>=0.12.1",
-    "types-setuptools>=80.9.0.20250529",
-]
 docs = [
+    "rstcheck>=6.2.5",
     "sphinx>=8.2.3",
- "sphinx-autodoc-typehints>=3.2.0",
- "sphinx-click>=6.0.0",
+    "sphinx-autodoc-typehints>=3.2.0",
+    "sphinx-autobuild>=2024.10.3",
 ]
-docs_auto = ["sphinx-autobuild>=2024.10.3"]
-ruff = ["ruff>=0.0.259"]
 analyze = ["jupyterlab>=4.2.5", "jupytext>=1.16.4"]
 
 [tool.pytest.ini_options]
@@ -213,13 +213,6 @@ ignore_missing_imports = true
 module = ["tomllib"]
 allow_redefinition = true
 disable_error_code = "no-redef"
-
-[tool.check-manifest]
-ignore = [
-    "tests/*",
-    "tools/*",
-    "*.yaml",
-]
 
 [tool.jupytext]
 # https://jupytext.readthedocs.io/en/latest/config.html
