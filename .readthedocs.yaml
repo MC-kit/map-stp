@@ -1,9 +1,12 @@
+# .readthedocs.yaml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
 version: 2
-sphinx:
-  configuration: docs/source/conf.py
-formats: all
-python:
-  version: "3.8"
-  install:
-    - requirements: docs/requirements.txt
-    - path: .
+
+build:
+  os: ubuntu-lts-latest
+  commands:
+    - curl -LsSf https://astral.sh/uv/install.sh | sh
+    # uv is installed in "/home/docs/.local/bin"
+    - /home/docs/.local/bin/uv run --no-dev --group docs sphinx-build docs/source $READTHEDOCS_OUTPUT/html

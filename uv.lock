@@ -1020,10 +1020,11 @@ dev = [
     { name = "xdoctest" },
 ]
 docs = [
-    { name = "rstcheck" },
+    { name = "rstcheck", extra = ["sphinx"] },
     { name = "sphinx" },
     { name = "sphinx-autobuild" },
     { name = "sphinx-autodoc-typehints" },
+    { name = "sphinx-togglebutton" },
 ]
 lint = [
     { name = "pylint" },
@@ -1083,12 +1084,12 @@ dev = [
     { name = "coverage", extras = ["toml"], specifier = ">=7.9.2" },
     { name = "mypy", specifier = ">=1.2.0" },
     { name = "pep8-naming", specifier = ">=0.12.1" },
-    { name = "pre-commit", specifier = ">=2.15.0" },
+    { name = "pre-commit", specifier = ">=4.3.0" },
     { name = "pydocstringformatter", specifier = ">=0.7.3" },
     { name = "pylint" },
     { name = "pylint-per-file-ignores" },
     { name = "pytest", specifier = ">=8.4.1" },
-    { name = "pytest-cov", specifier = ">=6.2.1" },
+    { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "pytest-durations", specifier = ">=1.5.2" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-mock", specifier = ">=3.14.0" },
@@ -1097,10 +1098,11 @@ dev = [
     { name = "xdoctest", specifier = ">=1.2.0" },
 ]
 docs = [
-    { name = "rstcheck", specifier = ">=6.2.5" },
+    { name = "rstcheck", extras = ["toml", "sphinx"], specifier = ">=6.2.5" },
     { name = "sphinx", specifier = ">=8.2.3" },
-    { name = "sphinx-autobuild", specifier = ">=2024.10.3" },
+    { name = "sphinx-autobuild", specifier = ">=2025.8.25" },
     { name = "sphinx-autodoc-typehints", specifier = ">=3.2.0" },
+    { name = "sphinx-togglebutton", specifier = ">=0.3.2" },
 ]
 lint = [
     { name = "pylint" },
@@ -1112,14 +1114,14 @@ mypy = [
     { name = "types-setuptools", specifier = ">=80.9.0.20250529" },
 ]
 pre-commit = [
-    { name = "pre-commit", specifier = ">=2.15.0" },
+    { name = "pre-commit", specifier = ">=4.3.0" },
     { name = "pydocstringformatter", specifier = ">=0.7.3" },
 ]
 ruff = [{ name = "ruff", specifier = ">=0.0.259" }]
 style = [
     { name = "mypy", specifier = ">=1.2.0" },
     { name = "pep8-naming", specifier = ">=0.12.1" },
-    { name = "pre-commit", specifier = ">=2.15.0" },
+    { name = "pre-commit", specifier = ">=4.3.0" },
     { name = "pydocstringformatter", specifier = ">=0.7.3" },
     { name = "pylint" },
     { name = "pylint-per-file-ignores" },
@@ -1129,7 +1131,7 @@ style = [
 test = [
     { name = "coverage", extras = ["toml"], specifier = ">=7.9.2" },
     { name = "pytest", specifier = ">=8.4.1" },
-    { name = "pytest-cov", specifier = ">=6.2.1" },
+    { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "pytest-durations", specifier = ">=1.5.2" },
     { name = "pytest-emoji", specifier = ">=0.2.0" },
     { name = "pytest-mock", specifier = ">=3.14.0" },
@@ -2251,6 +2253,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/6b/c2/67e0fa861f250e343c5c25de5f09800e85227241942d018a3e303d14d965/rstcheck-6.2.5-py3-none-any.whl", hash = "sha256:09af9555cf05f23651189154066d483ced25d36ebb3f01dc3a5d27524e4a5fdc", size = 8679, upload-time = "2025-06-01T13:06:35.16Z" },
 ]
 
+[package.optional-dependencies]
+sphinx = [
+    { name = "sphinx" },
+]
+
 [[package]]
 name = "rstcheck-core"
 version = "1.2.2"
@@ -2408,6 +2415,21 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/93/68/a388a9b8f066cd865d9daa65af589d097efbfab9a8c302d2cb2daa43b52e/sphinx_autodoc_typehints-3.2.0.tar.gz", hash = "sha256:107ac98bc8b4837202c88c0736d59d6da44076e65a0d7d7d543a78631f662a9b", size = 36724, upload-time = "2025-04-25T16:53:25.872Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f7/c7/8aab362e86cbf887e58be749a78d20ad743e1eb2c73c2b13d4761f39a104/sphinx_autodoc_typehints-3.2.0-py3-none-any.whl", hash = "sha256:884b39be23b1d884dcc825d4680c9c6357a476936e3b381a67ae80091984eb49", size = 20563, upload-time = "2025-04-25T16:53:24.492Z" },
+]
+
+[[package]]
+name = "sphinx-togglebutton"
+version = "0.3.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "docutils" },
+    { name = "setuptools" },
+    { name = "sphinx" },
+    { name = "wheel" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f0/df/d151dfbbe588116e450ca7e898750cb218dca6b2e557ced8de6f9bd7242b/sphinx-togglebutton-0.3.2.tar.gz", hash = "sha256:ab0c8b366427b01e4c89802d5d078472c427fa6e9d12d521c34fa0442559dc7a", size = 8324, upload-time = "2022-07-15T12:08:50.286Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e9/18/267ce39f29d26cdc7177231428ba823fe5ca94db8c56d1bed69033b364c8/sphinx_togglebutton-0.3.2-py3-none-any.whl", hash = "sha256:9647ba7874b7d1e2d43413d8497153a85edc6ac95a3fea9a75ef9c1e08aaae2b", size = 8249, upload-time = "2022-07-15T12:08:48.8Z" },
 ]
 
 [[package]]
@@ -2873,6 +2895,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/86/eb/20b6cdf273913d0ad05a6a14aed4b9a85591c18a987a3d47f20fa13dcc47/websockets-15.0.1-cp313-cp313-win32.whl", hash = "sha256:ba9e56e8ceeeedb2e080147ba85ffcd5cd0711b89576b83784d8605a7df455fa", size = 176393, upload-time = "2025-03-05T20:02:53.814Z" },
     { url = "https://files.pythonhosted.org/packages/1b/6c/c65773d6cab416a64d191d6ee8a8b1c68a09970ea6909d16965d26bfed1e/websockets-15.0.1-cp313-cp313-win_amd64.whl", hash = "sha256:e09473f095a819042ecb2ab9465aee615bd9c2028e4ef7d933600a8401c79561", size = 176837, upload-time = "2025-03-05T20:02:55.237Z" },
     { url = "https://files.pythonhosted.org/packages/fa/a8/5b41e0da817d64113292ab1f8247140aac61cbf6cfd085d6a0fa77f4984f/websockets-15.0.1-py3-none-any.whl", hash = "sha256:f7a866fbc1e97b5c617ee4116daaa09b722101d4a3c170c787450ba409f9736f", size = 169743, upload-time = "2025-03-05T20:03:39.41Z" },
+]
+
+[[package]]
+name = "wheel"
+version = "0.45.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/8a/98/2d9906746cdc6a6ef809ae6338005b3f21bb568bea3165cfc6a243fdc25c/wheel-0.45.1.tar.gz", hash = "sha256:661e1abd9198507b1409a20c02106d9670b2576e916d58f520316666abca6729", size = 107545, upload-time = "2024-11-23T00:18:23.513Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0b/2c/87f3254fd8ffd29e4c02732eee68a83a1d3c346ae39bc6822dcbcb697f2b/wheel-0.45.1-py3-none-any.whl", hash = "sha256:708e7481cc80179af0e556bbf0cc00b8444c7321e2700b8d8580231d13017248", size = 72494, upload-time = "2024-11-23T00:18:21.207Z" },
 ]
 
 [[package]]

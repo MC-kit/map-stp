@@ -69,7 +69,7 @@ strict = true
 # or `format.skip-magic-trailing-comma=false`.
 
 [lint.isort]
-known-first-party = ["src"]
+known-first-party = ["src", "tests"]
 known-third-party = ["mpl_toolkits", "matplotlib", "numpy", "scipy", "loguru", "tqdm", "dotenv"]
 default-section = "third-party"
 lines-between-types = 1

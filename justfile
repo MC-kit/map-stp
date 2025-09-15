@@ -10,8 +10,8 @@ log := "warn"
 
 export JUST_LOG := log
 
-default:
-  @just --list
+@_default:
+  just --list
 
 # create venv, if not exists
 [group: 'dev']
@@ -44,7 +44,7 @@ default:
       "htmlcov"
   )
   for d in "${dirs_to_clean[@]}"; do
-      find . -type d -name "$d" -exec rm -rf {} +
+      find . -type d -wholename "$d" -exec rm -rf {} +
   done
 
 
@@ -68,11 +68,16 @@ default:
   uv version --bump {{args}}
   git commit -m "bump: version $(uv version)" pyproject.toml uv.lock 
 
-# update tools and dependencies
+# update tools
 [group: 'dev']
-@up:
+@up-tools:
   pre-commit autoupdate
   uv self update
+  pre-commit run -a 
+
+# update dependencies
+[group: 'dev']
+@up:
   uv sync --upgrade
   pre-commit run -a 
   pytest
@@ -133,8 +138,8 @@ typeguard *args:
 
 # Run pre-commit on all files
 [group: 'lint']
-pre-commit:
-  @uv run --no-dev --group pre-commit pre-commit run -a 
+@pre-commit:
+  uv run --no-dev --group pre-commit pre-commit run --show-diff-on-failure --color=always --all-files
 
 # Run mypy
 [group: 'lint']
@@ -158,4 +163,4 @@ pre-commit:
 # browse and edit documentation with auto build
 [group: 'docs']
 @docs:
-  uv run --no-dev --group docs --group docs-auto sphinx-autobuild --open-browser docs/source docs/_build
+  uv run --no-dev --group docs --group docs sphinx-autobuild --open-browser docs/source docs/_build

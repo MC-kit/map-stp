@@ -16,7 +16,8 @@ keywords = [
   "STP",
   "MCNP",
   "SuperMC",
-  "SpaceClaim"
+  "SpaceClaim",
+  "GEOUNED",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -51,10 +52,7 @@ style = [
     { include-group = "mypy" },
     { include-group = "lint" },
 ]
-pre_commit = [
-    "pre-commit>=2.15.0",
-    "pydocstringformatter>=0.7.3",
-]
+pre_commit = ["pre-commit>=4.3.0", "pydocstringformatter>=0.7.3"]
 ruff = ["ruff>=0.0.259"]
 mypy = [
     "mypy>=1.2.0",
@@ -64,23 +62,22 @@ mypy = [
 lint = ["pylint", "pylint-per-file-ignores"]
 test = [
     "pytest>=8.4.1",
-    "pytest-cov>=6.2.1",
+    "pytest-cov>=7.0.0",
     "pytest-mock>=3.14.0",
     "pytest-durations>=1.5.2",
     "pytest-emoji>=0.2.0",
     "xdoctest>=1.2.0",
-    { include-group = "coverage"}  # coverage may be used on its own, see GHA test
+    { include-group = "coverage" }, # coverage may be used on its own, see GHA test
 ]
-coverage = [
-    "coverage[toml]>=7.9.2",
-]
+coverage = ["coverage[toml]>=7.9.2"]
 # environments not in dev
 typeguard = ["typeguard>=4.1.5"]
 docs = [
-    "rstcheck>=6.2.5",
+    "rstcheck[toml,sphinx]>=6.2.5",
     "sphinx>=8.2.3",
     "sphinx-autodoc-typehints>=3.2.0",
-    "sphinx-autobuild>=2024.10.3",
+    "sphinx-autobuild>=2025.8.25",
+    "sphinx-togglebutton>=0.3.2",
 ]
 analyze = ["jupyterlab>=4.2.5", "jupytext>=1.16.4"]
 
@@ -174,6 +171,7 @@ sort = "Cover"
 #     https://dev.to/tusharsadhwani/the-comprehensive-guide-to-mypy-561m
 [tool.mypy]
 python_version = "3.13"
+cache_dir = ".cache/mypy"
 strict = true
 follow_imports = "silent"
 disallow_untyped_defs = true
@@ -226,3 +224,8 @@ sections = ["project.dependencies"]
 exclude-deps = [
     "openpyxl",
 ]
+
+
+[tool.rstcheck]
+report_level = "ERROR"
+ignore_messages = "(Unknown directive type \"(todo.*|automodule)\".$)"
