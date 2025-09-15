@@ -78,6 +78,7 @@ docs = [
     "sphinx-autodoc-typehints>=3.2.0",
     "sphinx-autobuild>=2025.8.25",
     "sphinx-togglebutton>=0.3.2",
+    "sphinx-click>=6.1.0",
 ]
 analyze = ["jupyterlab>=4.2.5", "jupytext>=1.16.4"]
 
@@ -225,7 +226,6 @@ exclude-deps = [
     "openpyxl",
 ]
 
-
 [tool.rstcheck]
 report_level = "ERROR"
-ignore_messages = "(Unknown directive type \"(todo.*|automodule)\".$)"
+ignore_messages = '(Unknown directive type \"click|todo|(auto(module|class|function))\"\.)'

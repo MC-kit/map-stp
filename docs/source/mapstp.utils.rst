@@ -7,7 +7,7 @@ Submodules
 mapstp.utils.io module
 ----------------------
 
-.. automodule:: mapstp.utils.io
+.. automodule:: mapstp.utils._io
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,18 +15,11 @@ mapstp.utils.io module
 mapstp.utils.re module
 ----------------------
 
-.. automodule:: mapstp.utils.re
+.. automodule:: mapstp.utils._re
    :members:
    :undoc-members:
    :show-inheritance:
 
-mapstp.utils.resource module
-----------------------------
-
-.. automodule:: mapstp.utils.resource
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 Module contents
 ---------------
