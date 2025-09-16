@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING, cast
 from dataclasses import dataclass
 
 from mapstp.exceptions import STPParserError
-from mapstp.stp_parser import LeafProduct, make_index
+from mapstp.stp_parser import make_index
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterable, Iterator
 
-    from mapstp.stp_parser import Link, LinksList, Product
+    from mapstp.stp_parser import LeafProduct, Link, LinksList, Product
 
 
 @dataclass
@@ -73,9 +73,7 @@ class Tree:
                     node = self._node_index[src]
                     path: list[str] = [parent.name for parent in node.collect_parents()]
                     path.append(product.name)
-                    # TODO @dvp: design flaw: separate indexes for
-                    #           Products and LeafProducts to avoid cast
-                    for b in cast(LeafProduct, product).bodies:
+                    for b in cast("LeafProduct", product).bodies:
                         yield "/".join([*path, b.name])
 
         return list(_scan())
@@ -143,5 +141,5 @@ def create_bodies_paths(products: Iterable[Product], links: LinksList) -> list[s
         msg = "Only one product is expected for `simple` stp"
         raise ValueError(msg)
 
-    product = cast(LeafProduct, ps[0])
+    product = cast("LeafProduct", ps[0])
     return [b.name for b in product.bodies]

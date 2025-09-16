@@ -13,21 +13,6 @@ Subpackages
 Submodules
 ----------
 
-mapstp.config module
---------------------
-
-.. automodule:: mapstp.config
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-mapstp.excel module
--------------------
-
-.. automodule:: mapstp.excel
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 mapstp.exceptions module
 ------------------------

@@ -18,8 +18,7 @@ import pandas as pd
 
 from mapstp.exceptions import PathInfoError
 from mapstp.materials import drop_material_cards
-from mapstp.utils.io import read_mcnp_sections
-from mapstp.utils.re import CELL_START_PATTERN
+from mapstp.utils import CELL_START_PATTERN, read_mcnp_sections
 
 if TYPE_CHECKING:
     import re
@@ -27,7 +26,7 @@ if TYPE_CHECKING:
     from collections.abc import Generator, Iterable, Iterator
     from pathlib import Path
 
-    from mapstp.utils.io import MCNPSections
+    from mapstp.utils import MCNPSections
 
 logger = getLogger()
 
@@ -225,8 +224,7 @@ def _print_other_sections(
             print(used_materials_text, file=output)
     else:
         logger.warning(
-            "There are no surfaces in model, "
-            "skipping surfaces and data cards including materials",
+            "There are no surfaces in model, skipping surfaces and data cards including materials",
         )
 
 
@@ -247,27 +245,3 @@ def _print_control_cards_with_used_materials(
     print("\n\n", file=output)
     if remainder:
         print(remainder, file=output, end="")
-
-
-def join_paths(paths: list[list[str]], separator: str = "/") -> list[str]:
-    """Collect rows of strings to string.
-
-    Note:
-        if stp path contains more than one part,
-        then omit the first part, which in that case is duplicated in
-        all the stp paths, to be consistent with names in volumes.json.
-
-    Args:
-        paths: list of stp paths defined as list of strings
-        separator: character to be used as separator
-
-    Returns:
-        list of joined stp paths
-    """
-
-    def select_unique_parts(path: list[str]) -> list[str]:
-        if len(path) > 1:
-            return path[1:]
-        return path
-
-    return [separator.join(select_unique_parts(path)) for path in paths]

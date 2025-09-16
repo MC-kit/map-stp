@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 
-PACKAGE_DATA: Path = cast(Path, files("mapstp").joinpath("data"))
+PACKAGE_DATA: Path = cast("Path", files("mapstp").joinpath("data"))
 
 
 def load_materials_index(materials_index: str | None = None) -> pd.DataFrame:

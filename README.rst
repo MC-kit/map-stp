@@ -2,8 +2,9 @@
 *mapstp*: Tag cells in MCNP models
 ==========================================================
 
-|Maintained| |License| |Versions| |PyPI| |Docs|
 
+
+|Maintained| |License| |Versions| |PyPI| |Docs|
 
 .. contents::
 
@@ -47,34 +48,57 @@ The  *mapstp*:
 * creates separate accompanying excel file with list of cells, applied materials, densities and correction factors, classification tag, and paths in STP
 
 
-Installation
-------------
+More details in documentation_.
 
-Documentation
--------------
 
 Contributing
 ------------
 
+
 .. image:: https://github.com/MC-kit/map-stp/workflows/Tests/badge.svg
    :target: https://github.com/MC-kit/map-stp/actions
    :alt: Tests
-.. image:: https://codecov.io/gh/MC-kit/map-stp/branch/master/graph/badge.svg?token=wlqoa368k8
+.. image:: https://codecov.io/gh/MC-kit/map-stp/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/MC-kit/map-stp
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-   :target: https://github.com/psf/black
-.. image:: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
-   :target: https://pycqa.github.io/isort/
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
-.. image:: https://img.shields.io/badge/try%2Fexcept%20style-tryceratops%20%F0%9F%A6%96%E2%9C%A8-black
-   :target: https://github.com/guilatrova/tryceratops
-   :alt: try/except style: tryceratops
+.. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
+   :target: https://github.com/astral-sh/ruff
+.. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json
+   :target: https://github.com/astral-sh/uv
 
-.. .. image:: https://img.shields.io/badge/security-bandit-yellow.svg
-    :target: https://github.com/PyCQA/bandit
-    :alt: Security Status
+Some specific: in development environment we use uv_, just_, ruff_.
+
+To setup development environment, run:
+
+.. code-block:: shell
+
+  just install | reinstall
+
+To build documentation, run:
+
+.. code-block:: shell
+
+   just docs        # - for local online docs rendering, while editing 
+   just docs-build  # - to build documentation 
+
+To release, run:
+
+.. code-block:: shell
+
+  just bump [major|minor|patch]  # - in `devel` branch
+  
+Then merge devel to master (via Pull Request) and if all the checks are passed create Release. Manually.
+
+
+.. Links
+
+.. _documentation: https://mapstp.readthedocs.io/en/latest
+.. _uv: https://github.com/astral-sh/uv
+.. _just: https://github.com/casey/just
+.. _ruff: https://github.com/astral-sh/ruff
+
 
 .. Substitutions
 

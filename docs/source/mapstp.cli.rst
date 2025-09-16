@@ -7,7 +7,7 @@ Submodules
 mapstp.cli.logging module
 -------------------------
 
-.. automodule:: mapstp.cli.logging
+.. automodule:: mapstp.cli.mapstp_logging
    :members:
    :undoc-members:
    :show-inheritance:

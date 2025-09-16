@@ -264,7 +264,7 @@ def _process_body(line: str, products: list[Product], *, may_have_components: bo
         may_have_components = False
     last_product = products[-1]
     if last_product.is_leaf:
-        leaf = cast(LeafProduct, last_product)
+        leaf = cast("LeafProduct", last_product)
     else:
         products[-1] = leaf = LeafProduct(last_product.number, last_product.name)
     leaf.append(body)
@@ -282,18 +282,12 @@ def check_header(inp: TextIO) -> None:
     """
     line = next(inp)
     if line != _VALID_FIRST_LINE:
-        msg = (
-            "Not a valid STP file: the expected first row "
-            f"{_VALID_FIRST_LINE[:-1]}, actual {line}"
-        )
+        msg = f"Not a valid STP file: the expected first row {_VALID_FIRST_LINE[:-1]},actual {line}"
         raise FileError(msg)
     next(inp)
     line = next(inp)
     if line != _VALID_THIRD_LINE:
-        msg = (
-            "STP protocol is not AP214, the expected third row "
-            f"{_VALID_THIRD_LINE}, actual {line}"
-        )
+        msg = f"STP protocol is not AP214, the expected third row {_VALID_THIRD_LINE},actual {line}"
         raise FileError(msg)
 
 

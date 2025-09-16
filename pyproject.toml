@@ -1,108 +1,89 @@
-[tool.poetry]
+[build-system]
+requires = ["uv_build>=0.7.19,<0.9.0"]
+build-backend = "uv_build"
+
+[project]
 name = "mapstp"
-version = "1.0.1"
+version = "1.0.3"
+requires-python = ">=3.11,<4" 
 description = "Transfers meta information from STP to MCNP"
-authors = ["dvp <dmitri_portnov@yahoo.com>"]
-license = "MIT"
-homepage = "https://github.com/MC-kit/map-stp"
-repository = "https://github.com/MC-kit/map-stp"
-# documentation = "https://mapstp.readthedocs.io
-keywords = ["STP", "MCNP", "SuperMC", "SpaceClaim"]
-readme = "README.rst"
-packages = [
-    { include = "mapstp", from = "src" },
+authors = [
+  { name = "dvp2015", email = "dmitri_portnov@yahoo.com" }
 ]
-# Select from PyPI classifiers: https://pypi.org/classifiers/
+readme = "README.rst"
+license = { text = "MIT" }
+keywords = [
+  "STP",
+  "MCNP",
+  "SuperMC",
+  "SpaceClaim",
+  "GEOUNED",
+]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Physics",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "click (>=8.1.7)",
+    "loguru (>=0.7.2)",
+    "numpy (>=2.3.1)",
+    "openpyxl (>=3.0.9)",
+    "pandas (>=2.0.0)",
 ]
 
-[build-system]
-requires = ["poetry-core >= 1.8.3"]
-build-backend = "poetry.core.masonry.api"
+[project.urls]
+homepage = "https://github.com/MC-kit/map-stp"
+repository = "https://github.com/MC-kit/map-stp"
+# documentation = "https://mapstp.readthedocs.io
 
-[tool.poetry.scripts]
+[project.scripts]
 mapstp = "mapstp.cli.runner:mapstp"
 
-[tool.poetry.urls]
-documentation = "https://mapstp.readthedocs.io"
-Chnagelog = "https://github.com/MC-kit/mapstp/releases"
-
-
-[tool.poetry.dependencies]
-python = ">=3.10,<3.14"
-numpy = ">=2.0"
-openpyxl = ">=3.0.9"
-pandas = ">=2.0.0"
-loguru = ">=0.7.2"
-click = ">=8.1.7"
-
-[tool.poetry.group.dev.dependencies]
-Pygments = ">=2.10.0"
-nox = ">=2022.1.7"
-tomli = { version = ">=2.0.1", python = "<3.11" }
-
-#[tool.poetry.group.profile]
-#optional = true
-
-#[tool.poetry.group.profile.dependencies]
-# TODO dvp: apply yappi: https://coderzcolumn.com/tutorials/python/yappi-yet-another-python-profiler
-#yappi = ">=1.3.2"
-
-[tool.poetry.group.pre_commit.dependencies]
-pre-commit = ">=2.15.0"
-rstcheck = ">=6.1.2"
-pydocstringformatter = ">=0.7.3"
-pyupgrade = ">=3.15.0"
-
-[tool.poetry.group.test.dependencies]
-pytest = ">=7.1"
-# pytest-cache = ">=1.0"
-pytest-cov = ">=4.0"
-# pytest-mock = ">=3.9"
-# pytest-randomly = ">=3.12"
-coverage = { version = ">=6.1.2", extras = ["toml"] }
-xdoctest = { extras = ["colors"], version = ">=0.15.10" }
-
-[tool.poetry.group.coverage.dependencies]
-coverage = { version = ">=6.1.2", extras = ["toml"] }
-
-[tool.poetry.group.xdoctest.dependencies]
-xdoctest = { extras = ["colors"], version = ">=0.15.10" }
-
-[tool.poetry.group.typeguard.dependencies]
-typeguard = ">=4.1.5"
-
-[tool.poetry.group.mypy.dependencies]
-mypy = ">=1.2.0"
-pep8-naming = ">=0.12.1"
-types-setuptools = ">=57.4.2"
-numpy = ">=1.26.2"
-
-[tool.poetry.group.docs.dependencies]
-sphinx = ">=6.1.3"
-sphinx-autodoc-typehints = ">=1.19.5"
-sphinx-click = ">=4.4.0"
-
-[tool.poetry.group.docs_auto.dependencies]
-sphinx-autobuild = ">=2021.3.14"
-
-[tool.poetry.group.ruff.dependencies]
-ruff = ">=0.0.259"
+[dependency-groups]
+dev = [{ include-group = "style" }, { include-group = "test" }]
+style = [
+    { include-group = "pre_commit" },
+    { include-group = "ruff" },
+    { include-group = "mypy" },
+    { include-group = "lint" },
+]
+pre_commit = ["pre-commit>=4.3.0", "pydocstringformatter>=0.7.3"]
+ruff = ["ruff>=0.0.259"]
+mypy = [
+    "mypy>=1.2.0",
+    "pep8-naming>=0.12.1",
+    "types-setuptools>=80.9.0.20250529",
+]
+lint = ["pylint", "pylint-per-file-ignores"]
+test = [
+    "pytest>=8.4.1",
+    "pytest-cov>=7.0.0",
+    "pytest-mock>=3.14.0",
+    "pytest-durations>=1.5.2",
+    "pytest-emoji>=0.2.0",
+    "xdoctest>=1.2.0",
+    { include-group = "coverage" }, # coverage may be used on its own, see GHA test
+]
+coverage = ["coverage[toml]>=7.9.2"]
+# environments not in dev
+typeguard = ["typeguard>=4.1.5"]
+docs = [
+    "rstcheck[toml,sphinx]>=6.2.5",
+    "sphinx>=8.2.3",
+    "sphinx-autodoc-typehints>=3.2.0",
+    "sphinx-autobuild>=2025.8.25",
+    "sphinx-togglebutton>=0.3.2",
+    "sphinx-click>=6.1.0",
+]
+analyze = ["jupyterlab>=4.2.5", "jupytext>=1.16.4"]
 
 [tool.pytest.ini_options]
-minversion = "6.2"
+minversion = "8.4"
 cache_dir = '.cache/pytest'
 norecursedirs = '''
 *.egg-info
@@ -127,25 +108,25 @@ addopts = '''
 --ignore setup.py
 --failed-first
 --xdoctest
+--pytest-durations-min=1
+--pytest-resultlog="pytest-result.log"
 '''
-doctest_optionflags = "ELLIPSIS NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES"
+doctest_optionflags = "ELLIPSIS NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES NUMBER"
 testpaths = ["tests", "src"]
-markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-]
+markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
 # xfail tests that pass should fail the test suite
 xfail_strict = true
 filterwarnings = [
     "error",
-    'ignore:Implementing implicit namespace packages \(as specified in PEP 420\) is preferred to `pkg_resources.declare_namespace`',
+    # 'ignore:Implementing implicit namespace packages \(as specified in PEP 420\) is preferred to `pkg_resources.declare_namespace`',
     "ignore:.*not typechecking multipledispatch.dispatcher.*UserWarning",
     'ignore:.*io.FileIO \[closed\]',
-    'ignore:.*Deprecated call to `pkg_resources.declare_namespace',
+    # 'ignore:.*Deprecated call to `pkg_resources.declare_namespace',
     'ignore:.*Implicit None on return values:DeprecationWarning',
-    # pandas 2.1.4 at python 3.12
-    'ignore:.*datetime.datetime.utcfromtimestamp\(\) is deprecated:DeprecationWarning',
-    # openpyxl 3.1.2 qt python 3.12
-    'ignore:.*datetime.datetime.utcnow\(\):DeprecationWarning'
+    # # pandas 2.1.4 at python 3.12
+    # 'ignore:.*datetime.datetime.utcfromtimestamp\(\) is deprecated:DeprecationWarning',
+    # # openpyxl 3.1.2 qt python 3.12
+    # 'ignore:.*datetime.datetime.utcnow\(\):DeprecationWarning',
 ]
 log_format = "%(asctime)s %(levelname)s %(message)s"
 log_date_format = "%Y-%m-%d %H:%M:%S"
@@ -160,7 +141,7 @@ source = ["src", ".nox/*/site-packages"]
 [tool.coverage.run]
 branch = true
 source = ["src"]
-omit = ["*_tab.py", "**/__init__.py"]
+omit = ["*_tab.py", "**/__init__.py", "tools/*.py"]
 
 [tool.coverage.report]
 show_missing = true
@@ -190,7 +171,8 @@ sort = "Cover"
 # See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
 #     https://dev.to/tusharsadhwani/the-comprehensive-guide-to-mypy-561m
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
+cache_dir = ".cache/mypy"
 strict = true
 follow_imports = "silent"
 disallow_untyped_defs = true
@@ -199,7 +181,6 @@ exclude = '''(?x)(
     data/.*\.py$     # python files given as data (for SpaceClaim)
   | cli/runner\.py$  # mypy doesn't like decorators
   )'''
-plugins = ["numpy.typing.mypy_plugin"]
 
 [[tool.mypy.overrides]]
 module = [
@@ -207,9 +188,14 @@ module = [
     "IPython.core.magic_arguments",
     "click",
     "click.testing",
+    "dask.*",
+    "duckdb",
     "loguru",
+    "mckit_nuclides.*",
+    "msgspec",
     "multipledispatch",
     "nox",
+    "numpy",
     "numpy.testing",
     "pandas",
     "polars",
@@ -223,291 +209,23 @@ module = [
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = [
-    "tomllib",
-    "tomli",
-]
+module = ["tomllib"]
 allow_redefinition = true
 disable_error_code = "no-redef"
-
-[tool.check-manifest]
-ignore = [
-    "tests/*",
-    "tools/*",
-    "*.yaml",
-    "noxfile.py",
-]
-
-[tool.ipdb]
-# For debugging in jupyterlab and ipython
-# see https://github.com/gotcha/ipdb
-context = 5
-
-[tool.tryceratops]
-include = ["src"]
-experimental = true
-
-[tool.pydocstringformatter]
-write = true
-style = "pep257"
-exclude = ["tools/**", "src/**/*_parser.py", "src/**/*_tab.py"]
-strip-whitespaces = true
-max-line-length = 100
-summary-quotes-same-line = true
-
-
-[tool.pylint]
-good-names-rgxs = ["."]  # a single character variable is okay
-logging-format-style = "new"   # use {} in logging messages
-deprecated-modules = ["six"]
-extension-pkg-allow-list = ["duckdb"]
-disable = [
-    "wrong-import-order"  # this is `ruff format` responsibility
-]
-
-[tool.ruff]
-target-version = "py310"
-
-line-length = 100
-
-# show an enumeration of all autofixed lint violations
-show-fixes = true
-
-# show source code snippets when reporting violations
-output-format = "concise"
-
-src = ["src", "tests"]
-
-exclude = [
-    "*.egg-info",
-    ".cache",
-    "__pycache__",
-    "adhoc",
-    "docs/source/conf.py",
-    "notebooks",
-    "src/mapstp/data",
-    "wrk",
-]
-
-[tool.ruff.lint]
-#see full list: https://beta.ruff.rs/docs/rules/#pyflakes-f
-#or run 'ruff linter' to see a brief list
-select = [
-    "A", # flake8-builtins
-    "ANN", # flake8-annotations
-    "AIR", # Airflow https://airflow.apache.org/docs/apache-airflow/stable/index.html
-    "ARG", # flake8-unused-arguments
-    "ASYNC", # flake8-async
-    "B", # flake8-bugbear
-    "BLE", # flake8-blind-except
-    "C4", # flake8-comprehensions
-    "C90", # mccabe
-    "COM", # flake8-commas
-    "D", # pydocstyle
-    "DJ", # flake8-django
-    "DTZ", # flake8-datetimez
-    "E", # pycodestyle
-    "EM", # flake8-errmsg
-    "ERA", # eradicate
-    "EXE", # flake8-executable
-    "F", # Pyflakes
-    "FA", # flake8-future-annotations
-    "FBT", # flake8-boolean-trap  https://adamj.eu/tech/2021/07/10/python-type-hints-how-to-avoid-the-boolean-trap
-    # "FIX", # flake8-fixme
-    "FLY", # flynt
-    "FURB", # refurb
-    "G", # flake8-logging-format
-    "I", # isort
-    "ICN", # flake8-import-conventions
-    "INP", # flake8-no-pep420
-    "INT", # flake8-gettext
-    "ISC", # flake8-implicit-str-concat
-    "LOG", # flake8-log
-    "N", # pep8-naming
-    "NPY", # NumPy-specific rules
-    "PD", # pandas-vet
-    "PERF", # Perflint
-    "PGH", # pygrep-hooks
-    "PIE", # flake8-pie
-    "PL", # Pylint
-    "PT", # flake8-pytest-style
-    "PTH", # flake8-use-pathlib
-    "PYI", # flake8-pyi
-    "Q", # flake8-quotes
-    "RET", # flake8-return
-    "RSE", # flake8-raise
-    "RUF", # Ruff-specific rules
-    "S", # flake8-bandit
-    "SIM", # flake8-simplify
-    "SLF", # flake8-self
-    "SLOT", # flake8-slot
-    "T10", # flake8-debugger
-    "T20", # flake8-print
-    # "TD", # flake8-todos
-    "TCH", # flake8-type-checking
-    "TID", # flake8-tidy-imports
-    "TRY", # tryceratops
-    "UP", # pyupgrade
-    "W", # pycodestyle 2
-    "YTT", # flake8-2020
-]
-
-#warning: The isort option `isort.split-on-trailing-comma` is incompatible with the formatter `format.skip-magic-trailing-comma=true` option. To avoid unexpected behavior, we recommend either setting `isort.split-on-trailing-comma=false` or `format.skip-magic-trailing-comma=false`.
-
-# Ignore rules that currently fail on the codebase
-ignore = [
-    # "ANN001", # ANN001 Missing type annotation for function argument: doesn't allow to use functools dispatching
-    # "ANN002", # ANN002 Missing type annotation for *drop_items: ... as above
-    # "ANN101", # ANN101 Missing type annotation for self in method
-    # "ANN102", # ANN102 Missing type annotation for cls in classmethod
-    # "ANN201", # Missing return type annotation for public function `mesh2com`
-    "ANN202", # ANN202 Missing return type annotation for protected function: ... dispatching
-    # "ANN204", # ANN204 Missing return type annotation for special method
-
-    # "ARG001", # Unused function argument: `expected`
-
-    # "B905", # B905 `zip()` without an explicit `strict=` parameter - ignore while support 3.9
-
-    # "C812",   # C812 Missing trailing comma: black compatibility
-    # "C901",   # too complex - ...
-
-    "COM812", # may cause conflicts when used with the ruff formatter
-
-    # "D100",   # Missing docstring in public module
-    # "D101",   # Missing docstring in public class
-    # "D102",   # Missing docstring in public method
-    # "D103",   # Missing docstring in public function
-    "D105", # D105 Missing docstring in magic method (__hash__, __eq__)
-    # "D104",   # Missing docstring in public package
-    # "D106",   # Missing docstring in public nested class
-    "D107", # Missing docstring in __init__
-    # "D417",   # Missing argument descriptions in the docstring: `config`, `ebins`, - TODO
-
-
-    # "E203",   # E203: Whitespace before ‘:'
-    # "E401",  # Multiple imports on one line
-    # "E402",  # Module level import not at top of file
-    # "E501",  # Line too long (<LENGTH> > 100 characters)
-    # "E701",  # Multiple statements on one line (colon)
-    # "E702",  # Multiple statements on one line (semicolon)
-    # "E703",  # Statement ends with an unnecessary semicolon
-    # "E704",  # Multiple statements on one line (def)
-    # "E711",  # Comparison to `None` should be `cond is not None`
-    # "E712",  # Comparison to `<BOOL>` should be `cond is <BOOL>`
-    # "E713",  # Test for membership should be `not in`
-    # "E714",  # Test for object identity should be `is not`
-    # "E721",  # Do not compare types, use `isinstance()`
-    # "E722",  # Do not use bare `except`
-    # "E731",  # Do not assign a `lambda` expression, use a `def`
-    # "E741",  # Ambiguous variable name: `<VARIABLE>`
-    # "E743",  # Ambiguous function name: `<FUNCTION>`
-
-    # "EM101",   # Exception must not use a string literal, assign to variable first
-    # "EM102",   # Exception must not use an f-string literal, assign to variable first
-
-    # "N803",    # Argument name `R` should be lowercase
-    # "N806",    # Variable `D` in function should be lowercase
-
-    # "F401",  # `<TYPE>` imported but unused
-    # "F403",  # `from <MODULE> import *` used; unable to detect undefined names
-    # "F405",  # `<TYPE>` may be undefined, or defined from star imports: `<MODULE>`
-    # "F523",  # `.format` call has unused arguments at position(s): <INDEX>
-    # "F601",  # Dictionary key literal `'<KEY>'` repeated
-    # "F811",  # Redefinition of unused `<VARIABLE>` from line <LINE>
-    # "F821",  # Undefined name `VARIABLE`
-    # "F823",  # Local variable `VARIABLE` referenced before assignment
-    # "F841",  # Local variable `VARIABLE` is assigned to but never used
-
-    # "FBT001",  # Boolean positional arg in function definition (TODO!)
-    # "FBT002",  # Boolean default value in function definition (TODO!)
-    # "FBT003",  # Boolean positional value in function call
-
-    # "I001",
-    # "I101",
-    # "I201",
-    # "I202",
-    # "INP001",  # File `tools/clear-prev-dist-info.py` is part of an implicit namespace package.
-    "ISC001", # may cause conflicts when used with the ruff formatter
-
-    # ignore some questionable pandas-vet warnings
-    # "PD005", # use operator instead of method
-    # "PD008", # We use at() to access single values
-    # "PD009", # And we use iat()
-
-    "PLE1205", # logging-too-many-args - we use loguru with '{' style of placeholders
-
-    # "PLR0912", # Too many branches (15 > 12)
-    # "PLR0913", # Too many arguments to function call (6 > 5)
-    # "PLR0915", # Too many statements (65 > 50)
-    "PLR2004", # magic number - don't want declare 0.0 as constant
-    # "PLR5501", # Consider using `elif` instead of `else` then `if` to remove one indentation level
-
-    "PT019", # Fixture `_bin` without value is injected as parameter (false positive?)
-
-    # "S101",    # Use of `assert` detected
-    # "S301",    # `pickle` and modules that wrap... - TODO - use sql instead of pickle
-
-    # "SLF001",  # Private member accessed: `_geometry_spec`
-
-    # "TCH001",  # Move application import `mckit.utils.named` into a type-checking block
-
-    # "TRY003",  #  Avoid specifying long messages outside the exception class
-
-    # "W503",  # Line break before binary operator: for compatibility with black settings
-]
-
-
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["E402"]
-"benchmarks/*" = ["S101"]
-"noxfile.py" = ["ANN"]
-"cli/*" = ["ANN001"]
-"tests/*" = ["ANN", "D100", "D101", "D102", "D103", "D104", "PLR2004", "RUF001", "S101"]
-"tools/*" = ["T201", "INP001", "S603", "S607"]
-
-[tool.ruff.lint.mccabe]
-# Unlike Flake8, default to a complexity level of 10.
-max-complexity = 15
-
-[tool.ruff.lint.flake8-annotations]
-mypy-init-return = true  # skip return type for __init__() methods
-
-[tool.ruff.lint.flake8-pytest-style]
-parametrize-names-type = "csv"
-
-[tool.ruff.lint.flake8-type-checking]
-strict = true
-
-[tool.ruff.lint.isort]
-known-first-party = ["src"]
-known-third-party = ["mpl_toolkits", "matplotlib", "numpy", "scipy", "loguru", "tqdm", "dotenv"]
-default-section = "third-party"
-lines-between-types = 1
-required-imports = ["from __future__ import annotations"]
-case-sensitive = true
-section-order = [
-    "future",
-    "typing",
-    "standard-library",
-    "third-party",
-    "first-party",
-    "local-folder",
-    "testing"
-]
-
-
-
-[tool.ruff.lint.isort.sections]
-"typing" = ["typing", "typing_extension"]
-"testing" = ["tests"]
-
-[tool.ruff.lint.pydocstyle]
-convention = "google" # Use Google-style docstrings.
-
-[tool.ruff.format]
-docstring-code-format = true
 
 [tool.jupytext]
 # https://jupytext.readthedocs.io/en/latest/config.html
 # Pair ipynb notebooks to py:percent text notebooks
-formats = "ipynb,md,py:percent"
+formats = "ipynb,py:percent"
+
+[tool.creosote]
+paths = ["src"]
+deps-file = "pyproject.toml"
+sections = ["project.dependencies"]
+exclude-deps = [
+    "openpyxl",
+]
+
+[tool.rstcheck]
+report_level = "ERROR"
+ignore_messages = '(Unknown directive type \"click|todo|(auto(module|class|function))\"\.)'

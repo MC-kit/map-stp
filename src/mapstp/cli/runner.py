@@ -5,7 +5,7 @@ of STP paths to STP components, corresponding to cells
 in MCNP model, would it be generated from the STP with SuperMC.
 
 The Excel also contains material numbers, densities, correction factors,
-and RWCL id. The values can be specified in the names of STP
+and RWCL(RadWaste Check List) id. The values can be specified in the names of STP
 components as special tags. A tag is denoted with bracket enclosed
 specification at the end of component name: "Component name [<spec>]".
 The spec may contain space separated entries:
@@ -36,11 +36,10 @@ from mapstp.cli.mapstp_logging import init_logger, logger
 from mapstp.materials import get_used_materials_sql, load_materials_map
 from mapstp.merge import merge_paths
 from mapstp.save_table import create_excel
-from mapstp.utils.io import can_override, select_output
+from mapstp.utils import can_override, select_output
 from mapstp.workflow_sql import load_path_info, save_meta_info_from_paths
 
 
-# TODO dvp: add customized configuring from a configuration toml-file.
 @dataclass
 class Config:
     """Shared configuration."""

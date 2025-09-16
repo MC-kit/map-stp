@@ -68,7 +68,7 @@ def _are_we_in_space_claim_session():
 _are_we_in_space_claim_session()
 
 
-def scan_bodies(model):  # noqa: ANN201
+def scan_bodies(model):
     """Collect the information on the bodies in a ``model``.
 
     Extract information on a body, path, volume, bounding box.
@@ -142,7 +142,9 @@ def _save_to_csv(document_path, sequence):
             b"offset,name,volume,xmin,ymin,zmin,xmax,ymax,zmax,path\n"
         )  # cannot use print on API V17 Beta
         for i, vol, minx, miny, minz, maxx, maxy, maxz, stp in sequence:
-            items = [str(t) for t in (i, vol, minx, miny, minz, maxx, maxy, maxz)] + [stp]
+            items = [str(t) for t in (i, vol, minx, miny, minz, maxx, maxy, maxz)] + [
+                stp
+            ]
             row = ",".join(items) + "\n"
             f.write(row.encode("utf8"))
     print("Cells and information on them are stored in CSV: " + output)
@@ -217,7 +219,7 @@ def _save_to_db(document_path, sequence):
     print("Cells and information on them are stored in the database: " + output)
 
 
-def main():  # noqa: ANN201
+def main():
     """Extract cell volumes and other information.
 
     Scans all the bodies in a SpaceClaim active model,

@@ -2,14 +2,23 @@
 **mapstp**: a tool to associate  MCNP and STP models
 ====================================================
 
-.. todo::
+.. note::
 
-    The documentation is under development.
+   This documentation is currently under active development.
 
 The tool allows associate STP model components and cells of the MCNP model generated from the STP
-model with Super MC.
-The association implies properties: material, density correction factor and classification tag.
-A user can use 3D editor to assign properties in 3D model.
+model with Super MC or GEOUNED.
+The association implies properties: material, density correction factor and radwaste classification tag.
+A user can use 3D editor to assign properties in 3D model. The properties propagate through the
+tree hierarchy from top to bottom and can be refined on lower levels, if needed.
+So, one can define that almost everything in the model is steel, inserting `[m-steel]` label on the top of hierarchy
+and set more proper value, like `[m-water]` or whatever, on some components or even `[m-void]` to define
+bodies as empty spaces.
+
+.. todo::
+
+  Improve description, give examples and add links.
+
 
 Usage
 =====
@@ -21,26 +30,70 @@ Command line interface
    :prog: mapstp
    :nested: full
 
+.. todo::
+
+  Describe CLI in details.
+
 Installation
 ============
 
-From PyPI (recommended):
+**From PyPI (recommended):**
 
-.. code-block::
+.. code-block:: bash
 
    pip install mapstp
+   # or
+   uv pip install mapstp
 
-With package manager (as dependency):
+**With package manager (as dependency):**
 
-.. code-block::
+.. code-block:: bash
 
+   # uv
+   uv add mapstp
+
+   # pixi
+   pixi add --pypi mapstp
+
+   # poetry
    poetry add mapstp
 
-From source:
+   # ...
 
-.. code-block::
+**From source:**
 
+.. code-block:: bash
+
+   uv pip install https://github.com/MC-kit/map-stp.git
+   # or
    pip install https://github.com/MC-kit/map-stp.git
+
+
+Roadmap & Future Development
+============================
+
+   
+Planned Features:
+-----------------
+
+- ☐ Harmonize with GEOUNED
+- ☐ Harmonize with Radmodelling
+
+
+API Reference
+=============
+
+.. For detailed API documentation, please refer to the :doc:`api` section.
+
+Examples
+========
+
+.. Basic usage examples and tutorials will be available in the :doc:`examples` section.
+
+Contributing
+============
+
+We welcome contributions! Please see our GitHub repository for contribution guidelines.
 
 Details
 =======

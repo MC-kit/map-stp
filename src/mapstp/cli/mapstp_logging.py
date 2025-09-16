@@ -41,9 +41,6 @@ class InterceptHandler(logging.Handler):
         logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
 
 
-log = logging.getLogger()
-log.addHandler(InterceptHandler())
-
 # from loguru._defaults.py
 
 MAPSTP_CONSOLE_LOG_FORMAT: Final[str] = os.getenv(
@@ -71,6 +68,9 @@ def init_logger(
         stderr_format: log message format for stderr handler, if None, no stderr logging.
         log_path: path to file for logging, if None, no file logging.
     """
+    log = logging.getLogger()
+    log.addHandler(InterceptHandler())
+
     logger.remove()
     if stderr_format:
         logger.add(

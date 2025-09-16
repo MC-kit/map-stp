@@ -18,9 +18,8 @@ pkg_path = Path("..", "..", "src").absolute()
 assert pkg_path.exists(), f"Invalid path {pkg_path}"
 sys.path.insert(0, str(pkg_path))
 
-from typing import Dict, List
 
-import mapstp
+# import mapstp
 
 # -- Project information -----------------------------------------------------
 
@@ -35,9 +34,9 @@ author = "dvp2015"
 # built documents.
 #
 # The short X.Y version.
-version = mapstp.__version__.rsplit(".", maxsplit=1)[0]
+# version = mapstp.__version__.rsplit(".", maxsplit=1)[0]
 # The full version, including alpha/beta/rc tags.
-release = mapstp.__version__
+# release = mapstp.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -173,4 +172,6 @@ latex_elements: dict[str, str] = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, document class [howto, manual, or own class]).
-latex_documents = [(master_doc, "mapstp.tex", "mapstp Documentation", "Dmitry Portnov", "manual")]
+latex_documents = [
+    (master_doc, "mapstp.tex", "mapstp Documentation", "Dmitry Portnov", "manual")
+]
