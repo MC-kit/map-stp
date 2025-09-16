@@ -48,11 +48,8 @@ The  *mapstp*:
 * creates separate accompanying excel file with list of cells, applied materials, densities and correction factors, classification tag, and paths in STP
 
 
-Installation
-------------
+More details in documentation_.
 
-Documentation
--------------
 
 Contributing
 ------------
@@ -71,6 +68,36 @@ Contributing
 .. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json
    :target: https://github.com/astral-sh/uv
 
+Some specific: in development environment we use uv_, just_, ruff_.
+
+To setup development environment, run:
+
+.. code-block:: shell
+
+  just install | reinstall
+
+To build documentation, run:
+
+.. code-block:: shell
+
+   just docs        # - for local online docs rendering, while editing 
+   just docs-build  # - to build documentation 
+
+To release, run:
+
+.. code-block:: shell
+
+  just bump [major|minor|patch]  # - in `devel` branch
+  
+Then merge devel to master (via Pull Request) and if all the checks are passed create Release. Manually.
+
+
+.. Links
+
+.. _documentation: https://mapstp.readthedocs.io/en/latest
+.. _uv: https://github.com/astral-sh/uv
+.. _just: https://github.com/casey/just
+.. _ruff: https://github.com/astral-sh/ruff
 
 
 .. Substitutions
