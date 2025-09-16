@@ -30,16 +30,6 @@ updates:
     open-pull-requests-limit: 10
     target-branch: devel
 
-  - package-ecosystem: "gitsubmodule"
-    directory: "/"
-    schedule:
-      interval: monthly
-    labels:
-      - "kind/dependencies"
-      - "bot"
-    open-pull-requests-limit: 10
-    target-branch: devel
-
   - package-ecosystem: "uv"
     directory: "/"
     schedule:
