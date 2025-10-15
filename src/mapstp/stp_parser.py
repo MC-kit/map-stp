@@ -62,8 +62,9 @@ class Product(Numbered):
 
         The Leaf products may have bodies and can be shared between multiple paths in STP.
 
-        Returns:
-            False always for non LeafProducts.
+        Returns
+        -------
+        False always for non LeafProducts.
         """
         return False
 
@@ -74,11 +75,13 @@ class Product(Numbered):
         Args:
             text: Line with 'PRODUCT_DEFINITION' statement from an STP file.
 
-        Returns:
-            New product with given number and name.
+        Returns
+        -------
+        New product with given number and name.
 
-        Raises:
-            STPParserError: if `text` doesn't match 'PRODUCT_DEFINITION' statement format.
+        Raises
+        ------
+        STPParserError: if `text` doesn't match 'PRODUCT_DEFINITION' statement format.
         """
         match = _PRODUCT_PATTERN.search(text)
         if not match:
@@ -102,8 +105,9 @@ class LeafProduct(Product):
 
         The Leaf products may have bodies and can be shared between multiple paths in STP.
 
-        Returns:
-            True always for LeafProducts
+        Returns
+        -------
+        True always for LeafProducts
         """
         return True
 
@@ -136,11 +140,13 @@ class Link(Numbered):
         Args:
             text: line from STP file being parsed.
 
-        Returns:
-            new `Link` object.
+        Returns
+        -------
+        new `Link` object.
 
-        Raises:
-            STPParserError: on invalid input
+        Raises
+        ------
+        STPParserError: on invalid input
         """
         match = _LINK_PATTERN.search(text)
         if not match:  # pragma: no cover
@@ -167,11 +173,13 @@ class Body(Numbered):
         Args:
             text: input text
 
-        Returns:
-            The new Body object.
+        Returns
+        -------
+        The new Body object.
 
-        Raises:
-            STPParserError: on invalid input
+        Raises
+        ------
+        STPParserError: on invalid input
         """
         match = _BODY_PATTERN.search(text)
         if not match:  # pragma: no cover
@@ -195,11 +203,13 @@ def parse(inp: TextIO) -> ParseResult:
     Args:
         inp: text of STP model.
 
-    Returns:
-        Tuple containing list of products and list of links between them.
+    Returns
+    -------
+    Tuple containing list of products and list of links between them.
 
-    Raises:
-        FileError: with line number where parsing failed
+    Raises
+    ------
+    FileError: with line number where parsing failed
     """
     products: list[Product] = []
     links: LinksList = []
@@ -277,8 +287,9 @@ def check_header(inp: TextIO) -> None:
     Args:
         inp: input text stream
 
-    Raises:
-        FileError: if header is invalid or protocol is not AP214.
+    Raises
+    ------
+    FileError: if header is invalid or protocol is not AP214.
     """
     line = next(inp)
     if line != _VALID_FIRST_LINE:
@@ -299,8 +310,9 @@ def parse_path(inp: Path) -> ParseResult:
     Args:
         inp: path to STP model.
 
-    Returns:
-        Tuple containing list of products and list of links between them.
+    Returns
+    -------
+    Tuple containing list of products and list of links between them.
     """
     with inp.open(encoding="cp1251") as _inp:
         return parse(_inp)
@@ -312,7 +324,8 @@ def make_index(products: Iterable[Product]) -> dict[int, Product]:
     Args:
         products: list of Product objects
 
-    Returns:
-        Dictionary product id -> product.
+    Returns
+    -------
+    Dictionary product id -> product.
     """
     return {p.number: p for p in products}

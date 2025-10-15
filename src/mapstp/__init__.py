@@ -1,4 +1,4 @@
-"""The `mapstp` package.
+"""The ``mapstp`` package.
 
 Provides functionality to transfer meta information
 inserted to STP file component names as special tags
@@ -9,8 +9,6 @@ from __future__ import annotations
 
 from importlib import metadata as _meta
 from importlib.metadata import PackageNotFoundError, version
-
-from .cli import init_logger
 
 try:
     __version__ = version(__name__)

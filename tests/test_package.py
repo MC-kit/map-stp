@@ -30,6 +30,6 @@ def _normalize_version(version: str) -> str:
 
 
 def test_package() -> None:
-    """This test checks if only current version is installed in working environment."""
+    """Check if only current version is installed in working environment."""
     version = _find_version_from_project_toml()
     assert __version__ == _normalize_version(version), "Run 'uv sync'"

@@ -37,9 +37,10 @@ def is_defined(number: float | None) -> bool:
     Args:
         number: value to
 
-    Returns:
-        true - if `number` is a valid number,
-        false - otherwise
+    Returns
+    -------
+    true - if `number` is a valid number,
+    false - otherwise
     """
     return number is not None and number is not pd.NA and not math.isnan(number)
 
@@ -54,8 +55,9 @@ def extract_number_and_density(cell: int, path_info: pd.DataFrame) -> tuple[int,
         cell: index in `path_info`
         path_info: table of data extracted from materials index for a given STP path.
 
-    Returns:
-        number and density or None, if not available
+    Returns
+    -------
+    number and density or None, if not available
     """
     material_number, density, factor = path_info.loc[cell][["material_number", "density", "factor"]]
 
@@ -116,8 +118,9 @@ class _Merger:
     def merge_lines(self: _Merger) -> Iterator[str]:
         """Add information to MCNP cells.
 
-        Yields:
-            line from a cell descriptions or added information
+        Yields
+        ------
+        line from a cell descriptions or added information
         """
         for line in self.mcnp_lines:
             match = CELL_START_PATTERN.match(line)
@@ -131,8 +134,9 @@ class _Merger:
     def is_current_cell_specified(self: _Merger) -> bool:
         """Check if current cell needs to update the first line and add a comment.
 
-        Returns:
-            True, if current cell needs to update the first line and add a comment, False otherwise.
+        Returns
+        -------
+        True, if current cell needs to update the first line and add a comment, False otherwise.
         """
         return self.current_cell in self.path_info.index
 
@@ -177,7 +181,7 @@ def merge_paths(
     mcnp: Path,
     used_materials_text: str | None = None,
 ) -> None:
-    """Print to `output` the updated MCNP code.
+    """Print to ``output`` the updated MCNP code.
 
     The material numbers and densities are inserted instead of zeroes.
     The STP path is inserted as end of line comment below each corresponding cell.
@@ -220,7 +224,7 @@ def _print_other_sections(
                 output,
                 used_materials_text,
             )
-        else:
+        elif used_materials_text:
             print(used_materials_text, file=output)
     else:
         logger.warning(

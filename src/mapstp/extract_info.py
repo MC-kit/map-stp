@@ -28,8 +28,10 @@ class MetaInfoCollector:
     def update(self: MetaInfoCollector, pars: dict[str, str]) -> None:
         """Revise meta information collected on traversing along an STP branch.
 
-        Args:
-            pars: the last found meta information
+        Parameters
+        ----------
+        pars
+            the last found meta information
         """
         mnemonic = pars.get("m")
         if mnemonic is not None:
@@ -57,9 +59,10 @@ def extract_path_info(paths: list[str], material_index: pd.DataFrame) -> pd.Data
         paths: STP paths
         material_index: mnemonic-material-density lookup table
 
-    Returns:
-        Table with material `number`, `density`, applied correction `factor`,
-        and `rwcl` label corresponding to every path in paths
+    Returns
+    -------
+    Table with material `number`, `density`, applied correction `factor`,
+    and `rwcl` label corresponding to every path in paths
     """
     return pd.DataFrame.from_records(
         _records(paths, material_index),
@@ -91,13 +94,18 @@ def define_material_number_and_density(
 ) -> tuple[float | None, int | None]:
     """Define material number and density from a material index for given meta info.
 
-    Args:
-        material_index: table mapping material mnemonics to material number and density
-        meta_info: ... collected from the `path`
-        path: ... for diagnostics
+    Parameters
+    ----------
+    material_index
+        table mapping material mnemonics to material number and density
+    meta_info
+        ... collected from the `path`
+    path
+        ... for diagnostics
 
-    Returns:
-        density and material
+    Returns
+    -------
+    density and material
     """
     try:
         material_number: int | None = int(material_index.loc[meta_info.mnemonic]["number"])
@@ -125,13 +133,16 @@ def define_material_number_and_density(
 
 
 def extract_meta_info_from_path(path: str) -> MetaInfoCollector:
-    """Extract meta information from an STP path.
+    """Extract the lowest tags from an STP path.
 
-    Args:
-        path: ... to body with `[m-...]` tags
+    Parameters
+    ----------
+    path
+        to body which may contain ``m-... f-... r-...`` tags
 
-    Returns:
-        Collected meta info map.
+    Returns
+    -------
+    Collected meta info map.
     """
     meta_info = MetaInfoCollector()
     found = _META_PATTERN.findall(path)

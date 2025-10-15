@@ -21,18 +21,22 @@ if TYPE_CHECKING:
     import sqlite3 as sq
 
     from collections.abc import Generator
+    from pathlib import Path
 
 
-def save_meta_info_from_paths(con: sq.Connection, materials_index: str) -> None:
+def save_meta_info_from_paths(con: sq.Connection, materials_index: Path | None) -> None:
     """Store information from materials index corresponding to cells paths to SQL database.
 
-    The database should contain a table cells, which has been generated
-    with extract-info.py script from SpaceClaim. The numbers in this table are
-    index of cells in MCNP model (starting from 1).
+    The database should contain the table ``cells``, which has been generated
+    with extract-info-*.py script from SpaceClaim.
+    The numbers in this table are index of cells in MCNP model (starting from 1).
 
-    Args:
-        con: connection to database
-        materials_index: file name of materials index file.
+    Parameters
+    ----------
+    con
+        connection to database
+    materials_index
+        path to materials index file [default: embedded file].
     """
     logger = getLogger()
     _materials_index = load_materials_index(materials_index)
@@ -75,11 +79,14 @@ def save_meta_info_from_paths(con: sq.Connection, materials_index: str) -> None:
 def load_path_info(con: sq.Connection) -> pd.DataFrame:
     """Load 'cells' table from the database.
 
-    Args:
-        con: database connection
+    Parameters
+    ----------
+    con
+        database connection
 
-    Returns:
-        the loaded table ordered by cell number
+    Returns
+    -------
+    the loaded table ordered by cell number
     """
     return pd.read_sql(
         """

@@ -2,39 +2,42 @@
 
 from __future__ import annotations
 
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from importlib.resources import files
-from pathlib import Path
 
 import pandas as pd
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 PACKAGE_DATA: Path = cast("Path", files("mapstp").joinpath("data"))
 
 
-def load_materials_index(materials_index: str | None = None) -> pd.DataFrame:
+def load_materials_index(materials_index: Path | None = None) -> pd.DataFrame:
     """Load material index from file.
 
-    Args:
-        materials_index: file name of index to load,
-                         if not provided, uses data/default-material-index.xlsx
+    Parameters
+    ----------
+    materials_index
+        file name of index to load, if not provided, uses data/default-material-index.xlsx
 
-    Note:
-        Validation of material index input values is postponed to usage of defined mnemonics.
-        The input file may contain 'missed' data for mnemonics in design phase,
-        until the mnemonics are actually used.
+    Note
+    ----
+    Validation of material index input values is postponed to usage of defined mnemonics.
+    The input file may contain 'missed' data for mnemonics in design phase,
+    until the mnemonics are actually used.
 
-    Returns:
-        DataFrame with columns mnemonic, number of material, density
-        with omitted rows, where mnemonic is not specified.
+    Returns
+    -------
+    DataFrame with columns mnemonic, number of material, density
+    with omitted rows, where mnemonic is not specified.
 
-    Raises:
-        FileNotFoundError: if the file `materials_index` doesn't exist.
+    Raises
+    ------
+    FileNotFoundError: if the file ``materials_index`` doesn't exist.
     """
-    if materials_index is None:
-        p = PACKAGE_DATA / "default-material-index.xlsx"
-    else:
-        p = Path(materials_index)
+    p = PACKAGE_DATA / "default-material-index.xlsx" if materials_index is None else materials_index
     if not p.exists():
         raise FileNotFoundError(p)
     materials = pd.read_excel(

@@ -7,7 +7,6 @@ from ._io import (
     can_override,
     find_first_cell_number,
     read_mcnp_sections,
-    select_output,
 )
 from ._re import (
     CARD_PATTERN,
@@ -31,5 +30,4 @@ __all__ = [
     "decode_russian",
     "find_first_cell_number",
     "read_mcnp_sections",
-    "select_output",
 ]

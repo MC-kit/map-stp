@@ -5,19 +5,29 @@ Run this in SpaceClaim session.
 Works fine with SpaceClaim API V16 - V20.
 The API works with IronPython 2.6 through 2.7
 """
+# type: ignore
+# ruff: noqa: F821
 from __future__ import print_function
 
 import re
-import sqlite3 as sq
 import sys
+
+try:
+    import sqlite3 as sq
+    HAS_SQLITE=True
+except ImportError:
+    HAS_SQLITE=False
 
 from os.path import splitext
 
-__version__ = "0.3.6"
+__version__ = "0.3.7"
 
 #
 # Changes
 # -------
+# 0.3.7 - dvp
+#     SpaceClaim IronPython instance doesn't have sqlite by default.
+#     This dependency is made optional
 # 0.3.6 - dvp
 #     Fix regex call
 # 0.3.5 - dvp
@@ -144,7 +154,7 @@ def _save_to_csv(document_path, sequence):
     output = _set_suffix(document_path, "-component-volumes.csv")
     with open(output, "w") as f:
         f.write(
-            b"offset,name,volume,xmin,ymin,zmin,xmax,ymax,zmax,path\n"
+            b"offset,volume,xmin,ymin,zmin,xmax,ymax,zmax,path\n"
         )  # cannot use print on API V17 Beta
         for i, vol, minx, miny, minz, maxx, maxy, maxz, stp in sequence:
             items = [str(t) for t in (i, vol, minx, miny, minz, maxx, maxy, maxz)] + [stp]
@@ -155,6 +165,9 @@ def _save_to_csv(document_path, sequence):
 
 # noinspection SqlDialectInspection
 def _save_to_db(document_path, sequence):
+    if not HAS_SQLITE:
+        print("WARNING: sqlite is not available, skipping DB creation")
+        return
     output = _set_suffix(document_path, ".sqlite")
     con = sq.connect(output)
     cur = con.cursor()
@@ -237,7 +250,7 @@ def main():  # noqa: ANN201
     then saves the model with warning.
     """
     print("extract-info" + " v" + __version__)
-    document = Window.ActiveWindow.Document  # noqa: F821
+    document = Window.ActiveWindow.Document  # type: ignore # noqa: F821
     document_path = document.Path
 
     if not document_path:
@@ -255,9 +268,13 @@ def main():  # noqa: ANN201
 
     if modified:
         print("The SpaceClaim model was modified, saving it.")
-        DocumentSave.Execute(document_path)  # noqa: F821
+        DocumentSave.Execute(document_path)  # type: ignore
+        path = GetRootPart().Document.Path[:-5] + "stp" # type: ignore
+        options = ExportOptions.Create() # type: ignore
+        DocumentSave.Execute(path, options) # type: ignore
+        print("STP file is saved to", path)
 
-    print("Save to STP manually! Automatic saving doesn't work yet.")
+
     print("Success!")
 
 

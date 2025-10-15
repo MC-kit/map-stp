@@ -31,8 +31,9 @@ class Node:
     def collect_parents(self: Node) -> Iterator[Product]:
         """Iterate through the parents of the node from root parent to this node.
 
-        Yields:
-            Chain of products starting from the topmost node.
+        Yields
+        ------
+        Chain of products starting from the topmost node.
         """
         if self.parent is not None:
             yield from self.parent.collect_parents()
@@ -61,8 +62,9 @@ class Tree:
     def create_bodies_paths(self: Tree) -> list[str]:
         """Create list of paths for each body in STP file.
 
-        Returns:
-            The list of paths.
+        Returns
+        -------
+        The list of paths.
         """
 
         def _scan() -> Generator[str]:
@@ -110,8 +112,9 @@ class Tree:
             product: data associated with the new Node
             parent: its parent Node
 
-        Returns:
-            new Node
+        Returns
+        -------
+        new Node
         """
         node = Node(product, parent)
         self._node_index[product.number] = node
@@ -125,11 +128,13 @@ def create_bodies_paths(products: Iterable[Product], links: LinksList) -> list[s
         products: list of product found on parsing STP
         links: pairs denoting links between the products.
 
-    Returns:
-        The list of paths.
+    Returns
+    -------
+    The list of paths.
 
-    Raises:
-        ValueError: if more than one product is found in STP without components
+    Raises
+    ------
+    ValueError: if more than one product is found in STP without components
     """
     if links:
         tree = Tree(products, links)
