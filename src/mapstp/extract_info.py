@@ -11,7 +11,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-_META_PATTERN = re.compile(r"\[(?P<meta>[^]]+)]")
+_META_PATTERN = re.compile(r"\[(?P<meta>(?:[mfr]-)[^]]+)]")
 
 if TYPE_CHECKING:
     from collections.abc import Iterator

@@ -120,7 +120,7 @@ def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
     MCNPSections: - the text sections
     """
     sections = MCNP_SECTIONS_SEPARATOR_PATTERN.split(
-        mcnp_path.read_text(encoding="cp1251"),
+        mcnp_path.read_text(encoding="utf8"),
         maxsplit=3,
     )
     sections_len = len(sections)

@@ -128,7 +128,7 @@ def tag(  # noqa: PLR0913
     if common is None:  # pragma: no cover
         common = Common()
     with (
-        start_task(action_type="Running mapstp", version=__version__, mcnp=mcnp, sql=sql) as logger,
+        start_task(action_type="tag mcnp", mcnp=mcnp, sql=sql) as logger,
         closing(sq.connect(sql)) as con,
     ):
         save_meta_info_from_paths(con, materials_index)

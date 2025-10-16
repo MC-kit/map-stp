@@ -10,10 +10,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TextIO
 
 import math
+import re
 
 from dataclasses import dataclass, field
 from logging import getLogger
 
+import numpy as np
 import pandas as pd
 
 from mapstp.exceptions import PathInfoError
@@ -21,8 +23,6 @@ from mapstp.materials import drop_material_cards
 from mapstp.utils import CELL_START_PATTERN, read_mcnp_sections
 
 if TYPE_CHECKING:
-    import re
-
     from collections.abc import Generator, Iterable, Iterator
     from pathlib import Path
 
@@ -112,13 +112,20 @@ def _correct_first_line(
     return _line
 
 
+VOL_PATTERN = re.compile(r"Vol=(?P<volume>\d\.\d+e[-+]\d+)", flags=re.IGNORECASE)
+
+
 @dataclass
 class _Merger:
+    """Metainfo to MCNP merge procedure state object."""
+
     path_info: pd.DataFrame
     mcnp_lines: Iterable[str]
     first_cell: bool = field(init=False, default=True)
     cells_over: bool = field(init=False, default=True)
     current_cell: int = field(init=False, default=0)
+    vol: float | None = field(init=False, default=None)
+    void_cells: bool = field(init=False, default=False)
 
     def merge_lines(self: _Merger) -> Iterator[str]:
         """Add information to MCNP cells.
@@ -132,6 +139,7 @@ class _Merger:
             if match:
                 yield from self._on_cell_start(line, match)
             else:
+                self.check_volume_id_defined(line)
                 yield line
         if self.is_current_cell_specified():
             yield from self._format_volume_and_comment()
@@ -145,9 +153,36 @@ class _Merger:
         """
         return self.current_cell in self.path_info.index
 
+    def check_volume_id_defined(self, line: str) -> None:
+        """Check if `vol=` entry is specified in line.
+
+        If yes, set self.vol to the value.
+        This value is to be checked in :meth:`_format_volume_and_comment`.
+
+        Parameters
+        ----------
+        line
+            input line
+        """
+        if self.void_cells:
+            return
+        if "VOID CELLS" in line:
+            self.void_cells = True
+            return
+        match = VOL_PATTERN.search(line)
+        if match:
+            if self.vol is not None:
+                msg = "self.vol is already defined"
+                raise ValueError(msg)
+            self.vol = float(match["volume"])
+
     def _format_volume_and_comment(self: _Merger) -> Generator[str]:
         rec = self.path_info.loc[self.current_cell][["volume", "path"]]
-        yield f"      vol={rec.volume}"
+        if self.vol is None:
+            yield f"      vol={rec.volume}"
+        elif not np.isclose(self.vol, rec.volume, rtol=1e-3):
+            msg = f"Geouned and extrac-info volumes differ for cell {self.current_cell}"
+            raise ValueError(msg)
         yield f"      $ stp: {rec.path}"
 
     def _on_cell_start(self: _Merger, line: str, match: re.Match[str]) -> Generator[str]:
@@ -161,6 +196,7 @@ class _Merger:
         yield line
 
     def _on_next_cell(self: _Merger, line: str, match: re.Match[str]) -> str:
+        self.vol = None
         self.current_cell = int(match["number"])
         if self.is_current_cell_specified() and int(match["material"]) == 0:
             line = _correct_first_line(
