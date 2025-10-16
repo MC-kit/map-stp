@@ -181,7 +181,7 @@ class _Merger:
         if self.vol is None:
             yield f"      vol={rec.volume}"
         elif not np.isclose(self.vol, rec.volume, rtol=1e-3):
-            msg = f"Geouned and extrac-info volumes differ for cell {self.current_cell}"
+            msg = f"volumes differ cell {self.current_cell}: {self.vol} != {rec.volume}"
             raise ValueError(msg)
         yield f"      $ stp: {rec.path}"
 
