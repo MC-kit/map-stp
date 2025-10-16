@@ -107,20 +107,22 @@ class MCNPSections:
     remainder: str | None = None
 
 
-def read_mcnp_sections(mcnp_path: Path) -> MCNPSections:
+def read_mcnp_sections(mcnp_path: Path, encoding: str = "utf8") -> MCNPSections:
     """Read text sections from MCNP file.
 
     Parameters
     ----------
     mcnp_path
         path to file.
+    encoding
+        input file encoding, for MCNP generated with GEOUNED it's ``utf8``, for SuperMC - ``cp1251``
 
     Returns
     -------
     MCNPSections: - the text sections
     """
     sections = MCNP_SECTIONS_SEPARATOR_PATTERN.split(
-        mcnp_path.read_text(encoding="utf8"),
+        mcnp_path.read_text(encoding=encoding),
         maxsplit=3,
     )
     sections_len = len(sections)

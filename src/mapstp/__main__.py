@@ -64,6 +64,9 @@ class Common:
     override: bool = False
     "Override existing output files [default: no]"
 
+    mcnp_encoding: str = "utf8"
+    """Encoding of the MCNP file, if generated with GEOUNED - `utf8`, if with SuperMC - `cp1251`"""
+
 
 @app.command
 def tag(  # noqa: PLR0913
@@ -106,6 +109,7 @@ def tag(  # noqa: PLR0913
             name=["--excel", "-e"],
         ),
     ] = None,
+    mcnp_encoding: str = "utf8",
     common: Common | None = None,
 ) -> None:
     """Transfers meta information from STP to MCNP model and Excel.
@@ -124,6 +128,8 @@ def tag(  # noqa: PLR0913
         excel with mnemonics mapping to materials and densities
     mcnp
         input MCNP model - to be tagged in output
+    mcnp_encoding
+        ... of the MCNP file, if generated with GEOUNED - ``utf8``, if with SuperMC - ``cp1251``
     """
     if common is None:  # pragma: no cover
         common = Common()
@@ -144,7 +150,7 @@ def tag(  # noqa: PLR0913
         can_override(output, override=common.override)
         with output.open(mode="w", encoding="utf8") as _output:
             path_info = load_path_info(con)
-            merge_paths(_output, path_info, mcnp, used_materials_text)
+            merge_paths(_output, path_info, mcnp, used_materials_text, encoding=mcnp_encoding)
         _excel = Path(excel) if excel else Path(mcnp.stem + "-cells.xlsx")
         can_override(_excel, override=common.override)
         create_excel(_excel, path_info)
@@ -195,17 +201,18 @@ def meta(
     """
     toml_cfg = cyclopts.config.Toml(
         config,
-        root_keys=["mckit", "mapstp"],
+        root_keys=["tool", "mapstp"],
         search_parents=True,
     )
     env_cfg = cyclopts.config.Env(prefix=NAME)
     app.config = cast("tuple[str, ...]", (toml_cfg, env_cfg))
-    init_logging(app.console if app.console else console, eliot_log)
+    console = app.console
+    init_logging(console, eliot_log)
     with start_task(action_type=NAME, version=__version__, working_dir=Path.cwd().absolute()):
-        _LOG.info("%s %s", NAME, __version__)
-        _LOG.info("working directory: %s", Path.cwd())
-        _LOG.info("eliot log: %s", eliot_log)
+        console.print(NAME, __version__, style="bold dark_olive_green3")
+        console.print("eliot log: ", eliot_log.absolute(), style="dim")
         app(tokens)
+        console.rule("✨ Done :smiley:", style="bold yellow1")
 
 
 def main() -> None:  # pragma: no cover

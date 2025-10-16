@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 def test_merger(data: Path) -> None:
-    sections = read_mcnp_sections(data / "test3.i")
+    sections = read_mcnp_sections(data / "test3.i", encoding="cp1251")
     assert sections.cells is not None
 
 

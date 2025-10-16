@@ -62,6 +62,10 @@ export JUST_LOG := log
 [group: 'dev']
 @check: pre-commit test
 
+# Check style includeing mypy and pylint and test
+[group: 'dev']
+@check-full: check mypy pylint
+ 
 # Bump project version
 [group: 'dev']
 @bump *args="patch":
@@ -144,11 +148,11 @@ typeguard *args:
 # Run mypy
 [group: 'lint']
 @mypy:
-  uv run --no-dev --group mypy mypy src docs/source/conf.py
+  uv run --no-dev --group mypy mypy src tests docs/source/conf.py
 
 [group: 'lint']
 @pylint:
-  uv run --no-dev --group lint pylint --recursive=y src 
+  uv run --no-dev --group lint pylint --recursive=y src tests
 
 # Check rst-texts
 [group: 'docs']

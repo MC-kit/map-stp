@@ -119,6 +119,8 @@ def test_info_assignment_with_sql(cyclopts_runner: Runner, data: Path) -> None:
             str(excel),
             "--sql",
             str(sql),
+            "--mcnp-encoding",
+            "cp1251",
             str(mcnp),
         ],
         exit_on_error=False,

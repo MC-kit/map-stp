@@ -1,5 +1,5 @@
 [build-system]
-requires = ["uv_build>=0.7.19,<0.9.0"]
+requires = ["uv_build>=0.9.2,<0.10.0"]
 build-backend = "uv_build"
 
 [project]
@@ -61,7 +61,10 @@ mypy = [
     "pep8-naming>=0.12.1",
     "types-setuptools>=80.9.0.20250529",
 ]
-lint = ["pylint", "pylint-per-file-ignores"]
+lint = [
+    "pylint",
+    "pylint-per-file-ignores",
+]
 test = [
     "pytest>=8.4.1",
     "pytest-cov>=7.0.0",

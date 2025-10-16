@@ -221,6 +221,7 @@ def merge_paths(
     path_info: pd.DataFrame,
     mcnp: Path,
     used_materials_text: str | None = None,
+    encoding: str = "utf8",
 ) -> None:
     """Print to ``output`` the updated MCNP code.
 
@@ -238,8 +239,10 @@ def merge_paths(
         The input MCNP file name.
     used_materials_text
         The specification of materials to add to model.
+    encoding
+        ... of the MCNP file, if generated with GEOUNED - ``utf8``, if with SuperMC - ``cp1251``
     """
-    mcnp_sections = read_mcnp_sections(mcnp)
+    mcnp_sections = read_mcnp_sections(mcnp, encoding=encoding)
     cells = mcnp_sections.cells
     lines = cells.split("\n")
 
