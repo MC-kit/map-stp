@@ -10,6 +10,8 @@ from __future__ import annotations
 from importlib import metadata as _meta
 from importlib.metadata import PackageNotFoundError, version
 
+from mapstp.mapstp_logging import NAME, PREFIX, init_logging
+
 try:
     __version__ = version(__name__)
 except PackageNotFoundError:  # pragma: no cover
@@ -24,4 +26,4 @@ __summary__ = __meta_data__["Summary"]
 __copyright__ = f"Copyright 2021 {__author__}"
 
 
-__all__ = ["init_logger"]
+__all__ = ["NAME", "PREFIX", "init_logging"]

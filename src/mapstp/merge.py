@@ -34,8 +34,10 @@ logger = getLogger()
 def is_defined(number: float | None) -> bool:
     """Check if number coming from a DataFrame object cell is not None or NaN.
 
-    Args:
-        number: value to
+    Parameters
+    ----------
+    number
+        value to check
 
     Returns
     -------
@@ -51,9 +53,12 @@ def extract_number_and_density(cell: int, path_info: pd.DataFrame) -> tuple[int,
     Validate the values: number, if provided, is to be positive, density - not
     negative.
 
-    Args:
-        cell: index in `path_info`
-        path_info: table of data extracted from materials index for a given STP path.
+    Parameters
+    ----------
+    cell
+        index in `path_info`
+    path_info
+        table of data extracted from materials index for a given STP path.
 
     Returns
     -------
@@ -186,12 +191,17 @@ def merge_paths(
     The material numbers and densities are inserted instead of zeroes.
     The STP path is inserted as end of line comment below each corresponding cell.
 
-    Args:
-        output: stream to print to
-        path_info: table with other information on cells:
-                  material number, density, density correction factor.
-        mcnp:   The input MCNP file name.
-        used_materials_text: The specification of materials to add to model.
+    Parameters
+    ----------
+    output
+        stream to print to
+    path_info
+        table with other information on cells:
+        material number, density, density correction factor.
+    mcnp
+        The input MCNP file name.
+    used_materials_text
+        The specification of materials to add to model.
     """
     mcnp_sections = read_mcnp_sections(mcnp)
     cells = mcnp_sections.cells

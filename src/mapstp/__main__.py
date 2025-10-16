@@ -15,22 +15,18 @@ from pathlib import Path
 import cyclopts
 
 from cyclopts import App, Parameter, types  # noqa: TC002 - types are used in run time
-from eliot import start_task, to_file
-from eliot.stdlib import EliotHandler
+from eliot import start_task
 from rich.console import Console
-from rich.logging import RichHandler
 
-from mapstp import __name__ as pkg_name
 from mapstp import __summary__, __version__
 from mapstp.csv2sqlite import csv2sqlite as do_csv2sqlite
+from mapstp.mapstp_logging import NAME, PREFIX, init_logging
 from mapstp.materials import get_used_materials_sql, load_materials_map
 from mapstp.merge import merge_paths
+from mapstp.save_meta_info import load_path_info, save_meta_info_from_paths
 from mapstp.save_table import create_excel
 from mapstp.utils import can_override
-from mapstp.workflow_sql import load_path_info, save_meta_info_from_paths
 
-NAME: Final[str] = pkg_name.replace("_", "-")
-PREFIX: Final[Path] = Path(NAME)
 DEFAULT_CONFIG_PATH: Final[Path] = PREFIX.with_suffix(".toml")
 DEFAULT_ELIOT_LOG_PATH: Final[Path] = PREFIX.with_suffix(".log")
 
@@ -182,31 +178,6 @@ def csv2sqlite(
     do_csv2sqlite(csv, sql, override=common.override)
 
 
-def init_logging(eliot_log: Path | None = None) -> None:
-    """Init logging using Rich and eliot.
-
-    Parameters
-    ----------
-    eliot_log, optional
-        file for structured eliot logging
-    """
-    logging.basicConfig(
-        level="NOTSET",
-        format="%(message)s",
-        datefmt="[%X]",
-        handlers=[
-            RichHandler(console=app.console, rich_tracebacks=True, tracebacks_suppress=[cyclopts])
-        ],
-    )
-    if not eliot_log and "pytest" not in sys.modules:
-        eliot_log = PREFIX.with_suffix(".log")
-    if eliot_log:
-        to_file(eliot_log.open(mode="a"))
-        # Add Eliot Handler to root Logger. You may wish to only route specific
-        # Loggers to Eliot.
-        logging.getLogger().addHandler(EliotHandler())
-
-
 @app.meta.default
 def meta(
     *tokens: Annotated[str, Parameter(show=False, allow_leading_hyphen=True)],  # ty: ignore[unknown-argument]
@@ -227,11 +198,11 @@ def meta(
         root_keys=["mckit", "mapstp"],
         search_parents=True,
     )
-    env_cfg = cyclopts.config.Env(prefix=pkg_name)
+    env_cfg = cyclopts.config.Env(prefix=NAME)
     app.config = cast("tuple[str, ...]", (toml_cfg, env_cfg))
-    init_logging(eliot_log)
+    init_logging(app.console if app.console else console, eliot_log)
     with start_task(action_type=NAME, version=__version__, working_dir=Path.cwd().absolute()):
-        _LOG.info("%s %s", pkg_name, __version__)
+        _LOG.info("%s %s", NAME, __version__)
         _LOG.info("working directory: %s", Path.cwd())
         _LOG.info("eliot log: %s", eliot_log)
         app(tokens)
