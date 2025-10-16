@@ -11,6 +11,7 @@ from contextlib import closing
 import pandas as pd
 
 from eliot import start_action
+from packaging.version import parse as parse_version
 
 from mapstp import __version__
 from mapstp.utils import can_override
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
     from collections.abc import Generator
     from pathlib import Path
 
-version_info = tuple(int(x) for x in __version__.split("."))
+version_info = parse_version(__version__).release
 
 
 def csv2sqlite(csv: Path, sql: Path, *, override: bool = False) -> None:

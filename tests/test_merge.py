@@ -1,14 +1,22 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 import pandas as pd
 import pytest
 
 import mapstp.merge as m
 
+from mapstp.exceptions import PathInfoError
+from mapstp.utils import read_mcnp_sections
 
-def test_merger(data):
-    sections = m.read_mcnp_sections(data / "test3.i")
+if TYPE_CHECKING:
+    from pathlib import Path
+
+
+def test_merger(data: Path) -> None:
+    sections = read_mcnp_sections(data / "test3.i")
     assert sections.cells is not None
 
 
@@ -20,7 +28,9 @@ def test_merger(data):
         (1, 2.0, 2.0, (1, 4.0)),
     ],
 )
-def test_extract_number_and_density(number, density, factor, expected):
+def test_extract_number_and_density(
+    number: int, density: float, factor: float, expected: tuple[int, float]
+) -> None:
     ndf_table = pd.DataFrame.from_records(
         data=[(number, density, factor)],
         columns=["material_number", "density", "factor"],
@@ -32,12 +42,14 @@ def test_extract_number_and_density(number, density, factor, expected):
 @pytest.mark.parametrize(
     "material_number,density,factor,exception",
     [
-        (-1, 7.93, pd.NA, m.PathInfoError),
-        (1, -7.93, np.nan, m.PathInfoError),
-        (1, 2.0, -2.0, m.PathInfoError),
+        (-1, 7.93, pd.NA, PathInfoError),
+        (1, -7.93, np.nan, PathInfoError),
+        (1, 2.0, -2.0, PathInfoError),
     ],
 )
-def test_extract_number_and_density_bad_path(material_number, density, factor, exception):
+def test_extract_number_and_density_bad_path(
+    material_number: int, density: float, factor: float, exception: type[Exception]
+) -> None:
     ndf_table = pd.DataFrame.from_records(
         data=[(material_number, density, factor)],
         columns=["material_number", "density", "factor"],

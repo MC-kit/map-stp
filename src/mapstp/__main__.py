@@ -69,7 +69,7 @@ class Common:
     "Override existing output files [default: no]"
 
 
-@app.command  # type: ignore[misc]
+@app.command
 def tag(  # noqa: PLR0913
     mcnp: types.ResolvedExistingFile,
     sql: Annotated[
@@ -80,7 +80,7 @@ def tag(  # noqa: PLR0913
     ],
     *,
     output: Annotated[
-        types.ResolvedFile,
+        types.ResolvedFile | None,
         Parameter(
             name=["--output", "-o"],
         ),
@@ -157,7 +157,7 @@ def tag(  # noqa: PLR0913
             logger.add_success_fields(output=output)
 
 
-@app.command  # type: ignore[misc]
+@app.command
 def csv2sqlite(
     csv: types.ExistingCsvPath,
     sql: Annotated[
@@ -207,7 +207,7 @@ def init_logging(eliot_log: Path | None = None) -> None:
         logging.getLogger().addHandler(EliotHandler())
 
 
-@app.meta.default  # type: ignore[misc]
+@app.meta.default
 def meta(
     *tokens: Annotated[str, Parameter(show=False, allow_leading_hyphen=True)],  # ty: ignore[unknown-argument]
     config: types.TomlPath = DEFAULT_CONFIG_PATH,

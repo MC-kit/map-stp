@@ -16,7 +16,7 @@ from mapstp.utils.decode_russian_in_stp import decode_russian
         )
     ],
 )
-def test_decode_russian(inp, expected):
+def test_decode_russian(inp: str, expected: str) -> None:
     assert expected == decode_russian(inp)
 
 

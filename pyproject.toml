@@ -33,6 +33,7 @@ dependencies = [
     "eliot>=1.17.5",
     "numpy (>=2.3.1)",
     "openpyxl (>=3.0.9)",
+    "packaging>=25.0",
     "pandas (>=2.0.0)",
     "rich>=14.2.0",
 ]

@@ -11,7 +11,7 @@ import pytest
 
 from cyclopts import MissingArgumentError
 
-from mapstp.__main__ import __summary__, __version__
+from mapstp import __summary__, __version__
 from mapstp.__main__ import app as mapstp
 from mapstp.materials import load_materials_map
 from mapstp.utils._io import (
@@ -21,17 +21,19 @@ from mapstp.utils._io import (
 from mapstp.utils._re import MATERIAL_PATTERN, VOID_CELL_START_PATTERN
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable
+    from collections.abc import Callable, Generator, Iterable
+
+    Runner = Callable[..., str]
 
 
 # noinspection PyTypeChecker
-def test_version(cyclopts_runner):
+def test_version(cyclopts_runner: Runner) -> None:
     out = cyclopts_runner(mapstp, ["--version"])
     assert __version__ in out
 
 
 # noinspection PyTypeChecker
-def test_help_command(cyclopts_runner):
+def test_help_command(cyclopts_runner: Runner) -> None:
     out = cyclopts_runner(mapstp, ["--help"])
     assert "Usage: " in out
     expected = __summary__.replace("\n", "")[:-40]
@@ -39,7 +41,7 @@ def test_help_command(cyclopts_runner):
     assert expected in actual
 
 
-def test_tag_help_command(cyclopts_runner):
+def test_tag_help_command(cyclopts_runner: Runner) -> None:
     out = cyclopts_runner(mapstp, ["tag", "--help"])
     assert "Transfers meta" in out
     expected = __summary__.replace("\n", "")[:-40]
@@ -50,26 +52,26 @@ def test_tag_help_command(cyclopts_runner):
 _COMMENT_PATTERN = re.compile(r"^\s{6}\$ stp: .*")
 
 
-def extract_stp_comment_lines(lines):
+def extract_stp_comment_lines(lines: Iterable[str]) -> Generator[str]:
     for line in lines:
         if _COMMENT_PATTERN.search(line):
             yield line
 
 
-def _extract_material_first_lines(lines):
+def _extract_material_first_lines(lines: Iterable[str]) -> Generator[tuple[int, str]]:
     for line in lines:
         match = MATERIAL_PATTERN.search(line)
         if match:
             yield int(match["material"]), line
 
 
-def extract_first_void_cell_lines(lines):
+def extract_first_void_cell_lines(lines: Iterable[str]) -> Generator[str]:
     for line in lines:
         if VOID_CELL_START_PATTERN.search(line):
             yield line
 
 
-def test_commenting_with_sql(cyclopts_runner, data):
+def test_commenting_with_sql(cyclopts_runner: Runner, data: Path) -> None:
     output = Path("test1-with-comments.i")
     mcnp = data / "test1.i"
     original_sql = data / "test1.sqlite"
@@ -89,7 +91,7 @@ def test_commenting_with_sql(cyclopts_runner, data):
     assert len(lines) == 3
 
 
-def test_commenting_with_sql_to_stdout(cyclopts_runner: Callable, data: Path) -> None:
+def test_commenting_with_sql_to_stdout(cyclopts_runner: Runner, data: Path) -> None:
     mcnp = data / "test1.i"
     cyclopts_runner(
         mapstp,
@@ -99,7 +101,7 @@ def test_commenting_with_sql_to_stdout(cyclopts_runner: Callable, data: Path) ->
     assert Path("test1-tagged.i").exists(), "Should create test1-tagged.i"
 
 
-def test_info_assignment_with_sql(cyclopts_runner: Callable, data: Path):
+def test_info_assignment_with_sql(cyclopts_runner: Runner, data: Path) -> None:
     output = Path("test-extract-info-prepared.i")
     excel = Path("test-extract-info.xlsx")
     original_sql = data / "test-extract-info.sqlite"
@@ -140,14 +142,17 @@ def test_info_assignment_with_sql(cyclopts_runner: Callable, data: Path):
         ("test-extract-info.i", 2000),
     ],
 )
-def test_correct_start_cell_number(data, mcnp, expected):
+def test_correct_start_cell_number(data: Path, mcnp: str | Path, expected: int) -> None:
     if mcnp:
         mcnp = data / mcnp
     actual = find_first_cell_number(mcnp)
     assert actual == expected
 
 
-def test_run_tag_without_args(cyclopts_runner: Callable, eliot_file_trace: Callable):
+def test_run_tag_without_args(
+    cyclopts_runner: Callable,  # type: ignore[type-arg]
+    eliot_file_trace: Callable,  # type: ignore[type-arg]
+) -> None:
     with eliot_file_trace("test.log"), pytest.raises(MissingArgumentError, match="mcnp"):
         assert "Missing argument" in cyclopts_runner(
             mapstp,
@@ -166,7 +171,7 @@ def select_cell_and_stp_lines(lines: Iterable[str]) -> dict[int, str]:
     return res
 
 
-def check_materials(materials, number_of_materials):
+def check_materials(materials: Path, number_of_materials: int) -> None:
     materials_dict = load_materials_map(materials)
     assert len(materials_dict) == number_of_materials, (
         f"There should be {number_of_materials} materials in {materials}"

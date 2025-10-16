@@ -11,8 +11,6 @@ from eliot import FileDestination, MemoryLogger, add_destinations, remove_destin
 from rich.console import Console
 
 from mapstp.materials_index import load_materials_index
-from mapstp.stp_parser import parse_path
-from mapstp.tree import create_bodies_paths
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Generator, Iterable
@@ -38,14 +36,8 @@ def data() -> Path:
 
 @pytest.fixture(scope="session")
 def materials() -> pd.DataFrame:
+    """Materials dataframe."""
     return load_materials_index()
-
-
-@pytest.fixture(scope="session")
-def paths_ei(data) -> list[str]:
-    _stp = Path(data / "test-extract-info.stp")
-    products, links = parse_path(_stp)
-    return create_bodies_paths(products, links)
 
 
 @pytest.fixture
@@ -79,7 +71,7 @@ def eliot_file_trace() -> Callable[[Path | str], _GeneratorContextManager[None]]
     return _wrap
 
 
-class MemoryDestination(MemoryLogger):
+class MemoryDestination(MemoryLogger):  # type: ignore[misc]
     """Eliot memory logger."""
 
     def __call__(self, message: dict[str, Any]) -> None:
@@ -104,7 +96,7 @@ def eliot_mem_trace() -> Generator[MemoryDestination]:
 @pytest.fixture
 def cyclopts_runner(
     cd_tmpdir: Path,  # noqa: ARG001
-) -> Callable[[App, None | str | Iterable[str]], str]:
+) -> Callable[..., str]:
     """Run cyclopts application in temporary directory and isolated console.
 
     Parameters
@@ -117,7 +109,11 @@ def cyclopts_runner(
         Callable to run the application returning the command output.
     """
 
-    def _wrapper(app: App, args: None | str | Iterable[str] = None, **kwargs) -> str:
+    def _wrapper(
+        app: App,
+        args: None | str | Iterable[str] = None,
+        **kwargs: Any,
+    ) -> str:
         console = Console()
         with console.capture() as capture:
             app(args, console=console, **kwargs)
