@@ -1,0 +1,246 @@
+"""CLI mapstp interface."""
+
+from __future__ import annotations
+
+from typing import Annotated, Final, cast
+
+import logging
+import sqlite3 as sq
+import sys
+
+from contextlib import closing
+from dataclasses import dataclass
+from pathlib import Path
+
+import cyclopts
+
+from cyclopts import App, Parameter, types  # noqa: TC002 - types are used in run time
+from eliot import start_task, to_file
+from eliot.stdlib import EliotHandler
+from rich.console import Console
+from rich.logging import RichHandler
+
+from mapstp import __name__ as pkg_name
+from mapstp import __summary__, __version__
+from mapstp.csv2sqlite import csv2sqlite as do_csv2sqlite
+from mapstp.materials import get_used_materials_sql, load_materials_map
+from mapstp.merge import merge_paths
+from mapstp.save_table import create_excel
+from mapstp.utils import can_override
+from mapstp.workflow_sql import load_path_info, save_meta_info_from_paths
+
+NAME: Final[str] = pkg_name.replace("_", "-")
+PREFIX: Final[Path] = Path(NAME)
+DEFAULT_CONFIG_PATH: Final[Path] = PREFIX.with_suffix(".toml")
+DEFAULT_ELIOT_LOG_PATH: Final[Path] = PREFIX.with_suffix(".log")
+
+_TAG_USAGE: Final[str] = f"""
+{__summary__}
+
+For given STP file creates Excel table with a list
+of STP paths to STP components, corresponding to cells
+in MCNP model, would it be generated from the STP with SuperMC.
+
+If MCNP file is also specified as the second `mcnp-file` argument,
+then produces output MCNP file with STP paths inserted
+as end of line comments after corresponding cells with prefix
+"sep:". The material numbers and densities are set according
+to the meta information provided in the STP.
+"""
+
+
+console = Console()
+app = App(
+    name=NAME,  # ty: ignore[unknown-argument]
+    version=__version__,
+    console=console,
+    help=__summary__,  # ty: ignore[unknown-argument]
+)
+
+_LOG = logging.getLogger("mapstp.main")
+
+
+@Parameter(name="*")  # https://cyclopts.readthedocs.io/en/latest/cookbook/sharing_parameters.html
+@dataclass
+class Common:
+    """Common for all commands command line options."""
+
+    override: bool = False
+    "Override existing output files [default: no]"
+
+
+@app.command  # type: ignore[misc]
+def tag(  # noqa: PLR0913
+    mcnp: types.ResolvedExistingFile,
+    sql: Annotated[
+        types.ResolvedExistingFile,
+        Parameter(
+            name=["--sql", "-s"],
+        ),
+    ],
+    *,
+    output: Annotated[
+        types.ResolvedFile,
+        Parameter(
+            name=["--output", "-o"],
+        ),
+    ] = None,
+    materials_index: Annotated[
+        types.ResolvedExistingFile | None,
+        Parameter(
+            name=["--materials-index", "-m"],
+            help=(
+                "Excel file containing materials mnemonics and materials for an MCNP model "
+                "(default: file from the package internal data corresponding to ITER C-model)"
+            ),
+        ),
+    ] = None,
+    materials: Annotated[
+        types.ResolvedExistingFile | None,
+        Parameter(
+            name="--materials",
+            help="Text file containing MCNP materials specifications. "
+            "If present, the selected materials present in this file are printed "
+            "to the `output` MCNP model, so, it becomes complete valid model",
+        ),
+    ] = None,
+    excel: Annotated[
+        types.ResolvedFile | None,
+        Parameter(
+            name=["--excel", "-e"],
+        ),
+    ] = None,
+    common: Common | None = None,
+) -> None:
+    """Transfers meta information from STP to MCNP model and Excel.
+
+    Parameters
+    ----------
+    output
+        File to write the MCNP with marked cells (default: computed),
+    excel
+        excel to store mapping cell->tags, stp path, volume
+    sql
+        SQLite3 file with the model information,
+    materials
+        file with MCNP materials
+    materials_index
+        excel with mnemonics mapping to materials and densities
+    mcnp
+        input MCNP model - to be tagged in output
+    """
+    if common is None:  # pragma: no cover
+        common = Common()
+    with (
+        start_task(action_type="Running mapstp", version=__version__, mcnp=mcnp, sql=sql) as logger,
+        closing(sq.connect(sql)) as con,
+    ):
+        save_meta_info_from_paths(con, materials_index)
+        if materials:
+            materials_map = load_materials_map(materials)
+            used_materials_text: str | None = get_used_materials_sql(con, materials_map)
+        else:
+            used_materials_text = None
+        _LOG.info("mapstp %s", __version__)
+        _LOG.info("Tagging model %s", mcnp)
+        if output is None:
+            output = Path(mcnp.stem + "-tagged").with_suffix(mcnp.suffix)
+        can_override(output, override=common.override)
+        with output.open(mode="w", encoding="utf8") as _output:
+            path_info = load_path_info(con)
+            merge_paths(_output, path_info, mcnp, used_materials_text)
+        _excel = Path(excel) if excel else Path(mcnp.stem + "-cells.xlsx")
+        can_override(_excel, override=common.override)
+        create_excel(_excel, path_info)
+        logger.add_success_fields(excel=_excel)
+        if output is not sys.stdout:
+            logger.add_success_fields(output=output)
+
+
+@app.command  # type: ignore[misc]
+def csv2sqlite(
+    csv: types.ExistingCsvPath,
+    sql: Annotated[
+        types.NonExistentFile,
+        Parameter(
+            name=["--sql", "-s"],
+        ),
+    ],
+    common: Common | None = None,
+) -> None:
+    """Convert CSV with metainfo from SpaceClaim model to sqlite.
+
+    Parameters
+    ----------
+    csv
+        CSV path
+    sql
+        Path to Sqlite database to store ``cells`` table.
+    """
+    if common is None:  # pragma: no cover
+        common = Common()
+    do_csv2sqlite(csv, sql, override=common.override)
+
+
+def init_logging(eliot_log: Path | None = None) -> None:
+    """Init logging using Rich and eliot.
+
+    Parameters
+    ----------
+    eliot_log, optional
+        file for structured eliot logging
+    """
+    logging.basicConfig(
+        level="NOTSET",
+        format="%(message)s",
+        datefmt="[%X]",
+        handlers=[
+            RichHandler(console=app.console, rich_tracebacks=True, tracebacks_suppress=[cyclopts])
+        ],
+    )
+    if not eliot_log and "pytest" not in sys.modules:
+        eliot_log = PREFIX.with_suffix(".log")
+    if eliot_log:
+        to_file(eliot_log.open(mode="a"))
+        # Add Eliot Handler to root Logger. You may wish to only route specific
+        # Loggers to Eliot.
+        logging.getLogger().addHandler(EliotHandler())
+
+
+@app.meta.default  # type: ignore[misc]
+def meta(
+    *tokens: Annotated[str, Parameter(show=False, allow_leading_hyphen=True)],  # ty: ignore[unknown-argument]
+    config: types.TomlPath = DEFAULT_CONFIG_PATH,
+    eliot_log: Path = DEFAULT_ELIOT_LOG_PATH,
+) -> None:  # pragma: no cover
+    """Transfer meta information from STP to MCNP.
+
+    Parameters
+    ----------
+    config, optional
+        configuration file, by default mapstp.toml
+    eliot_log, optional
+        file for structured eliot logging, by default mapstp.log
+    """
+    toml_cfg = cyclopts.config.Toml(
+        config,
+        root_keys=["mckit", "mapstp"],
+        search_parents=True,
+    )
+    env_cfg = cyclopts.config.Env(prefix=pkg_name)
+    app.config = cast("tuple[str, ...]", (toml_cfg, env_cfg))
+    init_logging(eliot_log)
+    with start_task(action_type=NAME, version=__version__, working_dir=Path.cwd().absolute()):
+        _LOG.info("%s %s", pkg_name, __version__)
+        _LOG.info("working directory: %s", Path.cwd())
+        _LOG.info("eliot log: %s", eliot_log)
+        app(tokens)
+
+
+def main() -> None:  # pragma: no cover
+    """Run mapstp application."""
+    app.meta()
+
+
+if __name__ == "__main__":
+    main()

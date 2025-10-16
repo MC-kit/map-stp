@@ -135,3 +135,5 @@ poetry.toml
 .pyre/
 
 wrk/
+
+.vscode/
