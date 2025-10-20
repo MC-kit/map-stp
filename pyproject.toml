@@ -178,7 +178,6 @@ disallow_untyped_defs = true
 files = "src/**/*.py"
 exclude = '''(?x)(
     data/.*\.py$     # python files given as data (for SpaceClaim)
-  | cli/runner\.py$  # mypy doesn't like decorators
   )'''
 
 [[tool.mypy.overrides]]

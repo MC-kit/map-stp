@@ -11,7 +11,7 @@ import pytest
 
 from cyclopts import MissingArgumentError
 
-from mapstp import __summary__, __version__
+from mapstp import __summary__
 from mapstp.__main__ import app as mapstp
 from mapstp.materials import load_materials_map
 from mapstp.utils._io import (
@@ -23,22 +23,7 @@ from mapstp.utils._re import MATERIAL_PATTERN, VOID_CELL_START_PATTERN
 if TYPE_CHECKING:
     from collections.abc import Callable, Generator, Iterable
 
-    Runner = Callable[..., str]
-
-
-# noinspection PyTypeChecker
-def test_version(cyclopts_runner: Runner) -> None:
-    out = cyclopts_runner(mapstp, ["--version"])
-    assert __version__ in out
-
-
-# noinspection PyTypeChecker
-def test_help_command(cyclopts_runner: Runner) -> None:
-    out = cyclopts_runner(mapstp, ["--help"])
-    assert "Usage: " in out
-    expected = __summary__.replace("\n", "")[:-40]
-    actual = out.replace("\n", "")
-    assert expected in actual
+    from tests.cli._types import Runner
 
 
 def test_tag_help_command(cyclopts_runner: Runner) -> None:

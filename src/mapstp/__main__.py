@@ -189,7 +189,7 @@ def meta(
     *tokens: Annotated[str, Parameter(show=False, allow_leading_hyphen=True)],  # ty: ignore[unknown-argument]
     config: types.TomlPath = DEFAULT_CONFIG_PATH,
     eliot_log: Path = DEFAULT_ELIOT_LOG_PATH,
-) -> None:  # pragma: no cover
+) -> None:
     """Transfer meta information from STP to MCNP.
 
     Parameters

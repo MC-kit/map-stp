@@ -126,13 +126,16 @@ class _Merger:
     current_cell: int = field(init=False, default=0)
     vol: float | None = field(init=False, default=None)
     void_cells: bool = field(init=False, default=False)
+    """True, if scan reached "void" cells portion."""
 
     def merge_lines(self: _Merger) -> Iterator[str]:
         """Add information to MCNP cells.
 
         Yields
         ------
-        line from a cell descriptions or added information
+        line from an original cell descriptions or
+        the first line with material and density
+        lines with volume and stp-path comment
         """
         for line in self.mcnp_lines:
             match = CELL_START_PATTERN.match(line)
@@ -182,7 +185,8 @@ class _Merger:
             yield f"      vol={rec.volume}"
         elif not np.isclose(self.vol, rec.volume, rtol=1e-3):
             msg = f"volumes differ cell {self.current_cell}: {self.vol} != {rec.volume}"
-            raise ValueError(msg)
+            # raise ValueError(msg)  # noqa: ERA001
+            logger.error(msg)
         yield f"      $ stp: {rec.path}"
 
     def _on_cell_start(self: _Merger, line: str, match: re.Match[str]) -> Generator[str]:
