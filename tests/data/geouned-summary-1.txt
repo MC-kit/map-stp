@@ -1,0 +1,4 @@
+  Cell Id     Mat Id      Density       Volume     Comments
+        1          0                  7.0052e+04   /trt-5.0.1/1A_521_514_СИСТЕМА_ЭЛЕКТРОМАГНИТНАЯ[m-steel]/D-coil_TRT-2023_V1[m-PK]/D1_TRT-2023_V1/D1_SSz_TRT-2023_V11
+        2          0                  1.0100e+05   /trt-5.0.1/1A_521_514_СИСТЕМА_ЭЛЕКТРОМАГНИТНАЯ[m-steel]/D-coil_TRT-2023_V1[m-PK]/D2_TRT-2023_V1/D2_SSz_TRT-2023_V11
+        3          0                  5.8811e+04   /trt-5.0.1/1A_521_514_СИСТЕМА_ЭЛЕКТРОМАГНИТНАЯ[m-steel]/CS_TRT-2023_V3[m-steel]/Iz_modul_Ring_CS_SS_TRT-2023_V3/Iz_modul-ring2_SS_CS_TRT-2023_V31

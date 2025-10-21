@@ -51,7 +51,7 @@ def init_logging(console: Console, eliot_log: Path | None = None) -> None:
     if not eliot_log and "pytest" not in sys.modules:
         eliot_log = PREFIX.with_suffix(".log")  # pragma: no cover
     if eliot_log:  # pragma: no cover
-        to_file(eliot_log.open(mode="a"))
+        to_file(eliot_log.open(mode="a", encoding="utf8"))
         # Add Eliot Handler to root Logger. You may wish to only route specific
         # Loggers to Eliot.
         logging.getLogger().addHandler(EliotHandler())

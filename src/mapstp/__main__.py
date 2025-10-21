@@ -19,6 +19,7 @@ from eliot import start_task
 from rich.console import Console
 
 from mapstp import __summary__, __version__
+from mapstp.cli import summary2sqlite as do_summary2sqlite
 from mapstp.csv2sqlite import csv2sqlite as do_csv2sqlite
 from mapstp.mapstp_logging import NAME, PREFIX, init_logging
 from mapstp.materials import get_used_materials_sql, load_materials_map
@@ -111,6 +112,7 @@ def tag(  # noqa: PLR0913
         ),
     ] = None,
     mcnp_encoding: str = "utf8",
+    geouned_format: bool = False,
     common: Common | None = None,
 ) -> None:
     """Transfers meta information from STP to MCNP model and Excel.
@@ -131,6 +133,9 @@ def tag(  # noqa: PLR0913
         input MCNP model - to be tagged in output
     mcnp_encoding
         ... of the MCNP file, if generated with GEOUNED - ``utf8``, if with SuperMC - ``cp1251``
+    geouned_format:
+        the MCNP file is produced by GeoUNED, where volume and STEP paths are already
+        specified, don't change, just check
     """
     if common is None:  # pragma: no cover
         common = Common()
@@ -151,11 +156,19 @@ def tag(  # noqa: PLR0913
         can_override(output, override=common.override)
         with output.open(mode="w", encoding="utf8") as _output:
             path_info = load_path_info(con)
-            merge_paths(_output, path_info, mcnp, used_materials_text, encoding=mcnp_encoding)
-        _excel = Path(excel) if excel else Path(mcnp.stem + "-cells.xlsx")
-        can_override(_excel, override=common.override)
-        create_excel(_excel, path_info)
-        logger.add_success_fields(excel=_excel)
+            merge_paths(
+                _output,
+                path_info,
+                mcnp,
+                used_materials_text,
+                geouned_format=geouned_format,
+                encoding=mcnp_encoding,
+            )
+        if excel is None:
+            excel = Path(mcnp.stem + "-cells.xlsx")
+        can_override(excel, override=common.override)
+        create_excel(excel, path_info)
+        logger.add_success_fields(excel=excel)
         if output is not sys.stdout:
             logger.add_success_fields(output=output)
 
@@ -185,6 +198,31 @@ def csv2sqlite(
     do_csv2sqlite(csv, sql, override=common.override)
 
 
+@app.command
+def summary2sqlite(
+    summary: types.ExistingPath,
+    sql: Annotated[
+        types.NonExistentFile,
+        Parameter(
+            name=["--sql", "-s"],
+        ),
+    ],
+    common: Common | None = None,
+) -> None:
+    """Convert GeoUNED summary file to sqlite.
+
+    Parameters
+    ----------
+    summary
+        path to summary.txt file
+    sql
+        Path to Sqlite database to store ``cells`` table.
+    """
+    if common is None:  # pragma: no cover
+        common = Common()
+    do_summary2sqlite(summary, sql, override=common.override)
+
+
 @app.meta.default
 def meta(
     *tokens: Annotated[str, Parameter(show=False, allow_leading_hyphen=True)],  # ty: ignore[unknown-argument]
@@ -207,16 +245,16 @@ def meta(
     )
     env_cfg = cyclopts.config.Env(prefix=NAME)
     app.config = cast("tuple[str, ...]", (toml_cfg, env_cfg))
-    console = app.console
-    init_logging(console, eliot_log)
+    _console = app.console
+    init_logging(_console, eliot_log)
     with start_task(action_type=NAME, version=__version__, working_dir=Path.cwd().absolute()):
-        console.print(NAME, __version__, style="bold dark_olive_green3")
-        console.print("eliot log: ", eliot_log.absolute(), style="dim")
+        _console.print(NAME, __version__, style="bold dark_olive_green3")
+        _console.print("eliot log: ", eliot_log.absolute(), style="dim")
         if "pytest" in sys.modules:
             app(tokens, result_action="return_value")
         else:
             app(tokens)
-        console.rule("✨ Done :smiley:", style="bold yellow1")
+        _console.rule("✨ Done :smiley:", style="bold yellow1")
 
 
 def main() -> None:  # pragma: no cover

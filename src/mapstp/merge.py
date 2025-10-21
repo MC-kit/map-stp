@@ -116,16 +116,18 @@ VOL_PATTERN = re.compile(r"Vol=(?P<volume>\d\.\d+e[-+]\d+)", flags=re.IGNORECASE
 
 
 @dataclass
-class _Merger:
+class _Merger:  # pylint: disable=[too-many-instance-attributes]
     """Metainfo to MCNP merge procedure state object."""
 
     path_info: pd.DataFrame
     mcnp_lines: Iterable[str]
+    geouned_format: bool
+    """GEOUNED adds Vol and $path comment itself, don't change, just check."""
     first_cell: bool = field(init=False, default=True)
     cells_over: bool = field(init=False, default=True)
     current_cell: int = field(init=False, default=0)
     vol: float | None = field(init=False, default=None)
-    void_cells: bool = field(init=False, default=False)
+    scanning_void_cells: bool = field(init=False, default=False)
     """True, if scan reached "void" cells portion."""
 
     def merge_lines(self: _Merger) -> Iterator[str]:
@@ -167,10 +169,10 @@ class _Merger:
         line
             input line
         """
-        if self.void_cells:
+        if self.scanning_void_cells:
             return
         if "VOID CELLS" in line:
-            self.void_cells = True
+            self.scanning_void_cells = True
             return
         match = VOL_PATTERN.search(line)
         if match:
@@ -181,13 +183,16 @@ class _Merger:
 
     def _format_volume_and_comment(self: _Merger) -> Generator[str]:
         rec = self.path_info.loc[self.current_cell][["volume", "path"]]
-        if self.vol is None:
+        if self.geouned_format:
+            if self.vol is None:
+                msg = "Volume is to be defined in GeoUNED MCNP format"
+                raise ValueError(msg)
+            if not np.isclose(self.vol, rec.volume, rtol=1e-3):
+                msg = f"volumes differ cell {self.current_cell}: {self.vol} != {rec.volume}"
+                raise ValueError(msg)
+        else:
             yield f"      vol={rec.volume}"
-        elif not np.isclose(self.vol, rec.volume, rtol=1e-3):
-            msg = f"volumes differ cell {self.current_cell}: {self.vol} != {rec.volume}"
-            # raise ValueError(msg)  # noqa: ERA001
-            logger.error(msg)
-        yield f"      $ stp: {rec.path}"
+            yield f"      $ stp: {rec.path}"
 
     def _on_cell_start(self: _Merger, line: str, match: re.Match[str]) -> Generator[str]:
         if self.first_cell:
@@ -213,18 +218,19 @@ class _Merger:
 
 
 def _merge_lines(
-    path_info: pd.DataFrame,
-    mcnp_lines: Iterable[str],
+    path_info: pd.DataFrame, mcnp_lines: Iterable[str], *, geouned_format: bool
 ) -> Iterator[str]:
-    merger = _Merger(path_info, mcnp_lines)
+    merger = _Merger(path_info, mcnp_lines, geouned_format=geouned_format)
     yield from merger.merge_lines()
 
 
-def merge_paths(
+def merge_paths(  # noqa: PLR0913, pylint: disable=[R0913]
     output: TextIO,
     path_info: pd.DataFrame,
     mcnp: Path,
     used_materials_text: str | None = None,
+    *,
+    geouned_format: bool,
     encoding: str = "utf8",
 ) -> None:
     """Print to ``output`` the updated MCNP code.
@@ -250,7 +256,7 @@ def merge_paths(
     cells = mcnp_sections.cells
     lines = cells.split("\n")
 
-    for line in _merge_lines(path_info, lines):
+    for line in _merge_lines(path_info, lines, geouned_format=geouned_format):
         print(line, file=output)
 
     print(file=output)

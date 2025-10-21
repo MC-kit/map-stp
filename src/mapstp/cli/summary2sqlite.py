@@ -8,8 +8,6 @@ import sqlite3 as sq
 
 from contextlib import closing
 
-import pandas as pd
-
 from eliot import start_action
 
 from mapstp.init_metainfo_db import init_metainfo_db
@@ -20,49 +18,58 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def csv2sqlite(csv: Path, sql: Path, *, override: bool = False) -> None:
+def summary2sqlite(summary: Path, sql: Path, *, override: bool = False) -> None:
     """Convert data from ``csv`` to sqlite data base.
 
     Parameters
     ----------
-    csv
+    summary
         path to CSV file
     sql
         path to output sql
     """
     can_override(sql, override=override)
     with (
-        start_action(action_type="convert csv to sqlite", csv=csv) as logger,
+        start_action(action_type="convert GeoUNED summary to sqlite", summary=summary) as logger,
         closing(sq.connect(sql)) as con,
         closing(con.cursor()) as cur,
     ):
-        init_metainfo_db(cur, "csv2sqlite")
+        init_metainfo_db(cur, "summary2sqlite")
         cur.executemany(
             """
                 insert into cells
-                    (cell, volume, xmin, ymin, zmin, xmax, ymax, zmax, path)
+                    (cell, volume, path)
                 values
-                    (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    (?, ?, ?)
             """,
-            load_records(csv),
+            load_records(summary),
         )
         con.commit()
         logger.add_success_fields(sql=sql)
 
 
 def load_records(
-    csv: Path,
-) -> Generator[tuple[int, float, float, float, float, float, float, float, str]]:
-    """Load records from CSV file created in SpaceClaim with extract-info script.
+    summary: Path,
+) -> Generator[tuple[int, float, str]]:
+    """Load records from summary table file created by GeoUNED.
 
     Parameters
     ----------
-    csv
-        path to csv file
+    summary
+        path to GeoUNED summary file
 
     Yields
     ------
     The records
     """
-    df = pd.read_csv(csv)
-    yield from df.itertuples(index=False)
+    with summary.open(encoding="utf8") as fid:
+        try:
+            next(fid)  # skip header
+        except StopIteration:
+            msg = "Input table file is empty"
+            raise ValueError(msg) from None
+        for line in fid:
+            cell = int(line[0:9])
+            volume = float(line[34:48])
+            path = line[51:]
+            yield cell, volume, path
