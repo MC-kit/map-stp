@@ -51,6 +51,7 @@ app = App(
     version=__version__,
     console=console,
     help=__summary__,  # ty: ignore[unknown-argument]
+    help_format="restructuredtext",
 )
 
 _LOG = logging.getLogger("mapstp.main")
@@ -211,7 +212,10 @@ def meta(
     with start_task(action_type=NAME, version=__version__, working_dir=Path.cwd().absolute()):
         console.print(NAME, __version__, style="bold dark_olive_green3")
         console.print("eliot log: ", eliot_log.absolute(), style="dim")
-        app(tokens)
+        if "pytest" in sys.modules:
+            app(tokens, result_action="return_value")
+        else:
+            app(tokens)
         console.rule("✨ Done :smiley:", style="bold yellow1")
 
 

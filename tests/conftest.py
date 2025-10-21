@@ -116,7 +116,7 @@ def cyclopts_runner(
     ) -> str:
         console = Console()
         with console.capture() as capture:
-            app(args, console=console, **kwargs)
+            app(args, console=console, result_action="return_value", **kwargs)
         return capture.get()
 
     return _wrapper
