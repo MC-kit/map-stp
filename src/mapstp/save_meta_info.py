@@ -32,7 +32,7 @@ def save_meta_info_from_paths(con: sq.Connection, materials_index: Path | None) 
     """Store information from materials index corresponding to cells paths to SQL database.
 
     The database should contain the table ``cells``, which has been generated
-    with extract-info-*.py script from SpaceClaim.
+    with extract-infopy script from SpaceClaim.
     The numbers in this table are index of cells in MCNP model (starting from 1).
 
     Parameters

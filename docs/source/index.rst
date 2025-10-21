@@ -26,13 +26,15 @@ Usage
 Command line interface
 ----------------------
 
-.. click:: mapstp.cli.runner:mapstp
-   :prog: mapstp
-   :nested: full
+The ``mapstp`` package includes a command-line interface
+
+.. cyclopts:: mapstp.__main__
+
 
 .. todo::
 
   Describe CLI in details.
+  Update CLI and logging modules description.
 
 Installation
 ============
