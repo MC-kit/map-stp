@@ -25,15 +25,15 @@ def test_help_command(cyclopts_runner: Runner) -> None:
     assert expected in actual
 
 
-def test_meta():
+def test_meta() -> None:
     meta("--help")
 
 
-def test_meta_with_command():
+def test_meta_with_command() -> None:
     meta("tag", "--help")
 
 
-def test_meta_with_args(data, cd_tmpdir):  # noqa: ARG001
+def test_meta_with_args(data: Path, cd_tmpdir: Path) -> None:  # noqa: ARG001
     mcnp = data / "test1.i"
     meta("tag", "--sql", str(mcnp.with_suffix(".sqlite")), str(mcnp))
     assert Path("test1-tagged.i").exists(), "Should create test1-tagged.i"
