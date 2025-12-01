@@ -49,10 +49,10 @@ jobs:
       !contains(github.event.head_commit.message, '[skip_ci]')
     steps:
       - name: ✅ Check out the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: 📦 Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
           enable-cache: true
@@ -71,10 +71,10 @@ jobs:
       !contains(github.event.head_commit.message, '[skip_ci]')
     steps:
       - name: ✅ Check out the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: 📦 Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
           enable-cache: true
@@ -96,12 +96,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: ✅ Check out the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
       - name: 📦 Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
           enable-cache: true
@@ -134,12 +134,12 @@ jobs:
     steps:
 
       - name: ✅ Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
       - name: 📦 Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
@@ -154,7 +154,7 @@ jobs:
         run: uv run coverage run --parallel -m pytest -vv --emoji
 
       - name: 🔃 Upload coverage data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-data-${{ runner.os }}-${{ matrix.python-version }}
           path: ".coverage.*"
@@ -167,10 +167,10 @@ jobs:
     steps:
 
       - name: ✅ Check out the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: 📦 Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
           enable-cache: true
@@ -179,7 +179,7 @@ jobs:
             **/pyproject.toml      
 
       - name: 🔃 Download coverage data
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: coverage-data-*
           merge-multiple: true
