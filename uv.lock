@@ -1141,9 +1141,9 @@ dev = [
     { name = "mypy" },
     { name = "pep8-naming" },
     { name = "pre-commit" },
-    { name = "pydocstringformatter" },
     { name = "pylint" },
     { name = "pylint-per-file-ignores" },
+    { name = "pyright" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-durations" },
@@ -1171,7 +1171,9 @@ mypy = [
 ]
 pre-commit = [
     { name = "pre-commit" },
-    { name = "pydocstringformatter" },
+]
+pyright = [
+    { name = "pyright" },
 ]
 ruff = [
     { name = "ruff" },
@@ -1180,9 +1182,9 @@ style = [
     { name = "mypy" },
     { name = "pep8-naming" },
     { name = "pre-commit" },
-    { name = "pydocstringformatter" },
     { name = "pylint" },
     { name = "pylint-per-file-ignores" },
+    { name = "pyright" },
     { name = "ruff" },
     { name = "types-setuptools" },
 ]
@@ -1221,9 +1223,9 @@ dev = [
     { name = "mypy", specifier = ">=1.2.0" },
     { name = "pep8-naming", specifier = ">=0.12.1" },
     { name = "pre-commit", specifier = ">=4.3.0" },
-    { name = "pydocstringformatter", specifier = ">=0.7.3" },
     { name = "pylint" },
     { name = "pylint-per-file-ignores" },
+    { name = "pyright", specifier = ">=1.1.406" },
     { name = "pytest", specifier = ">=8.4.1" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "pytest-durations", specifier = ">=1.5.2" },
@@ -1249,18 +1251,16 @@ mypy = [
     { name = "pep8-naming", specifier = ">=0.12.1" },
     { name = "types-setuptools", specifier = ">=80.9.0.20250529" },
 ]
-pre-commit = [
-    { name = "pre-commit", specifier = ">=4.3.0" },
-    { name = "pydocstringformatter", specifier = ">=0.7.3" },
-]
+pre-commit = [{ name = "pre-commit", specifier = ">=4.3.0" }]
+pyright = [{ name = "pyright", specifier = ">=1.1.406" }]
 ruff = [{ name = "ruff", specifier = ">=0.0.259" }]
 style = [
     { name = "mypy", specifier = ">=1.2.0" },
     { name = "pep8-naming", specifier = ">=0.12.1" },
     { name = "pre-commit", specifier = ">=4.3.0" },
-    { name = "pydocstringformatter", specifier = ">=0.7.3" },
     { name = "pylint" },
     { name = "pylint-per-file-ignores" },
+    { name = "pyright", specifier = ">=1.1.406" },
     { name = "ruff", specifier = ">=0.0.259" },
     { name = "types-setuptools", specifier = ">=80.9.0.20250529" },
 ]
@@ -2059,15 +2059,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pydocstringformatter"
-version = "0.7.5"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b0/37/f6d5ff68893c8b4ae194d6dd9df31be2cceacfae5256c840b9e216fd20de/pydocstringformatter-0.7.5.tar.gz", hash = "sha256:e9cbd134d6279360fd2bcaad94680cec02aa20a22560375c5ffd495fcfbcf92d", size = 30474, upload-time = "2025-07-12T10:12:46.089Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/81/ed/e70e413b537b7809badcd275a5f050301dafbe54efd1ae9d392ed2943c40/pydocstringformatter-0.7.5-py3-none-any.whl", hash = "sha256:7daed355f11244f64571d119e49e7328365ea9b545f88256a47b550f213d23eb", size = 31433, upload-time = "2025-07-12T10:12:44.619Z" },
-]
-
-[[package]]
 name = "pyflakes"
 version = "3.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2113,6 +2104,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/64/b2/cf916c3c8127282f60927a3fd382ef8e477e6ef090b3d1f1fedd62bff916/pylint_per_file_ignores-3.2.0.tar.gz", hash = "sha256:5eb30b2b64c49ca616b8940346b8b5b4973eeaa15700840c8b81a4b8ba565a02", size = 63854, upload-time = "2025-11-25T14:13:14.577Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/cb/6a/09cbda0032e1040eea8c7daec3994e6d32b3edc26a81d226fd643537886b/pylint_per_file_ignores-3.2.0-py3-none-any.whl", hash = "sha256:8b995b7486f6652f942cf5721e24c29b72735fa911b6d22b65b2f87bad323590", size = 5576, upload-time = "2025-11-25T14:13:13.208Z" },
+]
+
+[[package]]
+name = "pyright"
+version = "1.1.407"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "nodeenv" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a6/1b/0aa08ee42948b61745ac5b5b5ccaec4669e8884b53d31c8ec20b2fcd6b6f/pyright-1.1.407.tar.gz", hash = "sha256:099674dba5c10489832d4a4b2d302636152a9a42d317986c38474c76fe562262", size = 4122872, upload-time = "2025-10-24T23:17:15.145Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/dc/93/b69052907d032b00c40cb656d21438ec00b3a471733de137a3f65a49a0a0/pyright-1.1.407-py3-none-any.whl", hash = "sha256:6dd419f54fcc13f03b52285796d65e639786373f433e243f8b94cf93a7444d21", size = 5997008, upload-time = "2025-10-24T23:17:13.159Z" },
 ]
 
 [[package]]

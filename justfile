@@ -64,7 +64,7 @@ export JUST_LOG := log
 
 # Check style includeing mypy and pylint and test
 [group: 'dev']
-@check-full: check mypy pylint
+@check-full: check mypy pylint pyright
  
 # Bump project version
 [group: 'dev']
@@ -125,8 +125,9 @@ export JUST_LOG := log
 
 # coverage to html
 [group: 'test']
-coverage-html: coverage
-  @uv run --no-dev --group coverage coverage html
+@coverage-html: coverage
+  uv run --no-dev --group coverage coverage html
+  open htmlcov/index.html
 
 # check correct typing at runtime
 [group: 'test']
@@ -153,6 +154,15 @@ typeguard *args:
 [group: 'lint']
 @pylint:
   uv run --no-dev --group lint pylint --recursive=y src tests
+
+[group: 'lint']
+@pyright:
+  uv run --no-dev --group pyright pyright src tests
+
+# Lint with ty
+[group: 'lint']
+@ty:
+  uvx ty check 
 
 # Check rst-texts
 [group: 'docs']

@@ -73,7 +73,7 @@ jobs = 0
 
 # List of plugins (as comma separated values of python module names) to load,
 # usually to register additional checkers.
-load-plugins = ["pylint_per_file_ignores"]
+load-plugins = [ "pylint_per_file_ignores" ]
 
 # Pickle collected data for later comparisons.
 #persistent = true
@@ -84,7 +84,7 @@ load-plugins = ["pylint_per_file_ignores"]
 
 # Minimum Python version to use for version dependent checks. Will default to the
 # version used to run pylint.
-#py-version = "3.11"
+#py-version = "3.13"
 
 # Discover python modules and packages in the file system subtree.
 # recursive =

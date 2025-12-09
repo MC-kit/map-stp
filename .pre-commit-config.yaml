@@ -61,12 +61,12 @@ repos:
       - id: creosote
 
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.8.17
+    rev: 0.9.7
     hooks:
       - id: uv-lock 
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.13.0
+    rev: v0.14.3
     hooks:
       # linter
       - id: ruff-check
