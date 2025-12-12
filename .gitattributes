@@ -1,7 +1,6 @@
 #
 # Special handling for binary files
-# See https://git-scm.com/book/tr/v2/Customizing-Git-Git-Attributes
-# Install doc2txt https://sourceforge.net/projects/docx2txt/?source=navbar
+# See https://git-scm.com/book/en/v2/Customizing-Git-Git-Attributes
 #
 *.xz binary
 *.zip binary
