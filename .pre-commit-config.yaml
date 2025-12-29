@@ -26,21 +26,18 @@ repos:
       - id: check-added-large-files
         exclude: uv.lock
       - id: check-ast
-        exclude: notebooks
+        # exclude: notebooks
       - id: check-case-conflict
       - id: check-executables-have-shebangs
-      - id: check-json
-        exclude: notebooks
       - id: check-merge-conflict
         exclude: \.rst$
-      - id: check-shebang-scripts-are-executable
-        exclude: notebooks  # jupytext creates python scripts with shebangs but without permissions
-      - id: check-symlinks
+      # - id: check-shebang-scripts-are-executable
+        # exclude: notebooks  # jupytext creates python scripts with shebangs but without permissions
       - id: check-toml
       - id: check-yaml
-        exclude: recipe/meta.yaml
+        # exclude: recipe/meta.yaml
       - id: debug-statements
-        exclude: notebooks
+        # exclude: notebooks
       - id: destroyed-symlinks
       - id: detect-private-key
       - id: end-of-file-fixer
@@ -50,10 +47,19 @@ repos:
         args:
           - --pytest-test-first
       - id: mixed-line-ending
-      - id: pretty-format-json
-        args: [--autofix, --no-ensure-ascii, --no-sort-keys]
-        exclude: data|\.ipynb$
-      - id: requirements-txt-fixer
+
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.36.0
+    hooks:
+      - id: check-dependabot
+      - id: check-github-workflows
+        args: ["--verbose"]
+      - id: check-readthedocs
+
+  - repo: https://github.com/tox-dev/pyproject-fmt
+    rev: "v2.11.1"
+    hooks:
+      - id: pyproject-fmt
 
   - repo: https://github.com/fredrikaverpil/creosote
     rev: v4.1.0
@@ -61,19 +67,17 @@ repos:
       - id: creosote
 
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.7
+    rev: 0.9.18
     hooks:
       - id: uv-lock 
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.3
     hooks:
-      # linter
       - id: ruff-check
-        exclude: ^notebooks|^extern
-      # formatter 
+        # exclude: ^notebooks|^extern
       - id: ruff-format
-        exclude: ^notebooks|^extern|ipynb$
+        # exclude: ^notebooks|^extern|ipynb$
 
 
   # Check for common shell mistakes
@@ -83,3 +87,8 @@ repos:
       - id: shellcheck
         args: [ --external-sources ]
         stages: [ manual ]
+
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+      - id: check-useless-excludes
