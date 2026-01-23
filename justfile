@@ -82,7 +82,7 @@ export JUST_LOG := log
 # update dependencies
 [group: 'dev']
 @up:
-  uv sync --upgrade
+  uv sync --upgrade --all-extras
   pre-commit run -a 
   pytest
 
@@ -90,6 +90,11 @@ export JUST_LOG := log
 [group: 'dev']
 @tree *args:
   uv tree --outdated {{args}}
+
+# run pyupgrade
+[group: 'dev']
+@pyupgrade *args="--py314-plus":  # this check python version on moving to the python-3.14
+  uvx pyupgrade {{args}}  # presumably, code is updated by ruff, just to check sometimes
 
 # test up to the first fail
 [group: 'test']

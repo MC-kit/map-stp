@@ -18,7 +18,7 @@ license = { text = "MIT" }
 authors = [
   { name = "dvp2015", email = "dmitri_portnov@yahoo.com" },
 ]
-requires-python = ">=3.11,<4"
+requires-python = ">=3.12,<4"
 classifiers = [
   "Development Status :: 4 - Beta",
   "Environment :: Console",
@@ -26,7 +26,6 @@ classifiers = [
   "Intended Audience :: Science/Research",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
