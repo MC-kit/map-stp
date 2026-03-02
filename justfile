@@ -23,6 +23,11 @@ export JUST_LOG := log
 @build: venv
   uv build
 
+# check distribution with twine
+[group: 'dev']
+@check-dist: build
+  uvx twine check dist/*
+
 # clean reproducible files
 [group: 'dev']
 @clean:
@@ -32,7 +37,6 @@ export JUST_LOG := log
       ".cache"
       ".eggs"
       ".mypy_cache"
-      ".nox"
       ".pytest_cache"
       ".ruff_cache"
       ".venv"
@@ -158,7 +162,7 @@ typeguard *args:
 
 [group: 'lint']
 @pylint:
-  uv run --no-dev --group lint pylint --recursive=y src tests
+  uv run --no-dev --group lint pylint --recursive=y --output-format colorized src tests
 
 [group: 'lint']
 @pyright:
