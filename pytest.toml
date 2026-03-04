@@ -17,7 +17,7 @@ norecursedirs = [
 ]
 python_functions = ["test_*",  "profile_*"]
 addopts = [
-    "-ra", 
+    "-ra",
     "-q",
     "--tb=short",
     "--doctest-modules",
@@ -28,7 +28,14 @@ addopts = [
     "--pytest-durations-min=1",
     "--pytest-resultlog=pytest-result.log"
 ]
-doctest_optionflags = "ELLIPSIS NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES NUMBER"
+doctest_optionflags = [
+  "ELLIPSIS",
+  "NORMALIZE_WHITESPACE",
+  "IGNORE_EXCEPTION_DETAIL",
+  "ALLOW_UNICODE",
+  "ALLOW_BYTES",
+  "NUMBER",
+]
 testpaths = ["tests", "src", "docs"]
 markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
 # xfail tests that pass should fail the test suite
