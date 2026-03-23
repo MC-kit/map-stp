@@ -137,8 +137,8 @@ def test_correct_start_cell_number(data: Path, mcnp: str | Path, expected: int) 
 
 
 def test_run_tag_without_args(
-    cyclopts_runner: Callable,  # type: ignore[type-arg]
-    eliot_file_trace: Callable,  # type: ignore[type-arg]
+    cyclopts_runner: Callable,
+    eliot_file_trace: Callable,
 ) -> None:
     with eliot_file_trace("test.log"), pytest.raises(MissingArgumentError, match="mcnp"):
         assert "Missing argument" in cyclopts_runner(

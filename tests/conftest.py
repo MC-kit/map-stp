@@ -71,7 +71,7 @@ def eliot_file_trace() -> Callable[[Path | str], _GeneratorContextManager[None]]
     return _wrap
 
 
-class MemoryDestination(MemoryLogger):  # type: ignore[misc]
+class MemoryDestination(MemoryLogger):
     """Eliot memory logger."""
 
     def __call__(self, message: dict[str, Any]) -> None:

@@ -1,5 +1,6 @@
 [src]
 include = ["src", "tests"]
+exclude = ["src/mapstp/data"]
 
 [terminal]
 output-format = "concise"

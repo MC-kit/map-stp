@@ -48,10 +48,10 @@ to the meta information provided in the STP.
 
 console = Console()
 app = App(
-    name=NAME,  # ty: ignore[unknown-argument]
+    name=NAME,
     version=__version__,
     console=console,
-    help=__summary__,  # ty: ignore[unknown-argument]
+    help=__summary__,
     help_format="restructuredtext",
 )
 
@@ -225,7 +225,7 @@ def summary2sqlite(
 
 @app.meta.default
 def meta(
-    *tokens: Annotated[str, Parameter(show=False, allow_leading_hyphen=True)],  # ty: ignore[unknown-argument]
+    *tokens: Annotated[str, Parameter(show=False, allow_leading_hyphen=True)],
     config: types.TomlPath = DEFAULT_CONFIG_PATH,
     eliot_log: Path = DEFAULT_ELIOT_LOG_PATH,
 ) -> None:
