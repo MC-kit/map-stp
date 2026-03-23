@@ -101,7 +101,7 @@ def _correct_first_line(
     if nd is not None:
         material_number, density = nd
         line_with_material_and_density = (
-            _line[: match_end - 1].split()[0] + f" {int(material_number)} {-density:.5g}"
+            _line[: match_end - 1].split(maxsplit=1)[0] + f" {int(material_number)} {-density:.5g}"
         )
         remainder = _line[match_end:].strip()
         if remainder:
