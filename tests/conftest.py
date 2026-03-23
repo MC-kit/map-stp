@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
     from cyclopts import App
 
+
 _DATA = Path(__file__).parent / "data"
 
 
@@ -71,7 +72,7 @@ def eliot_file_trace() -> Callable[[Path | str], _GeneratorContextManager[None]]
     return _wrap
 
 
-class MemoryDestination(MemoryLogger):
+class MemoryDestination(MemoryLogger):  # type: ignore[misc] # ty: ignore[unused-ignore-comment]
     """Eliot memory logger."""
 
     def __call__(self, message: dict[str, Any]) -> None:

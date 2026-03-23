@@ -158,6 +158,14 @@ module = [ "tomllib" ]
 allow_redefinition = true
 disable_error_code = "no-redef"
 
+[[tool.mypy.overrides]]
+module = [ "tests.cli.*" ]
+disable_error_code = "type-arg"
+
+[[tool.mypy.overrides]]
+module = [ "conftest" ]
+disable_error_code = "misc"
+
 [tool.xdoctest]
 quiet = true
 options = ""
