@@ -1200,7 +1200,7 @@ dev = [
 ]
 docs = [
     { name = "rstcheck", extras = ["sphinx", "toml"], specifier = ">=6.2.5" },
-    { name = "sphinx", specifier = ">=8.2.3" },
+    { name = "sphinx", specifier = ">=9.1" },
     { name = "sphinx-autobuild", specifier = ">=2025.8.25" },
     { name = "sphinx-autodoc-typehints", specifier = ">=3.2" },
     { name = "sphinx-togglebutton", specifier = ">=0.3.2" },
