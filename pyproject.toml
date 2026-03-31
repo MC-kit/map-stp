@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "uv_build"
-requires = [ "uv-build>=0.9.2,<0.11" ]
+requires = [ "uv-build>=0.11,<0.12" ]
 
 [project]
 name = "mapstp"
@@ -49,11 +49,11 @@ scripts.mapstp = "mapstp.__main__:main"
 dev = [ { include-group = "style" }, { include-group = "test" } ]
 test = [
   "pytest>=9",
-  "pytest-durations>=1.5.2",
-  "pytest-emoji>=0.2",
+  "pytest-cov>=7.1",
+  "pytest-durations>=1.5",
   "pytest-mock>=3.14",
+  "pytest-xdist[psutil]>=3.8",
   "xdoctest>=1.2",
-  { include-group = "coverage" },  # coverage may be used on its own, see GHA test
 ]
 docs = [
   "rstcheck[sphinx,toml]>=6.2.5",
