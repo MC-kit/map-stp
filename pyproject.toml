@@ -15,9 +15,6 @@ keywords = [
   "SuperMC",
 ]
 license = { text = "MIT" }
-authors = [
-  { name = "dvp2015", email = "dmitri_portnov@yahoo.com" },
-]
 requires-python = ">=3.12,<4"
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -40,10 +37,14 @@ dependencies = [
   "pandas>=2",
   "rich>=14.2",
 ]
-urls.homepage = "https://github.com/MC-kit/map-stp"
-urls.repository = "https://github.com/MC-kit/map-stp"
-# documentation = "https://mapstp.readthedocs.io
-scripts.mapstp = "mapstp.__main__:main"
+[[project.authors]]
+name = "dvp2015"
+email = "dmitri_portnov@yahoo.com"
+[project.scripts]
+mapstp = "mapstp.__main__:main"
+[project.urls]
+homepage = "https://github.com/MC-kit/map-stp"
+repository = "https://github.com/MC-kit/map-stp"
 
 [dependency-groups]
 dev = [ { include-group = "style" }, { include-group = "test" } ]
@@ -78,40 +79,8 @@ style = [
 ]
 typeguard = [ "typeguard>=4.1.5" ]
 
-[tool.coverage]
-run.branch = true
-run.omit = [ "**/__init__.py", "*_tab.py", "tools/*.py" ]
-run.parallel = true
-run.source = [ "src" ]
-paths.source = [ "src" ]
-# Regexes for lines to exclude from consideration
-report.exclude_lines = [
-  # Don't complain about missing debug-only code:
-  "def __repr__",
-  "if __name__ == .__main__.:",
-  # Don't complain if non-runnable code isn't run:
-  "if 0:",
-  "if self.debug",
-  "if TYPE_CHECKING:",
-  # Have to re-enable the standard pragma
-  "pragma: no cover",
-  # Don't complain if tests don't hit defensive assertion code:
-  "raise AssertionError",
-  "raise NotImplementedError",
-]
-report.fail_under = 85  # TODO dvp: restore tests for STP parsing code or remove it at all
-report.ignore_errors = true
-report.omit = [ "**/__init__.py", "*_tab.py" ]
-report.show_missing = true
-report.skip_covered = true
-report.sort = "Cover"
-
-# MyPy config
-# See https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
-#     https://dev.to/tusharsadhwani/the-comprehensive-guide-to-mypy-561m
-
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.14"
 cache_dir = ".cache/mypy"
 disallow_untyped_defs = true
 exclude = """(?x)(
@@ -122,7 +91,6 @@ follow_imports = "silent"
 pretty = true
 strict = true
 warn_unused_configs = true
-
 [[tool.mypy.overrides]]
 module = [
   "IPython.core.magic",
@@ -152,19 +120,46 @@ module = [
   "xdoctest",
 ]
 ignore_missing_imports = true
-
 [[tool.mypy.overrides]]
 module = [ "tomllib" ]
 allow_redefinition = true
 disable_error_code = "no-redef"
-
 [[tool.mypy.overrides]]
 module = [ "tests.cli.*" ]
 disable_error_code = "type-arg"
-
 [[tool.mypy.overrides]]
 module = [ "conftest" ]
 disable_error_code = "misc"
+
+[tool.coverage]
+[tool.coverage.paths]
+source = [ "src" ]
+[tool.coverage.report]
+exclude_lines = [
+  # Don't complain about missing debug-only code:
+  "def __repr__",
+  "if __name__ == .__main__.:",
+  # Don't complain if non-runnable code isn't run:
+  "if 0:",
+  "if self.debug",
+  "if TYPE_CHECKING:",
+  # Have to re-enable the standard pragma
+  "pragma: no cover",
+  # Don't complain if tests don't hit defensive assertion code:
+  "raise AssertionError",
+  "raise NotImplementedError",
+]
+fail_under = 85  # TODO dvp: restore tests for STP parsing code or remove it at all
+ignore_errors = true
+omit = [ "**/__init__.py", "*_tab.py" ]
+show_missing = true
+skip_covered = true
+sort = "Cover"
+[tool.coverage.run]
+branch = true
+omit = [ "**/__init__.py", "*_tab.py", "tools/*.py" ]
+parallel = true
+source = [ "src" ]
 
 [tool.xdoctest]
 quiet = true
