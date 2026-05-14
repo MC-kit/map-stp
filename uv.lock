@@ -556,7 +556,7 @@ wheels = [
 
 [[package]]
 name = "eliot"
-version = "1.17.5"
+version = "1.18.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "boltons" },
@@ -564,9 +564,9 @@ dependencies = [
     { name = "pyrsistent" },
     { name = "zope-interface" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5a/c9/c901e6dd3933fa2363b15725dd5f257c42e7c666f0e14774ea53e34c1652/eliot-1.17.5.tar.gz", hash = "sha256:6b3b17c60d8cbb9285369b61601bc5554aad023a153fc7bccadb1538968ea767", size = 160097, upload-time = "2025-02-28T19:03:43.805Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/36/e6/daf15619e6a4010ecfab1897dc2eece71a4ec7bf55fc4fe775bbe0cb03a3/eliot-1.18.0.tar.gz", hash = "sha256:249ee78966da740b664301688982e2692d9b57ac92d065c7e2abf66bac06932d", size = 719195, upload-time = "2026-05-07T23:48:27.723Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3e/6e/1489a1dc489d080798b9e36e850f60e70061db671ffbebd56b503b63c102/eliot-1.17.5-py3-none-any.whl", hash = "sha256:f93991fb8b853e82ef892618a09dfe285a3f6b9d2b3448a34cdc3f0ae6d47635", size = 113658, upload-time = "2025-02-28T19:03:41.518Z" },
+    { url = "https://files.pythonhosted.org/packages/e9/8e/3b2cc4895996a951498e47ced3bc2b384aadf4a3945faa5330e062c6ef10/eliot-1.18.0-py3-none-any.whl", hash = "sha256:b5beb40bc84d040373694e8a9dba9c646ce2c25a21fd152ae8d0e3301fe94689", size = 114151, upload-time = "2026-05-07T23:48:26.027Z" },
 ]
 
 [[package]]
