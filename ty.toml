@@ -1,6 +1,6 @@
 [src]
-include = ["src", "tests"]
-exclude = ["src/mapstp/data"]
+include = [ "src", "tests" ]
+exclude = ["**/data/"]
 
 [terminal]
 output-format = "concise"

@@ -51,20 +51,18 @@ dev = [ { include-group = "style" }, { include-group = "test" } ]
 test = [
   "pytest>=9",
   "pytest-cov>=7.1",
-  "pytest-durations>=1.5",
-  "pytest-mock>=3.14",
+  "pytest-mock>=3.15",
   "pytest-xdist[psutil]>=3.8",
-  "xdoctest>=1.2",
+  "xdoctest>=1.3",
 ]
 docs = [
   "rstcheck[sphinx,toml]>=6.2.5",
   "sphinx>=9.1",
   "sphinx-autobuild>=2025.8.25",
-  "sphinx-autodoc-typehints>=3.2",
-  "sphinx-togglebutton>=0.3.2",
+  "sphinx-autodoc-typehints>=3.10",
+  "sphinx-togglebutton>=0.4",
 ]
-analyze = [ "jupyterlab>=4.2.5", "jupytext>=1.16.4" ]
-coverage = [ "coverage[toml]>=7.9.2" ]
+analyze = [ "jupyterlab>=4.5", "jupytext>=1.19" ]
 lint = [ "pylint", "pylint-per-file-ignores" ]
 mypy = [ "mypy>=1.2", "pep8-naming>=0.12.1", "types-setuptools>=80.9.0.20250529" ]
 pre_commit = [ "pre-commit>=4.3" ]
@@ -77,7 +75,7 @@ style = [
   { include-group = "pyright" },
   { include-group = "ruff" },
 ]
-typeguard = [ "typeguard>=4.1.5" ]
+typeguard = [ "typeguard>=4.5" ]
 
 [tool.mypy]
 python_version = "3.14"
@@ -139,13 +137,10 @@ exclude_lines = [
   # Don't complain about missing debug-only code:
   "def __repr__",
   "if __name__ == .__main__.:",
-  # Don't complain if non-runnable code isn't run:
   "if 0:",
-  "if self.debug",
   "if TYPE_CHECKING:",
-  # Have to re-enable the standard pragma
+  "if self.debug",
   "pragma: no cover",
-  # Don't complain if tests don't hit defensive assertion code:
   "raise AssertionError",
   "raise NotImplementedError",
 ]
@@ -162,8 +157,8 @@ parallel = true
 source = [ "src" ]
 
 [tool.xdoctest]
-quiet = true
 options = ""
+quiet = true
 
 [tool.jupytext]
 # https://jupytext.readthedocs.io/en/latest/config.html
@@ -171,12 +166,13 @@ options = ""
 formats = "ipynb,py:percent"
 
 [tool.creosote]
-paths = [ "src" ]
 deps-file = "pyproject.toml"
-sections = [ "project.dependencies" ]
 exclude-deps = [
   "openpyxl",
 ]
+paths = [ "src" ]
+sections = [ "project.dependencies" ]
+venvs = [ ".venv" ]
 
 [tool.rstcheck]
 report_level = "ERROR"

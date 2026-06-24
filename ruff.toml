@@ -1,6 +1,6 @@
 target-version = "py312"
 line-length = 100
-src = ["src", "tests"]
+src = [ "src", "tests" ]
 exclude = [
   ".cache",
   ".direnv",
@@ -14,8 +14,6 @@ exclude = [
   ".pytest_cache",
   ".pytype",
   ".ruff_cache",
-  ".svn",
-  ".tox",
   ".venv",
   ".vscode",
   "__pycache__",
@@ -26,15 +24,15 @@ exclude = [
   "data",
   "dist",
   "docs/source/conf.py",
-  "node_modules",
   "notebooks",
   "site-packages",
+  "tests/data",
   "venv",
   "wrk",
 ]
 
 [lint]
-select = ["ALL"]
+select = [ "ALL" ]
 ignore = [
   "COM812",
   "D203",
@@ -73,10 +71,7 @@ parametrize-names-type = "csv"
 strict = true
 
 [lint.pep8-naming]
-ignore-names = [
-    "*eV*",
-    "*He*",
-]
+ignore-names = [ "*He*", "*eV*" ]
 
 # warning: The isort option `isort.split-on-trailing-comma` is incompatible
 # with the formatter `format.skip-magic-trailing-comma=true` option.
@@ -84,19 +79,11 @@ ignore-names = [
 # or `format.skip-magic-trailing-comma=false`.
 
 [lint.isort]
-known-first-party = ["src"]
-known-third-party = [
-  "mpl_toolkits",
-  "matplotlib",
-  "numpy",
-  "scipy",
-  "loguru",
-  "tqdm",
-  "dotenv",
-]
+known-first-party = [ "src" ]
+known-third-party = [ "dotenv", "loguru", "matplotlib", "mpl_toolkits", "numpy", "scipy", "tqdm" ]
 default-section = "third-party"
 lines-between-types = 1
-required-imports = ["from __future__ import annotations"]
+required-imports = [ "from __future__ import annotations" ]
 case-sensitive = true
 section-order = [
   "future",
@@ -109,8 +96,8 @@ section-order = [
 ]
 
 [lint.isort.sections]
-"typing" = ["typing", "typing_extension"]
-"testing" = ["tests"]
+"typing" = [ "typing", "typing_extension" ]
+"testing" = [ "tests" ]
 
 [lint.pydocstyle]
 convention = "numpy"
