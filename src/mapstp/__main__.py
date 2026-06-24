@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Annotated, Final, cast
 
-import logging
 import sqlite3 as sq
 import sys
 
@@ -21,7 +20,7 @@ from rich.console import Console
 from mapstp import __summary__, __version__
 from mapstp.cli import summary2sqlite as do_summary2sqlite
 from mapstp.csv2sqlite import csv2sqlite as do_csv2sqlite
-from mapstp.mapstp_logging import NAME, PREFIX, init_logging
+from mapstp.mapstp_logging import NAME, PREFIX, get_logger, init_logging
 from mapstp.materials import get_used_materials_sql, load_materials_map
 from mapstp.merge import merge_paths
 from mapstp.save_meta_info import load_path_info, save_meta_info_from_paths
@@ -55,7 +54,7 @@ app = App(
     help_format="restructuredtext",
 )
 
-_LOG = logging.getLogger("mapstp.main")
+_LOG = get_logger("main")
 
 
 @Parameter(name="*")  # https://cyclopts.readthedocs.io/en/latest/cookbook/sharing_parameters.html

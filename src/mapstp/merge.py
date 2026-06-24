@@ -13,12 +13,12 @@ import math
 import re
 
 from dataclasses import dataclass, field
-from logging import getLogger
 
 import numpy as np
 import pandas as pd
 
 from mapstp.exceptions import PathInfoError
+from mapstp.mapstp_logging import get_logger
 from mapstp.materials import drop_material_cards
 from mapstp.utils import CELL_START_PATTERN, read_mcnp_sections
 
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
     from mapstp.utils import MCNPSections
 
-logger = getLogger()
+logger = get_logger(__name__)
 
 
 def is_defined(number: float | None) -> bool:

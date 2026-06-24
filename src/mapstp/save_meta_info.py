@@ -7,8 +7,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from logging import getLogger
-
 import pandas as pd
 
 from eliot import start_action
@@ -17,6 +15,7 @@ from mapstp.extract_info import (
     define_material_number_and_density,
     extract_meta_info_from_path,
 )
+from mapstp.mapstp_logging import get_logger
 from mapstp.materials_index import load_materials_index
 
 if TYPE_CHECKING:
@@ -25,7 +24,7 @@ if TYPE_CHECKING:
     from collections.abc import Generator
     from pathlib import Path
 
-logger = getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def save_meta_info_from_paths(con: sq.Connection, materials_index: Path | None) -> None:
