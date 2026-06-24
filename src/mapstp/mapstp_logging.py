@@ -39,7 +39,7 @@ def init_logging(console: Console, eliot_log: Path | None = None) -> None:
     eliot_log, optional
         file for structured eliot logging
     """
-    logging.getLogger("mapstp").disabled = False
+    logging.getLogger(NAME).disabled = False
     logging.basicConfig(
         level="NOTSET",
         format="%(message)s",
@@ -52,10 +52,23 @@ def init_logging(console: Console, eliot_log: Path | None = None) -> None:
         eliot_log = PREFIX.with_suffix(".log")  # pragma: no cover
     if eliot_log:  # pragma: no cover
         to_file(eliot_log.open(mode="a", encoding="utf8"))
-        # Add Eliot Handler to root Logger. You may wish to only route specific
-        # Loggers to Eliot.
-        logging.getLogger().addHandler(EliotHandler())
+        logging.getLogger(NAME).addHandler(EliotHandler())
+
+
+def get_logger(suffix: str) -> logging.Logger:
+    """Get the package specific logger.
+
+    Parameters
+    ----------
+    suffix
+        requested logger name
+
+    Returns
+    -------
+    logger for name prepended with the package name
+    """
+    return logging.getLogger(NAME + "." + suffix)
 
 
 # disable logging, if mapstp is used as a library
-logging.getLogger("mapstp").disabled = True
+logging.getLogger(NAME).disabled = True

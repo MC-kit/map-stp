@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING, TextIO
 
 from collections import defaultdict
 from dataclasses import dataclass, field
-from logging import getLogger
 
+from mapstp.mapstp_logging import get_logger
 from mapstp.utils._re import CARD_PATTERN, MATERIAL_PATTERN
 
 if TYPE_CHECKING:
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 MaterialsDict = dict[int, str]
 """Mapping material number -> material MCNP text."""
 
-logger = getLogger()
+_LOG = get_logger(__name__)
 
 
 @dataclass
@@ -133,7 +133,7 @@ def drop_material_cards(lines: Iterable[str]) -> Generator[str]:
             yield line
 
 
-def materials_spec_mapper(materials_map: dict[int, str]) -> Callable[[int], str]:
+def materials_spec_mapper(materials_map: MaterialsDict) -> Callable[[int], str]:
     """Create method to extract a material specification by its number.
 
     Parameters
@@ -150,7 +150,7 @@ def materials_spec_mapper(materials_map: dict[int, str]) -> Callable[[int], str]
         if used_number > 0:
             text = materials_map.get(used_number)
             if not text:
-                logger.warning(
+                _LOG.warning(
                     "Material M%s is not found "
                     "in provided materials specifications. "
                     "A dummy specification is issued to the tagged model.",
@@ -167,7 +167,7 @@ def materials_spec_mapper(materials_map: dict[int, str]) -> Callable[[int], str]
     return _func
 
 
-def get_used_materials_sql(con: sq.Connection, materials_map: dict[int, str]) -> str:
+def get_used_materials_sql(con: sq.Connection, materials_map: MaterialsDict) -> str:
     """Collect text of used materials specifications.
 
     Parameters
