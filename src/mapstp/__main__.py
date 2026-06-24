@@ -139,8 +139,11 @@ def tag(  # noqa: PLR0913
     """
     if common is None:  # pragma: no cover
         common = Common()
+    start_task_kwargs = {"action_type": "tag mcnp", "mcnp": mcnp, "sql": sql}
+    if materials:
+        start_task_kwargs["materials"] = materials.absolute()
     with (
-        start_task(action_type="tag mcnp", mcnp=mcnp, sql=sql) as logger,
+        start_task(**start_task_kwargs) as ctx,
         closing(sq.connect(sql)) as con,
     ):
         save_meta_info_from_paths(con, materials_index)
@@ -168,9 +171,8 @@ def tag(  # noqa: PLR0913
             excel = Path(mcnp.stem + "-cells.xlsx")
         can_override(excel, override=common.override)
         create_excel(excel, path_info)
-        logger.add_success_fields(excel=excel)
-        if output is not sys.stdout:
-            logger.add_success_fields(output=output)
+        ctx.add_success_fields(excel=excel)
+        ctx.add_success_fields(output=output)
 
 
 @app.command
@@ -253,7 +255,7 @@ def meta(
         if "pytest" in sys.modules:
             app(tokens, result_action="return_value")
         else:
-            app(tokens)
+            app(tokens)  # pragma: no cover
         _console.rule("✨ Done :smiley:", style="bold yellow1")
 
 

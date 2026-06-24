@@ -23,6 +23,7 @@ from mapstp.utils._re import MATERIAL_PATTERN, VOID_CELL_START_PATTERN
 if TYPE_CHECKING:
     from collections.abc import Callable, Generator, Iterable
 
+    from tests.cli._memory_destination import MemoryDestination
     from tests.cli._types import Runner
 
 
@@ -84,6 +85,52 @@ def test_commenting_with_sql_to_stdout(cyclopts_runner: Runner, data: Path) -> N
         exit_on_error=False,
     )
     assert Path("test1-tagged.i").exists(), "Should create test1-tagged.i"
+
+
+def test_structured_logging_of_materials_path(
+    cyclopts_runner: Runner,
+    eliot_mem_trace: MemoryDestination,
+    data: Path,
+) -> None:
+    mcnp = data / "test1.i"
+    sql = data / "test1.sqlite"
+    materials = data / "materials-1.txt"
+    cyclopts_runner(
+        mapstp,
+        ["tag", "--sql", str(sql), "--materials", str(materials), str(mcnp)],
+        exit_on_error=False,
+    )
+    assert any(m.get("materials") == materials.absolute() for m in eliot_mem_trace.messages), (
+        "Should log provided materials path as structured Eliot metadata"
+    )
+
+
+def test_success_fields_when_output_not_specified(
+    cyclopts_runner: Runner,
+    eliot_mem_trace: MemoryDestination,
+    data: Path,
+) -> None:
+    """Test line 175: if output is not sys.stdout branch when output not specified."""
+    mcnp = data / "test1.i"
+    sql = data / "test1.sqlite"
+    cyclopts_runner(
+        mapstp,
+        ["tag", "--sql", str(sql), str(mcnp)],
+        exit_on_error=False,
+    )
+    # When output is not specified, it defaults to a file (not sys.stdout)
+    # so the success event should include the output field
+    success_messages = [
+        m
+        for m in eliot_mem_trace.messages
+        if m.get("action_status") == "succeeded" and m.get("action_type") == "tag mcnp"
+    ]
+    assert success_messages, "Should have at least one success message"
+    success_msg = success_messages[0]
+    assert "output" in success_msg, (
+        "When output is not specified, default output file should be logged in success_fields"
+    )
+    assert success_msg["output"] == Path("test1-tagged.i")
 
 
 def test_info_assignment_with_sql(cyclopts_runner: Runner, data: Path) -> None:
