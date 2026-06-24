@@ -142,6 +142,8 @@ def tag(  # noqa: PLR0913
     start_task_kwargs = {"action_type": "tag mcnp", "mcnp": mcnp, "sql": sql}
     if materials:
         start_task_kwargs["materials"] = materials.absolute()
+    if materials_index:
+        start_task_kwargs["materials_index"] = materials_index.absolute()
     with (
         start_task(**start_task_kwargs) as ctx,
         closing(sq.connect(sql)) as con,
@@ -152,8 +154,8 @@ def tag(  # noqa: PLR0913
             used_materials_text: str | None = get_used_materials_sql(con, materials_map)
         else:
             used_materials_text = None
-        _LOG.info("mapstp %s", __version__)
-        _LOG.info("Tagging model %s", mcnp)
+        _console = app.console
+        _console.print(f"Tagging model {mcnp}", style="dim")
         if output is None:
             output = Path(mcnp.stem + "-tagged").with_suffix(mcnp.suffix)
         can_override(output, override=common.override)
@@ -250,13 +252,14 @@ def meta(
     _console = app.console
     init_logging(_console, eliot_log)
     with start_task(action_type=NAME, version=__version__, working_dir=Path.cwd().absolute()):
+        _console.rule("🏁 Start", style="bold yellow1", align="left")
         _console.print(NAME, __version__, style="bold dark_olive_green3")
         _console.print("eliot log: ", eliot_log.absolute(), style="dim")
         if "pytest" in sys.modules:
             app(tokens, result_action="return_value")
         else:
             app(tokens)  # pragma: no cover
-        _console.rule("✨ Done :smiley:", style="bold yellow1")
+        _console.rule("✨ Done :smiley:", style="bold yellow1", align="left")
 
 
 def main() -> None:  # pragma: no cover
