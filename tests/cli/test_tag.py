@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-import re
-import shutil
-from pathlib import Path
 from typing import TYPE_CHECKING
 
+import re
+import shutil
+
+from pathlib import Path
+
 import pytest
+
 from cyclopts import MissingArgumentError
 
 from mapstp import __summary__

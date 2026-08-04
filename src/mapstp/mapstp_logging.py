@@ -11,12 +11,15 @@
 
 from __future__ import annotations
 
-import logging
-import sys
-from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
+import logging
+import sys
+
+from pathlib import Path
+
 import cyclopts
+
 from eliot import to_file
 from eliot.stdlib import EliotHandler
 from rich.logging import RichHandler

@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+from typing import Annotated, Final, cast
+
 import sqlite3 as sq
 import sys
+
 from contextlib import closing
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Annotated, Final, cast
 
 import cyclopts
+
 from cyclopts import App, Parameter, types
 from eliot import start_task
 from rich.console import Console

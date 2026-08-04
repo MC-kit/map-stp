@@ -7,10 +7,12 @@ if specified in STP paths.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, TextIO
+
 import math
 import re
+
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, TextIO
 
 import numpy as np
 import pandas as pd  # pyright: ignore[reportMissingTypeStubs]

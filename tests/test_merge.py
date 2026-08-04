@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 
 import mapstp.merge as m
+
 from mapstp.exceptions import PathInfoError
 from mapstp.utils import read_mcnp_sections
 
