@@ -2,18 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Final, cast
-
 import sqlite3 as sq
 import sys
-
 from contextlib import closing
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Annotated, Final, cast
 
 import cyclopts
-
-from cyclopts import App, Parameter, types  # noqa: TC002 - types are used in run time
+from cyclopts import App, Parameter, types
 from eliot import start_task
 from rich.console import Console
 
@@ -99,9 +96,9 @@ def tag(  # noqa: PLR0913
         types.ResolvedExistingFile | None,
         Parameter(
             name="--materials",
-            help="Text file containing MCNP materials specifications. "
-            "If present, the selected materials present in this file are printed "
-            "to the `output` MCNP model, so, it becomes complete valid model",
+            help="""Text file containing MCNP materials specifications.
+            If present, the selected materials present in this file are printed
+            to the `output` MCNP model, so, it becomes complete valid model""",
         ),
     ] = None,
     excel: Annotated[
@@ -138,13 +135,13 @@ def tag(  # noqa: PLR0913
     """
     if common is None:  # pragma: no cover
         common = Common()
-    start_task_kwargs = {"action_type": "tag mcnp", "mcnp": mcnp, "sql": sql}
+    start_task_kwargs = {"mcnp": mcnp, "sql": sql}
     if materials:
         start_task_kwargs["materials"] = materials.absolute()
     if materials_index:
         start_task_kwargs["materials_index"] = materials_index.absolute()
     with (
-        start_task(**start_task_kwargs) as ctx,
+        start_task(action_type="tag mcnp", **start_task_kwargs) as ctx,
         closing(sq.connect(sql)) as con,
     ):
         save_meta_info_from_paths(con, materials_index)
@@ -157,7 +154,7 @@ def tag(  # noqa: PLR0913
         _console.print(f"Tagging model {mcnp}", style="dim")
         if output is None:
             output = Path(mcnp.stem + "-tagged").with_suffix(mcnp.suffix)
-        can_override(output, override=common.override)
+        _ = can_override(output, override=common.override)
         with output.open(mode="w", encoding="utf8") as _output:
             path_info = load_path_info(con)
             merge_paths(

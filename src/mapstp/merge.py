@@ -7,15 +7,13 @@ if specified in STP paths.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TextIO
-
 import math
 import re
-
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, TextIO
 
 import numpy as np
-import pandas as pd
+import pandas as pd  # pyright: ignore[reportMissingTypeStubs]
 
 from mapstp.exceptions import PathInfoError
 from mapstp.mapstp_logging import get_logger
@@ -28,7 +26,7 @@ if TYPE_CHECKING:
 
     from mapstp.utils import MCNPSections
 
-logger = get_logger(__name__)
+logger = get_logger("mapstp.merge")
 
 
 def is_defined(number: float | None) -> bool:
@@ -101,7 +99,7 @@ def _correct_first_line(
     if nd is not None:
         material_number, density = nd
         line_with_material_and_density = (
-            _line[: match_end - 1].split(maxsplit=1)[0] + f" {int(material_number)} {-density:.5g}"
+            _line[: match_end - 1].split(maxsplit=1)[0] + f" {material_number} {-density:.5g}"
         )
         remainder = _line[match_end:].strip()
         if remainder:
@@ -144,7 +142,7 @@ class _Merger:  # pylint: disable=[too-many-instance-attributes]
             if match:
                 yield from self._on_cell_start(line, match)
             else:
-                self.check_volume_id_defined(line)
+                self.check_volume_is_defined(line)
                 yield line
         if self.is_current_cell_specified():
             yield from self._format_volume_and_comment()
@@ -158,7 +156,7 @@ class _Merger:  # pylint: disable=[too-many-instance-attributes]
         """
         return self.current_cell in self.path_info.index
 
-    def check_volume_id_defined(self, line: str) -> None:
+    def check_volume_is_defined(self, line: str) -> None:
         """Check if `vol=` entry is specified in line.
 
         If yes, set self.vol to the value.
@@ -185,11 +183,11 @@ class _Merger:  # pylint: disable=[too-many-instance-attributes]
         rec = self.path_info.loc[self.current_cell][["volume", "path"]]
         if self.geouned_format:
             if self.vol is None:
-                msg = "Volume is to be defined in GeoUNED MCNP format"
-                raise ValueError(msg)
+                msg = f"Volume is to be defined in GeoUNED MCNP format, path: {rec.path}"
+                logger.warning(msg)
             if not np.isclose(self.vol, rec.volume, rtol=1e-3):
-                msg = f"volumes differ cell {self.current_cell}: {self.vol} != {rec.volume}"
-                raise ValueError(msg)
+                msg = f"volumes differ cell {self.current_cell}: {self.vol} != {rec.volume}: {rec.path}"
+                logger.warning(msg)
         else:
             yield f"      vol={rec.volume}"
             yield f"      $ stp: {rec.path}"
@@ -217,9 +215,24 @@ class _Merger:  # pylint: disable=[too-many-instance-attributes]
         return line
 
 
-def _merge_lines(
-    path_info: pd.DataFrame, mcnp_lines: Iterable[str], *, geouned_format: bool
-) -> Iterator[str]:
+def _merge_lines(path_info: pd.DataFrame, mcnp_lines: Iterable[str], *, geouned_format: bool) -> Iterator[str]:
+    """Merge information from STP paths to MCNP specification lines.
+
+    Parameters
+    ----------
+    path_info
+        table with MCNP cell numbers, volumes and stp-paths
+    mcnp_lines
+        iterable over MCNP specification text lines
+    geouned_format
+        the MCNP file is produced by GeoUNED, where volume and STEP paths are already
+        specified, don't change, just check
+
+    Returns
+    -------
+        Iterator over MCNP specification lines with inserted metainfo comments
+        (if not already provided by GEOUNED)
+    """
     merger = _Merger(path_info, mcnp_lines, geouned_format=geouned_format)
     yield from merger.merge_lines()
 
@@ -249,6 +262,9 @@ def merge_paths(  # noqa: PLR0913, pylint: disable=[R0913]
         The input MCNP file name.
     used_materials_text
         The specification of materials to add to model.
+    geouned_format
+        the MCNP file is produced by GeoUNED, where volume and STEP paths are already
+        specified, don't change, just check
     encoding
         ... of the MCNP file, if generated with GEOUNED - ``utf8``, if with SuperMC - ``cp1251``
     """

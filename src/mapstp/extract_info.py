@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import re
-
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -108,26 +106,20 @@ def define_material_number_and_density(
     density and material
     """
     try:
-        material_number: int | None = int(material_index.loc[meta_info.mnemonic]["number"])
+        material_number: int = int(material_index.loc[meta_info.mnemonic]["number"])  # int() call is necessary
     except KeyError:
         msg = (
-            f"The mnemonic {meta_info.mnemonic!r} "
+            f"The mnemonic {meta_info.mnemonic or ''!r} "
             "is not specified in the material index. "
             f"See the STP path: {path}"
         )
         raise KeyError(msg) from None
     density = material_index.loc[meta_info.mnemonic]["density"]
     if np.isnan(density):
-        msg = (
-            f"The density for mnemonic {meta_info.mnemonic!r} "
-            "is not specified in the material index."
-        )
+        msg = f"The density for mnemonic {meta_info.mnemonic or ''!r} is not specified in the material index."
         raise ValueError(msg)
     if density < 0.0:
-        msg = (
-            f"The density for mnemonic {meta_info.mnemonic!r} "
-            "in the material index is not to be negative."
-        )
+        msg = f"The density for mnemonic {meta_info.mnemonic or ''!r} in the material index is not to be negative."
         raise ValueError(msg)
     return density, material_number
 
@@ -148,18 +140,16 @@ def extract_meta_info_from_path(path: str) -> MetaInfoCollector:
     found = _META_PATTERN.findall(path)
     if found:
         for meta in found:
-            pairs = _extract_meta_info(meta, path)
-            meta_info.update(pairs)
+            meta_info.update(_extract_meta_info(meta, path))
     return meta_info
 
 
 def _extract_meta_info(meta: str, path: str) -> dict[str, str]:
     try:
-        pairs: dict[str, str] = dict(_create_pair(t) for t in meta.split())
+        return dict(_create_pair(t) for t in meta.split())
     except ValueError as _ex:
         msg = f"On path {path}"
         raise ValueError(msg) from _ex
-    return pairs
 
 
 def _create_pair(meta_part: str) -> tuple[str, str]:

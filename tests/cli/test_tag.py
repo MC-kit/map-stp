@@ -1,23 +1,17 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import re
 import shutil
-
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
-
 from cyclopts import MissingArgumentError
 
 from mapstp import __summary__
 from mapstp.__main__ import app as mapstp
 from mapstp.materials import load_materials_map
-from mapstp.utils._io import (
-    find_first_cell_number,
-    read_mcnp_sections,
-)
+from mapstp.utils._io import find_first_cell_number, read_mcnp_sections
 from mapstp.utils._re import MATERIAL_PATTERN, VOID_CELL_START_PATTERN
 
 if TYPE_CHECKING:
@@ -207,9 +201,7 @@ def select_cell_and_stp_lines(lines: Iterable[str]) -> dict[int, str]:
 
 def check_materials(materials: Path, number_of_materials: int) -> None:
     materials_dict = load_materials_map(materials)
-    assert len(materials_dict) == number_of_materials, (
-        f"There should be {number_of_materials} materials in {materials}"
-    )
+    assert len(materials_dict) == number_of_materials, f"There should be {number_of_materials} materials in {materials}"
     for i in range(1, 4):
         assert i in materials_dict
     material_1_first_row = materials_dict[1].split("\n")[1].strip()

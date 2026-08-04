@@ -11,15 +11,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
-
 import logging
 import sys
-
 from pathlib import Path
+from typing import TYPE_CHECKING, Final
 
 import cyclopts
-
 from eliot import to_file
 from eliot.stdlib import EliotHandler
 from rich.logging import RichHandler
@@ -44,9 +41,7 @@ def init_logging(console: Console, eliot_log: Path | None = None) -> None:
         level="NOTSET",
         format="%(message)s",
         datefmt="[%X]",
-        handlers=[
-            RichHandler(console=console, rich_tracebacks=True, tracebacks_suppress=[cyclopts])
-        ],
+        handlers=[RichHandler(console=console, rich_tracebacks=True, tracebacks_suppress=[cyclopts])],
     )
     if not eliot_log and "pytest" not in sys.modules:
         eliot_log = PREFIX.with_suffix(".log")  # pragma: no cover

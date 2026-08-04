@@ -1,0 +1,20 @@
+{
+  "venvPath": ".",
+  "venv": ".venv",
+  "typeCheckingMode": "basic",
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "**/data",
+    "**/parser",
+    "**/__pycache__",
+    "**/.*",
+    "wrk"
+  ],
+  "reportMissingImports": "error",
+  "reportMissingTypeStubs": false,
+  "pythonVersion": "3.13",
+  "pythonPlatform": "Linux",
+  "useLibraryCodeForTypes": true
+}

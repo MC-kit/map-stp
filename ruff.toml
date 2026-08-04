@@ -1,7 +1,8 @@
 target-version = "py312"
-line-length = 100
+line-length = 120
 src = [ "src", "tests" ]
 exclude = [
+  "*.egg-info",
   ".cache",
   ".direnv",
   ".eggs",
@@ -35,11 +36,13 @@ exclude = [
 select = [ "ALL" ]
 ignore = [
   "COM812",
+  "CPY001",  # Missing copyright notice at top of file
   "D203",
   "D211",
   "D213",
   "PLE1205",
-  "PLR2004"
+  "PLR2004",
+  "TC002",
 ]
 
 [lint.per-file-ignores]

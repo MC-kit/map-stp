@@ -2,18 +2,14 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 import os
-
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
-from mapstp.utils._re import (
-    CELL_START_PATTERN,
-    MCNP_SECTIONS_SEPARATOR_PATTERN,
-    VOID_CELL_START_PATTERN,
-)
+from mapstp.utils._re import (CELL_START_PATTERN,
+                              MCNP_SECTIONS_SEPARATOR_PATTERN,
+                              VOID_CELL_START_PATTERN)
 
 PathLike = str | Path | os.PathLike[Any]
 
@@ -37,10 +33,7 @@ def can_override(path: Path, *, override: bool = False) -> Path:
     FileExistsError: if file exists, but override is not allowed.
     """
     if not override and path.exists():
-        msg = (
-            f"File {path} already exists."
-            "Consider to use '--override' command line option or remove the file."
-        )
+        msg = f"File {path} already exists.Consider to use '--override' command line option or remove the file."
         raise FileExistsError(msg)
     return path
 

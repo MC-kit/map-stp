@@ -8,19 +8,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pandas as pd
-
 from eliot import start_action
 
-from mapstp.extract_info import (
-    define_material_number_and_density,
-    extract_meta_info_from_path,
-)
+from mapstp.extract_info import (define_material_number_and_density,
+                                 extract_meta_info_from_path)
 from mapstp.mapstp_logging import get_logger
 from mapstp.materials_index import load_materials_index
 
 if TYPE_CHECKING:
     import sqlite3 as sq
-
     from collections.abc import Generator
     from pathlib import Path
 
@@ -50,9 +46,7 @@ def save_meta_info_from_paths(con: sq.Connection, materials_index: Path | None) 
             """,
         ).fetchall()
 
-        def _iter_records() -> Generator[
-            tuple[int | None, float | None, float | None, str | None, int | None]
-        ]:
+        def _iter_records() -> Generator[tuple[int | None, float | None, float | None, str | None, int | None]]:
             for cell, path in records:
                 meta_info = extract_meta_info_from_path(path)
                 if meta_info.mnemonic:

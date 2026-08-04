@@ -1,10 +1,10 @@
 [build-system]
 build-backend = "uv_build"
-requires = [ "uv-build>=0.11,<0.12" ]
+requires = [ "uv-build>=0.12,<0.13" ]
 
 [project]
 name = "mapstp"
-version = "1.1.1.dev2"
+version = "1.2.0.dev1"
 description = "Transfers meta information from STP to MCNP"
 readme = "README.rst"
 keywords = [
@@ -69,6 +69,8 @@ pre_commit = [ "pre-commit>=4.3" ]
 pyright = [ "pyright>=1.1.406" ]
 ruff = [ "ruff>=0.0.259" ]
 style = [
+  "basedpyright>=1.39.9",
+  "pyrefly>=1.1.1",
   { include-group = "lint" },
   { include-group = "mypy" },
   { include-group = "pre_commit" },
@@ -78,21 +80,19 @@ style = [
 typeguard = [ "typeguard>=4.5" ]
 
 [tool.mypy]
-python_version = "3.14"
-cache_dir = ".cache/mypy"
-disallow_untyped_defs = true
+files = "src/**/*.py"
 exclude = """(?x)(
   data/.*.py$     # python files given as data (for SpaceClaim)
 )"""
-files = "src/**/*.py"
 follow_imports = "silent"
-pretty = true
+python_version = "3.14"
+disallow_untyped_defs = true
 strict = true
+pretty = true
+cache_dir = ".cache/mypy"
 warn_unused_configs = true
 [[tool.mypy.overrides]]
 module = [
-  "IPython.core.magic",
-  "IPython.core.magic_arguments",
   "click",
   "click.testing",
   "cyclopts",
@@ -100,6 +100,8 @@ module = [
   "duckdb",
   "eliot",
   "eliot.*",
+  "IPython.core.magic",
+  "IPython.core.magic_arguments",
   "loguru",
   "mckit_nuclides.*",
   "msgspec",
@@ -118,13 +120,16 @@ module = [
   "xdoctest",
 ]
 ignore_missing_imports = true
+
 [[tool.mypy.overrides]]
 module = [ "tomllib" ]
 allow_redefinition = true
 disable_error_code = "no-redef"
+
 [[tool.mypy.overrides]]
 module = [ "tests.cli.*" ]
 disable_error_code = "type-arg"
+
 [[tool.mypy.overrides]]
 module = [ "conftest" ]
 disable_error_code = "misc"
@@ -146,7 +151,7 @@ exclude_lines = [
 ]
 fail_under = 85  # TODO dvp: restore tests for STP parsing code or remove it at all
 ignore_errors = true
-omit = [ "**/__init__.py", "*_tab.py" ]
+omit = [ "**/__init__.py", "**/types.py", "*_tab.py" ]
 show_missing = true
 skip_covered = true
 sort = "Cover"
@@ -155,6 +160,9 @@ branch = true
 omit = [ "**/__init__.py", "*_tab.py", "tools/*.py" ]
 parallel = true
 source = [ "src" ]
+
+[tool.marimo.runtime]
+pythonpath = [ "notebooks", "notebooks/common" ]
 
 [tool.xdoctest]
 options = ""
@@ -175,5 +183,5 @@ sections = [ "project.dependencies" ]
 venvs = [ ".venv" ]
 
 [tool.rstcheck]
-report_level = "ERROR"
 ignore_messages = '(Unknown directive type \"cyclopts|todo|(auto(module|class|function))\"\.)'
+report_level = "ERROR"

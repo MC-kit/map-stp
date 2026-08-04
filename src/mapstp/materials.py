@@ -5,17 +5,15 @@ The map associates material number to its MCNP specification text.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TextIO
-
 from collections import defaultdict
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, TextIO
 
 from mapstp.mapstp_logging import get_logger
 from mapstp.utils._re import CARD_PATTERN, MATERIAL_PATTERN
 
 if TYPE_CHECKING:
     import sqlite3 as sq
-
     from collections.abc import Callable, Generator, Iterable
     from pathlib import Path
 
@@ -156,11 +154,7 @@ def materials_spec_mapper(materials_map: MaterialsDict) -> Callable[[int], str]:
                     "A dummy specification is issued to the tagged model.",
                     used_number,
                 )
-                text = (
-                    f"m{used_number}  "
-                    "$ dummy: material was not provided to mapstp\n"
-                    "        1001.31c  1.0\n"
-                )
+                text = f"m{used_number}  $ dummy: material was not provided to mapstp\n        1001.31c  1.0\n"
             return text
         return ""
 
