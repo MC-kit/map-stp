@@ -14,8 +14,7 @@ from cyclopts import MissingArgumentError
 from mapstp import __summary__
 from mapstp.__main__ import app as mapstp
 from mapstp.materials import load_materials_map
-from mapstp.utils._io import find_first_cell_number, read_mcnp_sections
-from mapstp.utils._re import MATERIAL_PATTERN, VOID_CELL_START_PATTERN
+from mapstp.utils import MATERIAL_PATTERN, VOID_CELL_START_PATTERN, find_first_cell_number, read_mcnp_sections
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Generator, Iterable
@@ -151,6 +150,45 @@ def test_info_assignment_with_sql(cyclopts_runner: Runner, data: Path) -> None:
             "--mcnp-encoding",
             "cp1251",
             str(mcnp),
+        ],
+        exit_on_error=False,
+    )
+    assert output.exists(), f"Should create output file {output}"
+    with output.open(encoding="cp1251") as stream:
+        lines = list(stream.readlines())
+    assert "           ( -2005 2010 2006 -2017 -2009 2018)\n" in lines, (
+        "The specification should be wrapped after material insertion to the first line"
+    )
+    stp_comment_lines = list(extract_stp_comment_lines(lines))
+    assert len(stp_comment_lines) == 5
+    assert "Inconel718" in stp_comment_lines[3]
+    first_void_lines = list(extract_first_void_cell_lines(lines))
+    assert len(first_void_lines) == 6
+
+
+def test_using_toml_config(cyclopts_runner: Runner, data: Path) -> None:
+    output = Path("test-extract-info-prepared.i")
+    excel = Path("test-extract-info.xlsx")
+    original_sql = data / "test-extract-info.sqlite"
+    sql = original_sql.name
+    shutil.copy(original_sql, sql)
+    mcnp = data / "test-extract-info.i"
+    config_text = f"""\
+    [tool.mapstp]
+    console_log_level="DEBUG"
+    [tool.mapstp.tag]
+    output="{output}"
+    excel="{excel}"
+    sql="{sql}"
+    mcnp-encoding="cp1251"
+    mcnp="{mcnp}"
+    """
+    Path("mckit.toml").write_text(config_text, encoding="cp1251")
+    # uses internal default material index
+    cyclopts_runner(
+        mapstp,
+        [
+            "tag",
         ],
         exit_on_error=False,
     )

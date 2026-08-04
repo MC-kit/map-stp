@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Final, cast
+from typing import Annotated, Final
 
 import sqlite3 as sq
 import sys
@@ -27,7 +27,7 @@ from mapstp.save_meta_info import load_path_info, save_meta_info_from_paths
 from mapstp.save_table import create_excel
 from mapstp.utils import can_override
 
-DEFAULT_CONFIG_PATH: Final[Path] = PREFIX.with_suffix(".toml")
+DEFAULT_CONFIG_PATH: Final[Path] = Path("mckit.toml")
 DEFAULT_ELIOT_LOG_PATH: Final[Path] = PREFIX.with_suffix(".log")
 
 _TAG_USAGE: Final[str] = f"""
@@ -41,14 +41,21 @@ If MCNP file is also specified as the second `mcnp-file` argument,
 then produces output MCNP file with STP paths inserted
 as end of line comments after corresponding cells with prefix
 "sep:". The material numbers and densities are set according
-to the meta information provided in the STP.
-"""
+to the meta information provided in the STP."""
 
 
 console = Console()
 app = App(
     name=NAME,
     version=__version__,
+    config=[
+        cyclopts.config.Toml(
+            DEFAULT_CONFIG_PATH,
+            root_keys=["tool", "mapstp"],
+            search_parents=True,
+        ),
+        cyclopts.config.Env(prefix=NAME),
+    ],
     console=console,
     help=__summary__,
     help_format="restructuredtext",
@@ -60,15 +67,16 @@ _LOG = get_logger("main")
 @Parameter(name="*")  # https://cyclopts.readthedocs.io/en/latest/cookbook/sharing_parameters.html
 @dataclass
 class Common:
-    """Common for all commands command line options."""
+    """Common for all command line options."""
 
     override: bool = False
     "Override existing output files [default: no]"
 
     mcnp_encoding: str = "utf8"
-    """Encoding of the MCNP file, if generated with GEOUNED - `utf8`, if with SuperMC - `cp1251`"""
+    "Encoding of the MCNP file, if generated with GEOUNED - `utf8`, if with SuperMC - `cp1251`"
 
 
+# noinspection incorrect-docstring
 @app.command
 def tag(  # noqa: PLR0913
     mcnp: types.ResolvedExistingFile,
@@ -121,7 +129,7 @@ def tag(  # noqa: PLR0913
     output
         File to write the MCNP with marked cells (default: computed),
     excel
-        excel to store mapping cell->tags, stp path, volume
+        ... to store mapping cell->tags, stp path, volume
     sql
         SQLite3 file with the model information,
     materials
@@ -176,6 +184,7 @@ def tag(  # noqa: PLR0913
         ctx.add_success_fields(output=output)
 
 
+# noinspection incorrect-docstring
 @app.command
 def csv2sqlite(
     csv: types.ExistingCsvPath,
@@ -192,7 +201,7 @@ def csv2sqlite(
     Parameters
     ----------
     csv
-        CSV path
+        path to CSV file from SpaceClaim model
     sql
         Path to Sqlite database to store ``cells`` table.
     """
@@ -201,6 +210,7 @@ def csv2sqlite(
     do_csv2sqlite(csv, sql, override=common.override)
 
 
+# noinspection incorrect-docstring
 @app.command
 def summary2sqlite(
     summary: types.ExistingPath,
@@ -229,27 +239,20 @@ def summary2sqlite(
 @app.meta.default
 def meta(
     *tokens: Annotated[str, Parameter(show=False, allow_leading_hyphen=True)],
-    config: types.TomlPath = DEFAULT_CONFIG_PATH,
     eliot_log: Path = DEFAULT_ELIOT_LOG_PATH,
+    console_log_level: str = "INFO",
 ) -> None:
     """Transfer meta information from STP to MCNP.
 
     Parameters
     ----------
-    config, optional
-        configuration file, by default mapstp.toml
-    eliot_log, optional
-        file for structured eliot logging, by default mapstp.log
+    eliot_log
+        file for structured eliot logging, by default mapstp.log, optional
+    console_log_level
+        logging level for console logging
     """
-    toml_cfg = cyclopts.config.Toml(
-        config,
-        root_keys=["tool", "mapstp"],
-        search_parents=True,
-    )
-    env_cfg = cyclopts.config.Env(prefix=NAME)
-    app.config = cast("tuple[str, ...]", (toml_cfg, env_cfg))
     _console = app.console
-    init_logging(_console, eliot_log)
+    init_logging(_console, eliot_log=eliot_log, console_log_level=console_log_level)
     with start_task(action_type=NAME, version=__version__, working_dir=Path.cwd().absolute()):
         _console.rule("🏁 Start", style="bold yellow1", align="left")
         _console.print(NAME, __version__, style="bold dark_olive_green3")

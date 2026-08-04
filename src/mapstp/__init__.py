@@ -26,4 +26,4 @@ __summary__ = __meta_data__["Summary"]
 __copyright__ = f"Copyright 2021 {__author__}"
 
 
-__all__ = ["NAME", "PREFIX", "init_logging"]
+__all__ = ["NAME", "PREFIX", "__summary__", "__version__", "init_logging"]
