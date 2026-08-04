@@ -69,11 +69,18 @@ repos:
     hooks:
       - id: uv-lock 
 
-#  - repo: https://github.com/astral-sh/ruff-pre-commit
-#    rev: v0.16.1
-#    hooks:
-#      - id: ruff-check
-#      - id: ruff-format
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check
+        entry: ruff check --fix --exit-non-zero-on-fix --force-exclude
+        language: python
+        types_or: [python, pyi]
+      - id: ruff-format
+        name: ruff format
+        entry: ruff format --exit-non-zero-on-format --force-exclude
+        language: python
+        types_or: [python, pyi]
 
   # Check for common shell mistakes
   - repo: https://github.com/shellcheck-py/shellcheck-py
