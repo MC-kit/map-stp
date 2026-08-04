@@ -67,7 +67,7 @@ def cyclopts_runner(
 
     def _wrapper(
         app: App,
-        args: None | str | Iterable[str] = None,
+        args: str | Iterable[str] | None = None,
         **kwargs: Any,
     ) -> str:
         console = Console()
