@@ -98,7 +98,7 @@ def load_path_info(con: sq.Connection) -> pd.DataFrame:
             xmax,
             ymax,
             zmax,
-            material material_number,
+            coalesce(cast(material as integer),0) material_number,
             density,
             correction factor,
             rwcl,

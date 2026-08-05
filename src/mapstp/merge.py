@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, TextIO
 
-import math
 import re
 
 from dataclasses import dataclass, field
@@ -44,7 +43,7 @@ def is_defined(number: float | None) -> bool:
     true - if `number` is a valid number,
     false - otherwise
     """
-    return number is not None and number is not pd.NA and not math.isnan(number)
+    return not (number is None or number is pd.NA or np.isnan(number))
 
 
 def extract_number_and_density(cell: int, path_info: pd.DataFrame) -> tuple[int, float] | None:
@@ -64,35 +63,28 @@ def extract_number_and_density(cell: int, path_info: pd.DataFrame) -> tuple[int,
     -------
     number and density or None, if not available
     """
-    material_number, density, factor = path_info.loc[cell][["material_number", "density", "factor"]]
+    row = path_info.index.get_loc(cell)
+    col = path_info.columns.get_loc("material_number")
+    material_number = path_info.iat[row, col].item()  # noqa: PD009
 
-    if not isinstance(material_number, np.integer):
-        msg = "The values in `material_number` column are to be integer."
-        raise PathInfoError(msg, cell, path_info)
-    material_number = material_number.item()
+    if not material_number:
+        return None
 
     def _validate(*, res: bool, msg: str) -> None:
         if not res:
-            raise PathInfoError(msg, cell, path_info)
+            raise PathInfoError(msg, row, path_info)
 
     _validate(
-        res=material_number > 0, msg="The values in `material_number` column are to be positive."
+        res=material_number > 0,
+        msg="The values in `material_number` column are to be positive.",
     )
+    density, factor = path_info.iloc[row][["density", "factor"]]
 
-    if not isinstance(density, np.floating):
-        msg = "The values in `density` column are to be float or NAN."
-        raise PathInfoError(msg, cell, path_info)
-    density = density.item()
     _validate(
-        res=is_defined(density),
-        msg=f"The `density` value is not defined for material number {material_number}.",
+        res=isinstance(density, float),
+        msg="The values in `density` column are to be float if material is defined.",
     )
     _validate(res=density >= 0.0, msg="The values in `density` column cannot be negative.")
-
-    if not isinstance(factor, np.floating):
-        msg = "The values in `factor` column are to be float or NAN."
-        raise PathInfoError(msg, cell, path_info)
-    factor = factor.item()
 
     if is_defined(factor):
         _validate(
@@ -202,6 +194,7 @@ class _Merger:  # pylint: disable=[too-many-instance-attributes]
                 msg = f"Volume is to be defined in GeoUNED MCNP format, path: {rec.path}"
                 logger.warning(msg)
             if not np.isclose(self.vol, rec.volume, rtol=1e-3):
+                # noinspection string-conversion-without-dunder-method
                 msg = f"volumes differ cell {self.current_cell}: {self.vol} != {rec.volume}: {rec.path}"
                 logger.warning(msg)
         else:
@@ -239,11 +232,11 @@ def _merge_lines(
     Parameters
     ----------
     path_info
-        table with MCNP cell numbers, volumes and stp-paths
+        Table with MCNP cell numbers, volumes and stp-paths
     mcnp_lines
-        iterable over MCNP specification text lines
+        Iterable over MCNP specification text lines
     geouned_format
-        the MCNP file is produced by GeoUNED, where volume and STEP paths are already
+        The MCNP file is produced by GeoUNED, where volume and STEP paths are already
         specified, don't change, just check
 
     Returns
@@ -281,10 +274,10 @@ def merge_paths(  # noqa: PLR0913, pylint: disable=[R0913]
     used_materials_text
         The specification of materials to add to model.
     geouned_format
-        the MCNP file is produced by GeoUNED, where volume and STEP paths are already
+        The MCNP file is produced by GeoUNED, where volume and STEP paths are already
         specified, don't change, just check
     encoding
-        ... of the MCNP file, if generated with GEOUNED - ``utf8``, if with SuperMC - ``cp1251``
+        of the MCNP file, if generated with GEOUNED - ``utf8``, if with SuperMC - ``cp1251``
     """
     mcnp_sections = read_mcnp_sections(mcnp, encoding=encoding)
     cells = mcnp_sections.cells

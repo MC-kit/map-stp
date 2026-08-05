@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 PACKAGE_DATA: Path = cast("Path", files("mapstp").joinpath("data"))
+DEFAULT_MATERIAL_INDEX_PATH = PACKAGE_DATA / "default-material-index.xlsx"
 
 
 def load_materials_index(materials_index: Path | None = None) -> pd.DataFrame:
@@ -37,7 +38,7 @@ def load_materials_index(materials_index: Path | None = None) -> pd.DataFrame:
     ------
     FileNotFoundError: if the file ``materials_index`` doesn't exist.
     """
-    p = PACKAGE_DATA / "default-material-index.xlsx" if materials_index is None else materials_index
+    p = materials_index or DEFAULT_MATERIAL_INDEX_PATH
     if not p.exists():
         raise FileNotFoundError(p)
     materials = pd.read_excel(

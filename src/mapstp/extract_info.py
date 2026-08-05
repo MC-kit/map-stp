@@ -11,7 +11,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-_META_PATTERN = re.compile(r"\[(?P<meta>(?:[mfr]-)[^]]+)]")
+_META_PATTERN = re.compile(r"\[(?P<meta>[mfr]-[^]]+)]")
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -124,7 +124,6 @@ def define_material_number_and_density(
     if np.isnan(density):
         msg = f"The density for mnemonic {meta_info.mnemonic or ''!r} is not specified in the material index."
         raise ValueError(msg)
-    density = density.item()
     if density < 0.0:
         msg = f"The density for mnemonic {meta_info.mnemonic or ''!r} in the material index is not to be negative."
         raise ValueError(msg)
