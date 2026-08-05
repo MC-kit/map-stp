@@ -108,7 +108,9 @@ def define_material_number_and_density(
     density and material
     """
     try:
-        material_number: int = int(material_index.loc[meta_info.mnemonic]["number"])  # int() call is necessary
+        material_number: int = int(
+            material_index.loc[meta_info.mnemonic]["number"]
+        )  # int() call is necessary
     except KeyError:
         msg = (
             f"The mnemonic {meta_info.mnemonic or ''!r} "

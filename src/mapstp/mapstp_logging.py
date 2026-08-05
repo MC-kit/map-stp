@@ -60,7 +60,9 @@ def init_logging(
         level=console_log_level,
         format="%(message)s",
         datefmt="[%X]",
-        handlers=[RichHandler(console=console, rich_tracebacks=True, tracebacks_suppress=[cyclopts])],
+        handlers=[
+            RichHandler(console=console, rich_tracebacks=True, tracebacks_suppress=[cyclopts])
+        ],
     )
     if not eliot_log and "pytest" not in sys.modules:
         eliot_log = PREFIX.with_suffix(".log")  # pragma: no cover

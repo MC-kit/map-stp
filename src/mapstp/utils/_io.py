@@ -9,7 +9,11 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-from mapstp.utils._re import CELL_START_PATTERN, MCNP_SECTIONS_SEPARATOR_PATTERN, VOID_CELL_START_PATTERN
+from mapstp.utils._re import (
+    CELL_START_PATTERN,
+    MCNP_SECTIONS_SEPARATOR_PATTERN,
+    VOID_CELL_START_PATTERN,
+)
 
 PathLike = str | Path | os.PathLike[Any]
 

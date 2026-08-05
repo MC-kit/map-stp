@@ -1,5 +1,5 @@
 target-version = "py312"
-line-length = 120
+line-length = 100
 src = [ "src", "tests" ]
 exclude = [
   "*.egg-info",
@@ -40,9 +40,10 @@ ignore = [
   "D203",
   "D211",
   "D213",
+  "E501",    # ruff format ignores by design
+  # "I001",
   "PLE1205",
   "PLR2004",
-  "TC002",
 ]
 
 [lint.per-file-ignores]
@@ -97,10 +98,7 @@ section-order = [
   "local-folder",
   "testing",
 ]
-
-[lint.isort.sections]
-"typing" = [ "typing", "typing_extension" ]
-"testing" = [ "tests" ]
+sections = { typing = [ "typing" ], testing = [ "tests" ] }
 
 [lint.pydocstyle]
 convention = "numpy"

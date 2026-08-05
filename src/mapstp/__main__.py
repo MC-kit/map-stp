@@ -13,7 +13,7 @@ from pathlib import Path
 
 import cyclopts
 
-from cyclopts import App, Parameter, types
+from cyclopts import App, Parameter, types  # noqa: TC002
 from eliot import start_task
 from rich.console import Console
 

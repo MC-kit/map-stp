@@ -217,7 +217,9 @@ class _Merger:  # pylint: disable=[too-many-instance-attributes]
         return line
 
 
-def _merge_lines(path_info: pd.DataFrame, mcnp_lines: Iterable[str], *, geouned_format: bool) -> Iterator[str]:
+def _merge_lines(
+    path_info: pd.DataFrame, mcnp_lines: Iterable[str], *, geouned_format: bool
+) -> Iterator[str]:
     """Merge information from STP paths to MCNP specification lines.
 
     Parameters

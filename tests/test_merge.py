@@ -28,7 +28,9 @@ def test_merger(data: Path) -> None:
         (1, 2.0, 2.0, (1, 4.0)),
     ],
 )
-def test_extract_number_and_density(number: int, density: float, factor: float, expected: tuple[int, float]) -> None:
+def test_extract_number_and_density(
+    number: int, density: float, factor: float, expected: tuple[int, float]
+) -> None:
     ndf_table = pd.DataFrame.from_records(
         data=[(number, density, factor)],
         columns=["material_number", "density", "factor"],
