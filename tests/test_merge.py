@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def test_merger(data: Path) -> None:
+def test_read_mcnp_sections(data: Path) -> None:
     sections = read_mcnp_sections(data / "test3.i", encoding="cp1251")
     assert sections.cells is not None
 

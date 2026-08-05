@@ -20,7 +20,7 @@ addopts = [
     "--doctest-modules",
     "--failed-first",
     "--ignore=setup.py",
-    "--numprocesses=logical",
+    "--numprocesses=0",  # no multiprocessing by default, set it to some number or 'logical' only on batch tests
     "--quiet",
     "--strict-markers",
     "--tb=short",

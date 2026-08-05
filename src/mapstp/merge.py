@@ -66,19 +66,33 @@ def extract_number_and_density(cell: int, path_info: pd.DataFrame) -> tuple[int,
     """
     material_number, density, factor = path_info.loc[cell][["material_number", "density", "factor"]]
 
+    if not isinstance(material_number, np.integer):
+        msg = "The values in `material_number` column are to be integer."
+        raise PathInfoError(msg, cell, path_info)
+    material_number = material_number.item()
+
     def _validate(*, res: bool, msg: str) -> None:
         if not res:
             raise PathInfoError(msg, cell, path_info)
 
-    if not is_defined(material_number):
-        return None  # void space
+    _validate(
+        res=material_number > 0, msg="The values in `material_number` column are to be positive."
+    )
 
+    if not isinstance(density, np.floating):
+        msg = "The values in `density` column are to be float or NAN."
+        raise PathInfoError(msg, cell, path_info)
+    density = density.item()
     _validate(
         res=is_defined(density),
         msg=f"The `density` value is not defined for material number {material_number}.",
     )
-    _validate(res=material_number > 0, msg="The values in `number` column are to be positive.")
     _validate(res=density >= 0.0, msg="The values in `density` column cannot be negative.")
+
+    if not isinstance(factor, np.floating):
+        msg = "The values in `factor` column are to be float or NAN."
+        raise PathInfoError(msg, cell, path_info)
+    factor = factor.item()
 
     if is_defined(factor):
         _validate(

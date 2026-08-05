@@ -161,6 +161,7 @@ def test_info_assignment_with_sql(cyclopts_runner: Runner, data: Path) -> None:
     assert output.exists(), f"Should create output file {output}"
     with output.open(encoding="cp1251") as stream:
         lines = list(stream.readlines())
+    assert "2003 305 -4.11" in lines, "Incorrect material id is set"
     assert "           ( -2005 2010 2006 -2017 -2009 2018)\n" in lines, (
         "The specification should be wrapped after material insertion to the first line"
     )

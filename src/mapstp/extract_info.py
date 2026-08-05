@@ -108,9 +108,11 @@ def define_material_number_and_density(
     density and material
     """
     try:
-        material_number: int = int(
-            material_index.loc[meta_info.mnemonic]["number"]
-        )  # int() call is necessary
+        material_item = material_index.loc[meta_info.mnemonic]["number"]
+        if material_item is None:
+            material_number = 0
+        else:
+            material_number: int = material_item.item()
     except KeyError:
         msg = (
             f"The mnemonic {meta_info.mnemonic or ''!r} "
@@ -122,6 +124,7 @@ def define_material_number_and_density(
     if np.isnan(density):
         msg = f"The density for mnemonic {meta_info.mnemonic or ''!r} is not specified in the material index."
         raise ValueError(msg)
+    density = density.item()
     if density < 0.0:
         msg = f"The density for mnemonic {meta_info.mnemonic or ''!r} in the material index is not to be negative."
         raise ValueError(msg)
