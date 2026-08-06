@@ -180,18 +180,18 @@ def test_using_toml_config(cyclopts_runner: Runner, data: Path) -> None:
     output = Path("test-extract-info-prepared.i")
     excel = Path("test-extract-info.xlsx")
     original_sql = data / "test-extract-info.sqlite"
-    sql = original_sql.name
+    sql = Path(original_sql.name)
     shutil.copy(original_sql, sql)
     mcnp = data / "test-extract-info.i"
     config_text = f"""\
     [tool.mapstp]
     console_log_level="DEBUG"
     [tool.mapstp.tag]
-    output="{output}"
-    excel="{excel}"
-    sql="{sql}"
+    output="{output.as_posix()}"
+    excel="{excel.as_posix()}"
+    sql="{sql.as_posix()}"
     mcnp-encoding="cp1251"
-    mcnp="{mcnp}"
+    mcnp="{mcnp.as_posix()}"
     """
     Path("mckit.toml").write_text(config_text, encoding="cp1251")
     # uses internal default material index
