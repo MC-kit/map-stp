@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 from mapstp.utils._io import (
@@ -8,20 +10,23 @@ from mapstp.utils._io import (
     read_mcnp_sections,
 )
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
-def test_find_first_cell_number(data):
+
+def test_find_first_cell_number(data: Path) -> None:
     mcnp = data / "test-extract-info.i"
     actual = find_first_cell_number(mcnp)
     assert actual == 2000
 
 
-def test_find_first_cell_number_bad_paths(data):
+def test_find_first_cell_number_bad_paths(data: Path) -> None:
     mcnp = data / "test1.stp"
     with pytest.raises(ValueError, match="Void cells are not found in"):
         find_first_void_cell_number(mcnp)
 
 
-def test_read_mcnp_sections(data, tmp_path):
+def test_read_mcnp_sections(data: Path, tmp_path: Path) -> None:
     mcnp = data / "test1.i"
     sections = read_mcnp_sections(mcnp)
     assert sections.cells
@@ -38,7 +43,7 @@ def test_read_mcnp_sections(data, tmp_path):
     assert sections.remainder is None
 
 
-def test_read_mcnp_sections_with_remainder(data, tmp_path):
+def test_read_mcnp_sections_with_remainder(data: Path, tmp_path: Path) -> None:
     mcnp = data / "test1.i"
     text = mcnp.read_text()
     tmp = tmp_path / "test.i"
@@ -51,7 +56,7 @@ def test_read_mcnp_sections_with_remainder(data, tmp_path):
     assert sections.remainder == "remainder\nabc"
 
 
-def test_read_mcnp_sections_with_empty_remainder(data, tmp_path):
+def test_read_mcnp_sections_with_empty_remainder(data: Path, tmp_path: Path) -> None:
     mcnp = data / "test1.i"
     text = mcnp.read_text()
     tmp = tmp_path / "test.i"

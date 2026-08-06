@@ -7,41 +7,43 @@ if specified in STP paths.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TextIO
+from typing import TYPE_CHECKING, TextIO, cast
 
-import math
+import re
 
 from dataclasses import dataclass, field
-from logging import getLogger
 
-import pandas as pd
+import numpy as np
+import pandas as pd  # pyright: ignore[reportMissingTypeStubs]
 
 from mapstp.exceptions import PathInfoError
+from mapstp.mapstp_logging import get_logger
 from mapstp.materials import drop_material_cards
 from mapstp.utils import CELL_START_PATTERN, read_mcnp_sections
 
 if TYPE_CHECKING:
-    import re
-
     from collections.abc import Generator, Iterable, Iterator
     from pathlib import Path
 
     from mapstp.utils import MCNPSections
 
-logger = getLogger()
+logger = get_logger("mapstp.merge")
 
 
 def is_defined(number: float | None) -> bool:
     """Check if number coming from a DataFrame object cell is not None or NaN.
 
-    Args:
-        number: value to
+    Parameters
+    ----------
+    number
+        value to check
 
-    Returns:
-        true - if `number` is a valid number,
-        false - otherwise
+    Returns
+    -------
+    true - if `number` is a valid number,
+    false - otherwise
     """
-    return number is not None and number is not pd.NA and not math.isnan(number)
+    return not (number is None or number is pd.NA or np.isnan(number))
 
 
 def extract_number_and_density(cell: int, path_info: pd.DataFrame) -> tuple[int, float] | None:
@@ -50,27 +52,56 @@ def extract_number_and_density(cell: int, path_info: pd.DataFrame) -> tuple[int,
     Validate the values: number, if provided, is to be positive, density - not
     negative.
 
-    Args:
-        cell: index in `path_info`
-        path_info: table of data extracted from materials index for a given STP path.
+    Parameters
+    ----------
+    cell
+        index in `path_info`
+    path_info
+        table of data extracted from materials index for a given STP path.
 
-    Returns:
-        number and density or None, if not available
+    Returns
+    -------
+    number and density or None, if not available
     """
-    material_number, density, factor = path_info.loc[cell][["material_number", "density", "factor"]]
+    row = path_info.index.get_loc(cell)
+
+    if not isinstance(row, int):
+        _msg = "The 'path_info' index on 'cell' is not unique."
+        raise TypeError(_msg)
 
     def _validate(*, res: bool, msg: str) -> None:
         if not res:
-            raise PathInfoError(msg, cell, path_info)
+            raise PathInfoError(msg, row, path_info)
 
-    if not is_defined(material_number):
-        return None  # void space
+    col = path_info.columns.get_loc("material_number")
+    if not isinstance(col, int):
+        _msg = "The 'material_number' column is duplicated?"
+        raise PathInfoError(_msg, row, path_info)
+
+    material_number_item = path_info.iat[row, col]  # noqa: PD009
+
+    if isinstance(material_number_item, np.integer):
+        material_number = material_number_item.item()
+    else:
+        material_number = cast("int", material_number_item)
+
+    if not isinstance(material_number, int):
+        _msg = "The values 'material_number' column are to be integer or None."
+        raise PathInfoError(_msg, row, path_info)
+
+    if material_number == 0:
+        return None
 
     _validate(
-        res=is_defined(density),
-        msg=f"The `density` value is not defined for material number {material_number}.",
+        res=material_number > 0,
+        msg="The values in `material_number` column are to be positive.",
     )
-    _validate(res=material_number > 0, msg="The values in `number` column are to be positive.")
+    density, factor = path_info.iloc[row][["density", "factor"]]
+
+    _validate(
+        res=isinstance(density, float),
+        msg="The values in `density` column are to be float if material is defined.",
+    )
     _validate(res=density >= 0.0, msg="The values in `density` column cannot be negative.")
 
     if is_defined(factor):
@@ -94,7 +125,7 @@ def _correct_first_line(
     if nd is not None:
         material_number, density = nd
         line_with_material_and_density = (
-            _line[: match_end - 1].split()[0] + f" {int(material_number)} {-density:.5g}"
+            _line[: match_end - 1].split(maxsplit=1)[0] + f" {material_number} {-density:.5g}"
         )
         remainder = _line[match_end:].strip()
         if remainder:
@@ -105,25 +136,39 @@ def _correct_first_line(
     return _line
 
 
+VOL_PATTERN = re.compile(r"Vol=(?P<volume>\d\.\d+e[-+]\d+)", flags=re.IGNORECASE)
+
+
 @dataclass
-class _Merger:
+class _Merger:  # pylint: disable=[too-many-instance-attributes]
+    """Metainfo to MCNP merge procedure state object."""
+
     path_info: pd.DataFrame
     mcnp_lines: Iterable[str]
+    geouned_format: bool
+    """GEOUNED adds Vol and $path comment itself, don't change, just check."""
     first_cell: bool = field(init=False, default=True)
     cells_over: bool = field(init=False, default=True)
     current_cell: int = field(init=False, default=0)
+    vol: float | None = field(init=False, default=None)
+    scanning_void_cells: bool = field(init=False, default=False)
+    """True, if scan reached "void" cells portion."""
 
     def merge_lines(self: _Merger) -> Iterator[str]:
         """Add information to MCNP cells.
 
-        Yields:
-            line from a cell descriptions or added information
+        Yields
+        ------
+        line from an original cell descriptions or
+        the first line with material and density
+        lines with volume and stp-path comment
         """
         for line in self.mcnp_lines:
             match = CELL_START_PATTERN.match(line)
             if match:
                 yield from self._on_cell_start(line, match)
             else:
+                self.check_volume_is_defined(line)
                 yield line
         if self.is_current_cell_specified():
             yield from self._format_volume_and_comment()
@@ -131,15 +176,48 @@ class _Merger:
     def is_current_cell_specified(self: _Merger) -> bool:
         """Check if current cell needs to update the first line and add a comment.
 
-        Returns:
-            True, if current cell needs to update the first line and add a comment, False otherwise.
+        Returns
+        -------
+        True, if current cell needs to update the first line and add a comment, False otherwise.
         """
         return self.current_cell in self.path_info.index
 
+    def check_volume_is_defined(self, line: str) -> None:
+        """Check if `vol=` entry is specified in line.
+
+        If yes, set self.vol to the value.
+        This value is to be checked in :meth:`_format_volume_and_comment`.
+
+        Parameters
+        ----------
+        line
+            input line
+        """
+        if self.scanning_void_cells:
+            return
+        if "VOID CELLS" in line:
+            self.scanning_void_cells = True
+            return
+        match = VOL_PATTERN.search(line)
+        if match:
+            if self.vol is not None:
+                msg = "self.vol is already defined"
+                raise ValueError(msg)
+            self.vol = float(match["volume"])
+
     def _format_volume_and_comment(self: _Merger) -> Generator[str]:
         rec = self.path_info.loc[self.current_cell][["volume", "path"]]
-        yield f"      vol={rec.volume}"
-        yield f"      $ stp: {rec.path}"
+        if self.geouned_format:
+            if self.vol is None:
+                msg = f"Volume is to be defined in GeoUNED MCNP format, path: {rec.path}"
+                logger.warning(msg)
+            elif not np.isclose(self.vol, rec.volume, rtol=1e-3):
+                # noinspection string-conversion-without-dunder-method
+                msg = f"volumes differ cell {self.current_cell}: {self.vol} != {rec.volume}: {rec.path}"
+                logger.warning(msg)
+        else:
+            yield f"      vol={rec.volume}"
+            yield f"      $ stp: {rec.path}"
 
     def _on_cell_start(self: _Merger, line: str, match: re.Match[str]) -> Generator[str]:
         if self.first_cell:
@@ -152,6 +230,7 @@ class _Merger:
         yield line
 
     def _on_next_cell(self: _Merger, line: str, match: re.Match[str]) -> str:
+        self.vol = None
         self.current_cell = int(match["number"])
         if self.is_current_cell_specified() and int(match["material"]) == 0:
             line = _correct_first_line(
@@ -164,36 +243,65 @@ class _Merger:
 
 
 def _merge_lines(
-    path_info: pd.DataFrame,
-    mcnp_lines: Iterable[str],
+    path_info: pd.DataFrame, mcnp_lines: Iterable[str], *, geouned_format: bool
 ) -> Iterator[str]:
-    merger = _Merger(path_info, mcnp_lines)
+    """Merge information from STP paths to MCNP specification lines.
+
+    Parameters
+    ----------
+    path_info
+        Table with MCNP cell numbers, volumes and stp-paths
+    mcnp_lines
+        Iterable over MCNP specification text lines
+    geouned_format
+        The MCNP file is produced by GeoUNED, where volume and STEP paths are already
+        specified, don't change, just check
+
+    Returns
+    -------
+        Iterator over MCNP specification lines with inserted metainfo comments
+        (if not already provided by GEOUNED)
+    """
+    merger = _Merger(path_info, mcnp_lines, geouned_format=geouned_format)
     yield from merger.merge_lines()
 
 
-def merge_paths(
+def merge_paths(  # noqa: PLR0913, pylint: disable=[R0913]
     output: TextIO,
     path_info: pd.DataFrame,
     mcnp: Path,
     used_materials_text: str | None = None,
+    *,
+    geouned_format: bool,
+    encoding: str = "utf8",
 ) -> None:
-    """Print to `output` the updated MCNP code.
+    """Print to ``output`` the updated MCNP code.
 
     The material numbers and densities are inserted instead of zeroes.
     The STP path is inserted as end of line comment below each corresponding cell.
 
-    Args:
-        output: stream to print to
-        path_info: table with other information on cells:
-                  material number, density, density correction factor.
-        mcnp:   The input MCNP file name.
-        used_materials_text: The specification of materials to add to model.
+    Parameters
+    ----------
+    output
+        stream to print to
+    path_info
+        table with other information on cells:
+        material number, density, density correction factor.
+    mcnp
+        The input MCNP file name.
+    used_materials_text
+        The specification of materials to add to model.
+    geouned_format
+        The MCNP file is produced by GeoUNED, where volume and STEP paths are already
+        specified, don't change, just check
+    encoding
+        of the MCNP file, if generated with GEOUNED - ``utf8``, if with SuperMC - ``cp1251``
     """
-    mcnp_sections = read_mcnp_sections(mcnp)
+    mcnp_sections = read_mcnp_sections(mcnp, encoding=encoding)
     cells = mcnp_sections.cells
     lines = cells.split("\n")
 
-    for line in _merge_lines(path_info, lines):
+    for line in _merge_lines(path_info, lines, geouned_format=geouned_format):
         print(line, file=output)
 
     print(file=output)
@@ -220,7 +328,7 @@ def _print_other_sections(
                 output,
                 used_materials_text,
             )
-        else:
+        elif used_materials_text:
             print(used_materials_text, file=output)
     else:
         logger.warning(

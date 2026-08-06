@@ -12,7 +12,7 @@ from mapstp.utils._re import CARD_PATTERN
         ("c cut ...", "comment"),
     ],
 )
-def test_test_card_pattern(text, expected):
+def test_test_card_pattern(text: str, expected: str) -> None:
     match = CARD_PATTERN.search(text)
     assert match is not None
     assert match.lastgroup == expected

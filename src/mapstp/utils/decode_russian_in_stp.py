@@ -18,11 +18,14 @@ def _replace_stp_encoding(match_result: re.Match[str]) -> str:
 def decode_russian(stp_text: str) -> str:
     """Convert encoded Russian text to unicode string.
 
-    Args:
-        stp_text: the text to decode
+    Parameters
+    ----------
+    stp_text
+        the text to decode
 
-    Returns:
-        Decoded text.
+    Returns
+    -------
+    Decoded text.
     """
     return re.sub(SEARCH_RUSSIAN_RE, _replace_stp_encoding, stp_text)
 

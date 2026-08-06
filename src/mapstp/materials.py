@@ -9,24 +9,20 @@ from typing import TYPE_CHECKING, TextIO
 
 from collections import defaultdict
 from dataclasses import dataclass, field
-from logging import getLogger
-from pathlib import Path
 
-import numpy as np
-
+from mapstp.mapstp_logging import get_logger
 from mapstp.utils._re import CARD_PATTERN, MATERIAL_PATTERN
 
 if TYPE_CHECKING:
     import sqlite3 as sq
 
     from collections.abc import Callable, Generator, Iterable
-
-    import pandas as pd
+    from pathlib import Path
 
 MaterialsDict = dict[int, str]
 """Mapping material number -> material MCNP text."""
 
-logger = getLogger()
+_LOG = get_logger(__name__)
 
 
 @dataclass
@@ -79,11 +75,13 @@ class _Loader:
 def load_materials_map_from_stream(stream: TextIO) -> MaterialsDict:
     """Read materials from opened MCNP file.
 
-    Args:
-        stream: stream to read from
+    Parameters
+    ----------
+    stream: stream to read from
 
-    Returns:
-        MaterialsDict: mapping material number -> material text
+    Returns
+    -------
+    MaterialsDict: mapping material number -> material text
     """
     loader = _Loader(stream)
 
@@ -96,17 +94,19 @@ def load_materials_map_from_stream(stream: TextIO) -> MaterialsDict:
     return {k: _restore_material_text(v) for k, v in loader.materials_dict.items()}
 
 
-def load_materials_map(materials: str | Path) -> MaterialsDict:
+def load_materials_map(materials: Path) -> MaterialsDict:
     """Read materials from MCNP file.
 
-    Args:
-        materials: name of MCNP file, containing materials to read
+    Parameters
+    ----------
+    materials
+        name of MCNP file, containing materials to read
 
-    Returns:
-        MaterialsDict: mapping material number -> material text
+    Returns
+    -------
+    MaterialsDict: mapping material number -> material text
     """
-    path = Path(materials)
-    with path.open(encoding="cp1251") as stream:
+    with materials.open(encoding="cp1251") as stream:
         return load_materials_map_from_stream(stream)
 
 
@@ -115,11 +115,14 @@ def drop_material_cards(lines: Iterable[str]) -> Generator[str]:
 
     Used on replacing materials in the model with ones actually used.
 
-    Args:
-        lines: mcnp file split to lines
+    Parameters
+    ----------
+    lines
+        mcnp file split to lines
 
-    Yields:
-        all the lines of the model without material cards
+    Yields
+    ------
+    all the lines of the model without material cards
     """
     in_material_card = False
     for line in lines:
@@ -130,59 +133,45 @@ def drop_material_cards(lines: Iterable[str]) -> Generator[str]:
             yield line
 
 
-def materials_spec_mapper(materials_map: dict[int, str]) -> Callable[[int], str]:
+def materials_spec_mapper(materials_map: MaterialsDict) -> Callable[[int], str]:
     """Create method to extract a material specification by its number.
 
-    Args:
-        materials_map:  map number -> spec
+    Parameters
+    ----------
+    materials_map
+        map number -> spec
 
-    Returns:
-        method to be used in map extracting material specification.
+    Returns
+    -------
+    method to be used in map extracting material specification.
     """
 
     def _func(used_number: int) -> str:
         if used_number > 0:
             text = materials_map.get(used_number)
             if not text:
-                logger.warning(
+                _LOG.warning(
                     "Material M%s is not found "
                     "in provided materials specifications. "
                     "A dummy specification is issued to the tagged model.",
                     used_number,
                 )
-                text = (
-                    f"m{used_number}  "
-                    "$ dummy: material was not provided to mapstp\n"
-                    "        1001.31c  1.0\n"
-                )
+                text = f"m{used_number}  $ dummy: material was not provided to mapstp\n        1001.31c  1.0\n"
             return text
         return ""
 
     return _func
 
 
-def get_used_materials(materials_map: dict[int, str], path_info: pd.DataFrame) -> str:
+def get_used_materials_sql(con: sq.Connection, materials_map: MaterialsDict) -> str:
     """Collect text of used materials specifications.
 
-    Args:
-        materials_map: map material number -> spec.
-        path_info: dataframe containing column with used material numbers.
-
-    Returns:
-        All the used materials specs to be used as part of MCNP model text.
-    """
-    values = path_info["material_number"].to_numpy()
-    used_numbers = sorted({int(m) for m in values if not np.isnan(m)})
-    used_materials_texts = list(map(materials_spec_mapper(materials_map), used_numbers))
-    return "".join(used_materials_texts)
-
-
-def get_used_materials_sql(con: sq.Connection, materials_map: dict[int, str]) -> str:
-    """Collect text of used materials specifications.
-
-    Args:
-        con: database connection
-        materials_map: map material number -> spec.
+    Parameters
+    ----------
+    con
+        database connection
+    materials_map
+        map material number -> spec.
     """
     used_numbers = [
         x[0]

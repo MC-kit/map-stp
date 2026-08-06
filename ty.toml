@@ -1,0 +1,9 @@
+[src]
+include = [ "src", "tests" ]
+exclude = ["**/data/"]
+
+[terminal]
+output-format = "concise"
+
+[rules]
+unresolved-import = "ignore"

@@ -7,7 +7,7 @@ import pytest
 from mapstp.extract_info import extract_path_info
 
 
-def test_load_materials_index(materials):
+def test_load_materials_index(materials: pd.DataFrame) -> None:
     actual = materials
     assert (actual.columns == ["number", "density"]).all()
     number = actual.loc["LH"]["number"]
@@ -39,7 +39,12 @@ def test_load_materials_index(materials):
         ),
     ],
 )
-def test_extract_info(materials, paths, expected, msg):
+def test_extract_info(
+    materials: pd.DataFrame,
+    paths: list[str],
+    expected: list[tuple[int, float, float, str]],
+    msg: str,
+) -> None:
     _expected = pd.DataFrame.from_records(
         expected,
         columns=["material_number", "density", "factor", "rwcl"],
@@ -60,7 +65,9 @@ def test_extract_info(materials, paths, expected, msg):
         ),
     ],
 )
-def test_extract_info_with_missed_material(materials, paths, exception, msg):
+def test_extract_info_with_missed_material(
+    materials: pd.DataFrame, paths: list[str], exception: type[Exception], msg: str
+) -> None:
     with pytest.raises(exception, match=msg):
         extract_path_info(paths, materials)
 
@@ -75,7 +82,9 @@ def test_extract_info_with_missed_material(materials, paths, exception, msg):
         ),
     ],
 )
-def test_extract_info_with_missed_density(materials, paths, exception, msg):
+def test_extract_info_with_missed_density(
+    materials: pd.DataFrame, paths: list[str], exception: type[Exception], msg: str
+) -> None:
     materials_without_density = materials.loc[["LH"]]
     materials_without_density.density = np.nan
     with pytest.raises(exception, match=msg):
@@ -88,11 +97,13 @@ def test_extract_info_with_missed_density(materials, paths, exception, msg):
         (
             ["aaa [m-LH]/bbb/ccc0"],
             ValueError,
-            "The density for mnemonic 'LH' in the material index is not to be negative.",
+            "The density for mnemonic 'LH' in the material index is to be positive.",
         ),
     ],
 )
-def test_extract_info_with_negative_density(materials, paths, exception, msg):
+def test_extract_info_with_negative_density(
+    materials: pd.DataFrame, paths: list[str], exception: type[Exception], msg: str
+) -> None:
     materials_with_negative_density = materials.loc[["LH"]]
     materials_with_negative_density.density = -1.0
     with pytest.raises(exception, match=msg):

@@ -1,7 +1,7 @@
 name: Release
 
 env:
-  PYTHON_VERSION: '3.13'
+  PYTHON_VERSION: '3.14'
 
 on:
   workflow_dispatch:
@@ -21,10 +21,10 @@ jobs:
 
     steps:
       - name: ✅ Check out the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: 📦 Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           enable-cache: true
@@ -37,5 +37,5 @@ jobs:
           uv build
 
       - name: 📤 Publish package on PyPI
-        if: ${{ !github.event.act }} # skip during local actions testing
+        if: ${{ !github.event.act }}  # skip during local actions testing with gh
         run: uv publish --username=__token__ --password=${{ secrets.PYPI_TOKEN }}

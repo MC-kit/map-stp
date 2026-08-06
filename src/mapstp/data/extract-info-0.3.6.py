@@ -2,23 +2,37 @@
 
 Run this in SpaceClaim session.
 
-Works fine with SpaceClaim API V17 - V20.
+Works fine with SpaceClaim API V16 - V20.
 The API works with IronPython 2.6 through 2.7
 """
-
-from __future__ import annotations
+# type: ignore
+# ruff: noqa: F821
+from __future__ import print_function
 
 import re
-import sqlite3 as sq
 import sys
+
+try:
+    import sqlite3 as sq
+    HAS_SQLITE=True
+except ImportError:
+    HAS_SQLITE=False
 
 from os.path import splitext
 
-__version__ = "0.3.4"
+__version__ = "0.3.7"
 
 #
 # Changes
 # -------
+# 0.3.7 - dvp
+#     SpaceClaim IronPython instance doesn't have sqlite by default.
+#     This dependency is made optional
+# 0.3.6 - dvp
+#     Fix regex call
+# 0.3.5 - dvp
+#     Use IDesignBody.PathToMaster property instead of method GetPathToMaster(). 
+#     This works on API 16 - 18 (including old SpaceClaim)
 #
 # 0.3.4 - dvp
 #     Fix name modification reporting
@@ -35,7 +49,7 @@ __version__ = "0.3.4"
 #     Fix bodies name output on automatic saving.
 # 0.2.5 - dvp
 #     Save STP after run.
-#     Index cells from 1 in SQL - to avoid fixing on processing
+#     Index cells from 1 in SQL - to avoid renaming on processing
 #     Extended cells table - to avoid creating copy with additional columns
 #     Add computing and saving bounding box corners for each cell
 # 0.2.4 - dvp
@@ -68,7 +82,7 @@ def _are_we_in_space_claim_session():
 _are_we_in_space_claim_session()
 
 
-def scan_bodies(model):
+def scan_bodies(model):  # noqa: ANN201
     """Collect the information on the bodies in a ``model``.
 
     Extract information on a body, path, volume, bounding box.
@@ -98,7 +112,7 @@ def scan_bodies(model):
         )  # m -> cm
         cell = len(bodies_table) + 1
         bodies_table.append((cell, vol, minx, miny, minz, maxx, maxy, maxz, path))
-        print("% 5.1f%%" % (100.0 * cell / size) + ": " + path)
+        print("% 5.1f%%" % (100.0 * cell / size) + ": " + path)  # noqa: FS001
 
     return bodies_table, names_modified
 
@@ -109,9 +123,10 @@ def _make_unique_path(body, paths_seen):
 
     while path in paths_seen:
         body_name = body.GetName()
-        match = DIGITS_AT_END.match(body_name)
-        if match:
-            i = int(match["digits"]) + 1
+        match = DIGITS_AT_END.search(body_name)
+        if match is not None:
+            digits = match.group(1)
+            i = int(digits) + 1
             body_name = body_name[: match.span()[0]] + str(i)
         else:
             body_name = body_name + "1"
@@ -126,7 +141,7 @@ def _make_unique_path(body, paths_seen):
 
 def _get_path(body):
     path = [body.Root.GetName()]
-    path.extend(x.GetName() for x in body.GetPathToMaster())
+    path.extend(x.GetName() for x in body.PathToMaster)
     path.append(body.GetName())
     return "/".join(path)
 
@@ -139,12 +154,10 @@ def _save_to_csv(document_path, sequence):
     output = _set_suffix(document_path, "-component-volumes.csv")
     with open(output, "w") as f:
         f.write(
-            b"offset,name,volume,xmin,ymin,zmin,xmax,ymax,zmax,path\n"
+            b"offset,volume,xmin,ymin,zmin,xmax,ymax,zmax,path\n"
         )  # cannot use print on API V17 Beta
         for i, vol, minx, miny, minz, maxx, maxy, maxz, stp in sequence:
-            items = [str(t) for t in (i, vol, minx, miny, minz, maxx, maxy, maxz)] + [
-                stp
-            ]
+            items = [str(t) for t in (i, vol, minx, miny, minz, maxx, maxy, maxz)] + [stp]
             row = ",".join(items) + "\n"
             f.write(row.encode("utf8"))
     print("Cells and information on them are stored in CSV: " + output)
@@ -152,6 +165,9 @@ def _save_to_csv(document_path, sequence):
 
 # noinspection SqlDialectInspection
 def _save_to_db(document_path, sequence):
+    if not HAS_SQLITE:
+        print("WARNING: sqlite is not available, skipping DB creation")
+        return
     output = _set_suffix(document_path, ".sqlite")
     con = sq.connect(output)
     cur = con.cursor()
@@ -219,7 +235,7 @@ def _save_to_db(document_path, sequence):
     print("Cells and information on them are stored in the database: " + output)
 
 
-def main():
+def main():  # noqa: ANN201
     """Extract cell volumes and other information.
 
     Scans all the bodies in a SpaceClaim active model,
@@ -234,7 +250,7 @@ def main():
     then saves the model with warning.
     """
     print("extract-info" + " v" + __version__)
-    document = Window.ActiveWindow.Document  # noqa: F821
+    document = Window.ActiveWindow.Document  # type: ignore # noqa: F821
     document_path = document.Path
 
     if not document_path:
@@ -252,9 +268,13 @@ def main():
 
     if modified:
         print("The SpaceClaim model was modified, saving it.")
-        DocumentSave.Execute(document_path)  # noqa: F821
+        DocumentSave.Execute(document_path)  # type: ignore
+        path = GetRootPart().Document.Path[:-5] + "stp" # type: ignore
+        options = ExportOptions.Create() # type: ignore
+        DocumentSave.Execute(path, options) # type: ignore
+        print("STP file is saved to", path)
 
-    print("Save to STP manually! Automatic saving doesn't work yet.")
+
     print("Success!")
 
 

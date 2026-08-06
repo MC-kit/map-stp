@@ -7,12 +7,26 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   mapstp.cli
    mapstp.utils
 
 Submodules
 ----------
 
+mapstp.__main__ module
+----------------------
+
+.. automodule:: mapstp.__main__
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mapstp.mapstp_logging module
+----------------------------
+
+.. automodule:: mapstp.mapstp_logging
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 mapstp.exceptions module
 ------------------------
@@ -54,26 +68,10 @@ mapstp.merge module
    :undoc-members:
    :show-inheritance:
 
-mapstp.stp\_parser module
--------------------------
+mapstp.save_meta_info module
+----------------------------
 
-.. automodule:: mapstp.stp_parser
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-mapstp.tree module
-------------------
-
-.. automodule:: mapstp.tree
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-mapstp.workflow module
-----------------------
-
-.. automodule:: mapstp.workflow
+.. automodule:: mapstp.save_meta_info
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 from mapstp.materials import drop_material_cards, load_materials_map
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
-def test_load_materials_map(data):
+
+def test_load_materials_map(data: Path) -> None:
     materials = data / "materials-1.txt"
     materials_map = load_materials_map(materials)
     assert len(materials_map) == 2
@@ -19,7 +24,7 @@ def test_load_materials_map(data):
     assert 400 in materials_map
 
 
-def test_filter_material_cards(data):
+def test_filter_material_cards(data: Path) -> None:
     materials = data / "materials-1.txt"
     filtered_lines = list(drop_material_cards(materials.read_text(encoding="cp1251").split("\n")))
     assert len(filtered_lines) == 2

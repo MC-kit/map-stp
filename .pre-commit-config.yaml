@@ -26,56 +26,61 @@ repos:
       - id: check-added-large-files
         exclude: uv.lock
       - id: check-ast
-        exclude: notebooks
+        # exclude: notebooks
       - id: check-case-conflict
       - id: check-executables-have-shebangs
-      - id: check-json
-        exclude: notebooks
       - id: check-merge-conflict
         exclude: \.rst$
       - id: check-shebang-scripts-are-executable
-        exclude: notebooks  # jupytext creates python scripts with shebangs but without permissions
-      - id: check-symlinks
+        # exclude: notebooks  # jupytext creates python scripts with shebangs but without permissions
+      # - id: check-symlinks
       - id: check-toml
       - id: check-yaml
-        exclude: recipe/meta.yaml
       - id: debug-statements
-        exclude: notebooks
       - id: destroyed-symlinks
       - id: detect-private-key
       - id: end-of-file-fixer
         exclude: data|.ipynb$|^\.
       - id: name-tests-test
-        exclude: common.py|help*.*py
+        exclude: _.*\.py
         args:
           - --pytest-test-first
       - id: mixed-line-ending
-      - id: pretty-format-json
-        args: [--autofix, --no-ensure-ascii, --no-sort-keys]
-        exclude: data|\.ipynb$
-      - id: requirements-txt-fixer
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.37.4
+    hooks:
+      - id: check-dependabot
+      - id: check-github-workflows
+        args: ["--verbose"]
+      - id: check-readthedocs
 
+  - repo: https://github.com/tox-dev/pyproject-fmt
+    rev: "v2.27.0"
+    hooks:
+      - id: pyproject-fmt
 
   - repo: https://github.com/fredrikaverpil/creosote
-    rev: v4.1.0
+    rev: v5.2.0
     hooks:
       - id: creosote
 
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.8.17
+    rev: 0.12.1
     hooks:
       - id: uv-lock 
 
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.13.0
+  - repo: local
     hooks:
-      # linter
       - id: ruff-check
-        exclude: ^notebooks|^extern
-      # formatter 
+        name: ruff check
+        entry: uv run ruff check --fix --exit-non-zero-on-fix --force-exclude
+        language: system 
+        types_or: [python, pyi]
       - id: ruff-format
-        exclude: ^notebooks|^extern|ipynb$
-
+        name: ruff format
+        entry: uv run ruff format --exit-non-zero-on-format --force-exclude
+        language: system
+        types_or: [python, pyi]
 
   # Check for common shell mistakes
   - repo: https://github.com/shellcheck-py/shellcheck-py
@@ -84,3 +89,8 @@ repos:
       - id: shellcheck
         args: [ --external-sources ]
         stages: [ manual ]
+
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+      - id: check-useless-excludes

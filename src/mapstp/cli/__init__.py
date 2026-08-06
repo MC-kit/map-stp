@@ -1,9 +1,7 @@
-"""Command line interface code."""
+"""CLI commands implementation."""
 
 from __future__ import annotations
 
-from .mapstp_logging import init_logger
+from .summary2sqlite import summary2sqlite
 
-__all__ = [
-    "init_logger",
-]
+__all__ = ["summary2sqlite"]
