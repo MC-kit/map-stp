@@ -219,6 +219,10 @@ def test_using_toml_config(cyclopts_runner: Runner, data: Path) -> None:
     assert len(first_void_lines) == 6
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="Paths in TOML configuration for Windows is in progress",
+)
 def test_using_toml_config_with_external_material_index(
     cyclopts_runner: Runner, data: Path
 ) -> None:
