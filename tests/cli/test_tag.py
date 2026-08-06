@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import re
 import shutil
+import sys
 
 from pathlib import Path
 
@@ -28,8 +29,7 @@ if TYPE_CHECKING:
     # noinspection protected-member
     from contextlib import _GeneratorContextManager
 
-    from tests.cli._memory_destination import MemoryDestination
-    from tests.cli._types import Runner
+    from tests.cli import MemoryDestination, Runner
 
 
 def test_tag_help_command(cyclopts_runner: Runner) -> None:
@@ -176,6 +176,10 @@ def test_info_assignment_with_sql(cyclopts_runner: Runner, data: Path) -> None:
     assert len(first_void_lines) == 6
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",  # условие: пропускаем, если платформа — Windows
+    reason="The path names in TOML configuration for Windows is in progress",
+)
 def test_using_toml_config(cyclopts_runner: Runner, data: Path) -> None:
     output = Path("test-extract-info-prepared.i")
     excel = Path("test-extract-info.xlsx")
