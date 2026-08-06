@@ -29,12 +29,12 @@ def scsv(csv: Path) -> str:
     return str(csv)
 
 
-def test_help_command(cyclopts_runner: Callable) -> None:
+def test_help_command(cyclopts_runner: Callable[..., str]) -> None:
     out = cyclopts_runner(mapstp, ["csv2sqlite", "--help"])
     assert "Convert CSV" in out
 
 
-def test_happy_path(cyclopts_runner: Callable, scsv: str) -> None:
+def test_happy_path(cyclopts_runner: Callable[..., str], scsv: str) -> None:
     sql = Path("test-happy-path.sqlite")
     cyclopts_runner(mapstp, ["csv2sqlite", "--sql", str(sql), scsv])
     assert sql.exists(), f"Should create {sql}"
@@ -62,7 +62,8 @@ def test_happy_path(cyclopts_runner: Callable, scsv: str) -> None:
 
 
 @pytest.mark.skip(reason="Run only to create some new test CSV file")
-def test_prepare_test_csv(data: Path, cd_tmpdir: Path) -> None:  # noqa: ARG001
+def test_prepare_test_csv(data: Path, cd_tmpdir: Path) -> None:
+    assert cd_tmpdir.exists()  # to avoid "unused parameterэ" warning
     original_sql = data / "test1.sqlite"
     with closing(sq.connect(original_sql)) as con:
         df = pd.read_sql("select * from cells", con)

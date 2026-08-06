@@ -97,7 +97,7 @@ def test_extract_info_with_missed_density(
         (
             ["aaa [m-LH]/bbb/ccc0"],
             ValueError,
-            "The density for mnemonic 'LH' in the material index is not to be negative.",
+            "The density for mnemonic 'LH' in the material index is to be positive.",
         ),
     ],
 )

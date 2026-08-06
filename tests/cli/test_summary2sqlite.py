@@ -38,12 +38,12 @@ def test_load_records(summary: Path) -> None:
     assert path.startswith("/trt-5.0.1/")
 
 
-def test_help_command(cyclopts_runner: Callable) -> None:
+def test_help_command(cyclopts_runner: Callable[..., str]) -> None:
     out = cyclopts_runner(mapstp, ["summary2sqlite", "--help"])
     assert "Convert GeoUNED summary" in out
 
 
-def test_happy_path(cyclopts_runner: Callable, scsv: str) -> None:
+def test_happy_path(cyclopts_runner: Callable[..., str], scsv: str) -> None:
     sql = Path("test-happy-path.sqlite")
     cyclopts_runner(mapstp, ["summary2sqlite", "--sql", str(sql), scsv])
     assert sql.exists(), f"Should create {sql}"

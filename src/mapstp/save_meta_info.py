@@ -55,7 +55,7 @@ def save_meta_info_from_paths(con: sq.Connection, materials_index: Path | None) 
                 if meta_info.mnemonic:
                     density, material = define_material_number_and_density(
                         _materials_index,
-                        meta_info,
+                        meta_info.mnemonic,
                         path,
                     )
                     yield material, density, meta_info.factor, meta_info.rwcl, cell

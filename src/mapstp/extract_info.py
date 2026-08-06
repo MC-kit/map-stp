@@ -79,7 +79,7 @@ def _records(
         if meta_info.mnemonic:
             density, material_number = define_material_number_and_density(
                 material_index,
-                meta_info,
+                meta_info.mnemonic,
                 path,
             )
         else:
@@ -89,7 +89,7 @@ def _records(
 
 def define_material_number_and_density(
     material_index: pd.DataFrame,
-    meta_info: MetaInfoCollector,
+    mnemonic: str,
     path: str,
 ) -> tuple[float | None, int | None]:
     """Define material number and density from a material index for given meta info.
@@ -98,8 +98,8 @@ def define_material_number_and_density(
     ----------
     material_index
         table mapping material mnemonics to material number and density
-    meta_info
-        ... collected from the `path`
+    mnemonic
+        material label from the STP-path
     path
         ... for diagnostics
 
@@ -108,25 +108,29 @@ def define_material_number_and_density(
     density and material
     """
     try:
-        material_item = material_index.loc[meta_info.mnemonic]["number"]
-        if material_item is None:
-            material_number = 0
-        else:
-            material_number: int = material_item.item()
+        material_numbers = material_index["number"]
+        material_item = None if material_numbers is None else material_numbers.loc[mnemonic]
+        material_number = 0 if material_item is None else material_item.item()
     except KeyError:
         msg = (
-            f"The mnemonic {meta_info.mnemonic or ''!r} "
+            f"The mnemonic {mnemonic or ''!r} "
             "is not specified in the material index. "
             f"See the STP path: {path}"
         )
         raise KeyError(msg) from None
-    density = material_index.loc[meta_info.mnemonic]["density"]
-    if np.isnan(density):
-        msg = f"The density for mnemonic {meta_info.mnemonic or ''!r} is not specified in the material index."
-        raise ValueError(msg)
-    if density < 0.0:
-        msg = f"The density for mnemonic {meta_info.mnemonic or ''!r} in the material index is not to be negative."
-        raise ValueError(msg)
+    if material_number > 0:
+        densities = material_index["density"]
+        if densities is None:
+            raise ValueError
+        density = densities.loc[mnemonic]
+        if np.isnan(density):
+            msg = f"The density for mnemonic {mnemonic or ''!r} is not specified in the material index."
+            raise ValueError(msg)
+        if density < 0.0:
+            msg = f"The density for mnemonic {mnemonic or ''!r} in the material index is to be positive."
+            raise ValueError(msg)
+    else:
+        density = 0.0
     return density, material_number
 
 

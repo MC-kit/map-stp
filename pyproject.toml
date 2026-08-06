@@ -76,6 +76,10 @@ style = [
   { include-group = "pre_commit" },
   { include-group = "pyright" },
   { include-group = "ruff" },
+  { include-group = "ty" },
+]
+ty = [
+  "ty>=0.0.68",
 ]
 typeguard = [ "typeguard>=4.5" ]
 
@@ -93,31 +97,15 @@ cache_dir = ".cache/mypy"
 warn_unused_configs = true
 [[tool.mypy.overrides]]
 module = [
-  "click",
-  "click.testing",
   "cyclopts",
-  "dask.*",
-  "duckdb",
   "eliot",
   "eliot.*",
-  "IPython.core.magic",
-  "IPython.core.magic_arguments",
-  "loguru",
-  "mckit_nuclides.*",
-  "msgspec",
-  "multipledispatch",
-  "nox",
   "numpy",
   "numpy.testing",
   "pandas",
-  "polars",
-  "pytest",
   "rich.*",
-  "scipy.constants",
-  "scipy.sparse",
   "tomli",
   "tomllib",
-  "xdoctest",
 ]
 ignore_missing_imports = true
 
@@ -126,14 +114,12 @@ module = [ "tomllib" ]
 allow_redefinition = true
 disable_error_code = "no-redef"
 
-[[tool.mypy.overrides]]
-module = [ "tests.cli.*" ]
-disable_error_code = "type-arg"
-
-[[tool.mypy.overrides]]
-module = [ "conftest" ]
-disable_error_code = "misc"
-
+# [[tool.mypy.overrides]]
+# module = [ "tests.cli.*" ]
+# disable_error_code = "type-arg"
+# [[tool.mypy.overrides]]
+# module = [ "conftest" ]
+# disable_error_code = "misc"
 [tool.coverage]
 [tool.coverage.paths]
 source = [ "src" ]

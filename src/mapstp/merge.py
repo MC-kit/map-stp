@@ -7,7 +7,7 @@ if specified in STP paths.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TextIO
+from typing import TYPE_CHECKING, TextIO, cast
 
 import re
 
@@ -64,15 +64,33 @@ def extract_number_and_density(cell: int, path_info: pd.DataFrame) -> tuple[int,
     number and density or None, if not available
     """
     row = path_info.index.get_loc(cell)
-    col = path_info.columns.get_loc("material_number")
-    material_number = path_info.iat[row, col].item()  # noqa: PD009
 
-    if not material_number:
-        return None
+    if not isinstance(row, int):
+        _msg = "The 'path_info' index on 'cell' is not unique."
+        raise TypeError(_msg)
 
     def _validate(*, res: bool, msg: str) -> None:
         if not res:
             raise PathInfoError(msg, row, path_info)
+
+    col = path_info.columns.get_loc("material_number")
+    if not isinstance(col, int):
+        _msg = "The 'material_number' column is duplicated?"
+        raise PathInfoError(_msg, row, path_info)
+
+    material_number_item = path_info.iat[row, col]  # noqa: PD009
+
+    if isinstance(material_number_item, np.integer):
+        material_number = material_number_item.item()
+    else:
+        material_number = cast("int", material_number_item)
+
+    if not isinstance(material_number, int):
+        _msg = "The values 'material_number' column are to be integer or None."
+        raise PathInfoError(_msg, row, path_info)
+
+    if material_number == 0:
+        return None
 
     _validate(
         res=material_number > 0,
@@ -193,7 +211,7 @@ class _Merger:  # pylint: disable=[too-many-instance-attributes]
             if self.vol is None:
                 msg = f"Volume is to be defined in GeoUNED MCNP format, path: {rec.path}"
                 logger.warning(msg)
-            if not np.isclose(self.vol, rec.volume, rtol=1e-3):
+            elif not np.isclose(self.vol, rec.volume, rtol=1e-3):
                 # noinspection string-conversion-without-dunder-method
                 msg = f"volumes differ cell {self.current_cell}: {self.vol} != {rec.volume}: {rec.path}"
                 logger.warning(msg)
