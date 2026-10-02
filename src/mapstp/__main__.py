@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated, Final
 
+import os
 import sqlite3 as sq
 import sys
 
@@ -27,7 +28,7 @@ from mapstp.save_meta_info import load_path_info, save_meta_info_from_paths
 from mapstp.save_table import create_excel
 from mapstp.utils import can_override
 
-DEFAULT_CONFIG_PATH: Final[Path] = Path("mckit.toml")
+DEFAULT_CONFIG_PATH: Final[Path] = Path(os.getenv("MCKIT_CONFIG", "mckit.toml"))
 DEFAULT_ELIOT_LOG_PATH: Final[Path] = PREFIX.with_suffix(".log")
 
 _TAG_USAGE: Final[str] = f"""
@@ -51,10 +52,10 @@ app = App(
     config=[
         cyclopts.config.Toml(
             DEFAULT_CONFIG_PATH,
-            root_keys=["tool", "mapstp"],
+            root_keys=["tool", NAME],
             search_parents=True,
         ),
-        cyclopts.config.Env(prefix=NAME),
+        cyclopts.config.Env(prefix=NAME.upper() + "_"),
     ],
     console=console,
     help=__summary__,
