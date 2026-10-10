@@ -69,7 +69,7 @@ analyze = [
   "polars>=1.43,<2",
   "pyarrow>=25,<26",
   "rich>=15",
-  "sqlglot>=28.10.1,<29",
+  "sqlglot>=28.10.1,<31",
 ]
 mypy = [ "mypy>=1.2", "pep8-naming>=0.12.1", "types-setuptools>=80.9.0.20250529" ]
 pre_commit = [ "pre-commit>=4.3" ]
