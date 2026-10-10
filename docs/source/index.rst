@@ -39,15 +39,15 @@ The ``mapstp`` package includes a command-line interface
 Installation
 ============
 
-**From PyPI (recommended):**
+**From PyPI (Recommended):**
 
 .. code-block:: bash
+   
+   pip install mckit-nuclides
+   # or 
+   uv pip install mckit-nuclides
 
-   pip install mapstp
-   # or
-   uv pip install mapstp
-
-**With package manager (as dependency):**
+**With package manager (as a dependency):**
 
 .. code-block:: bash
 
@@ -62,7 +62,7 @@ Installation
 
    # ...
 
-**From source:**
+**From Source:**
 
 .. code-block:: bash
 

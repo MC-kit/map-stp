@@ -1,5 +1,4 @@
 enable-fallback-search-path = true
-infer-with-first-use = false
 project-includes = ["src"]
 project-excludes = [
     "**/data",
@@ -10,6 +9,7 @@ project-excludes = [
 python-platform = "linux"
 python-version = "3.13.0"
 search-path = ["src", "tests"]
+infer-with-first-use = false
 
 [errors]
 untyped-import = "ignore"

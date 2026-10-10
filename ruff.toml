@@ -1,4 +1,4 @@
-target-version = "py312"
+target-version = "py314"
 line-length = 100
 src = [ "src", "tests" ]
 exclude = [
@@ -98,7 +98,10 @@ section-order = [
   "local-folder",
   "testing",
 ]
-sections = { typing = [ "typing" ], testing = [ "tests" ] }
+
+[lint.isort.sections]
+"typing" = [ "typing", "typing_extension" ]
+"testing" = [ "tests" ]
 
 [lint.pydocstyle]
 convention = "numpy"

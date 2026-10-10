@@ -189,7 +189,6 @@ typeguard *args:
 @mypy:
     uv run --no-dev --group mypy mypy src tests docs/source/conf.py
 
-
 [group('style')]
 @pylint:
     uv run --no-dev --group lint pylint --recursive=y --output-format colorized src tests
