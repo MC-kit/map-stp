@@ -919,7 +919,7 @@ typeguard = [
 requires-dist = [
     { name = "cyclopts", specifier = ">=3.24" },
     { name = "eliot", specifier = ">=1.17.5" },
-    { name = "numpy", specifier = ">=2.4" },
+    { name = "numpy", specifier = ">=2.5" },
     { name = "openpyxl", specifier = ">=3" },
     { name = "packaging", specifier = ">=25" },
     { name = "pandas", specifier = ">=2" },
