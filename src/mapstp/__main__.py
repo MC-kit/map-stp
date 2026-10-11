@@ -77,6 +77,7 @@ class Common:
     "Encoding of the MCNP file, if generated with GEOUNED - `utf8`, if with SuperMC - `cp1251`"
 
 
+# pylint: disable=too-many-locals
 # noinspection incorrect-docstring
 @app.command
 def tag(  # noqa: PLR0913
@@ -162,8 +163,7 @@ def tag(  # noqa: PLR0913
             used_materials_text: str | None = get_used_materials_sql(con, materials_map)
         else:
             used_materials_text = None
-        _console = app.console
-        _console.print(f"Tagging model {mcnp}", style="dim")
+        app.console.print(f"Tagging model {mcnp}", style="dim")
         if output is None:
             output = Path(mcnp.stem + "-tagged").with_suffix(mcnp.suffix)
         _ = can_override(output, override=common.override)

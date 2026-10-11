@@ -13,6 +13,8 @@ import pytest
 
 from mapstp.__main__ import app as mapstp
 
+from ._check_cells_table import check_cells_table
+
 if TYPE_CHECKING:
     from collections.abc import Callable
 
@@ -37,28 +39,7 @@ def test_help_command(cyclopts_runner: Callable[..., str]) -> None:
 def test_happy_path(cyclopts_runner: Callable[..., str], scsv: str) -> None:
     sql = Path("test-happy-path.sqlite")
     cyclopts_runner(mapstp, ["csv2sqlite", "--sql", str(sql), scsv])
-    assert sql.exists(), f"Should create {sql}"
-    with closing(sq.connect(sql)) as con:
-        df = pd.read_sql("select * from cells", con)
-        expected_columns = {
-            "cell",
-            "volume",
-            "xmin",
-            "ymin",
-            "zmin",
-            "xmax",
-            "ymax",
-            "zmax",
-            "path",
-            "material",
-            "density",
-            "correction",
-            "rwcl",
-        }
-        actual_columns = set(df.columns)
-        assert actual_columns == expected_columns
-        df = pd.read_sql("select * from cells", con)
-        assert df.shape == (3, 13)
+    check_cells_table(sql)
 
 
 @pytest.mark.skip(reason="Run only to create some new test CSV file")

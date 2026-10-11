@@ -77,7 +77,7 @@ def test_commenting_with_sql(cyclopts_runner: Runner, data: Path) -> None:
     assert output.exists(), f"Should create output file {output}"
     sections = read_mcnp_sections(output)
     assert sections.remainder is None
-    with output.open() as stream:
+    with output.open(encoding="utf8") as stream:
         lines = list(extract_stp_comment_lines(stream.readlines()))
     assert len(lines) == 3
 

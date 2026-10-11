@@ -27,7 +27,7 @@ def eliot_file_trace() -> Callable[[Path | str], _GeneratorContextManager[None]]
     def _wrap(path: Path | str) -> Generator[None]:
         if isinstance(path, str):
             path = Path(path)
-        with path.open("w") as fid:
+        with path.open("w", encoding="utf8") as fid:
             pth = FileDestination(fid)
             add_destinations(pth)
             try:
@@ -50,9 +50,7 @@ def eliot_mem_trace() -> Generator[MemoryDestination]:
 
 
 @pytest.fixture
-def cyclopts_runner(
-    cd_tmpdir: Path,  # noqa: ARG001
-) -> Callable[..., str]:
+def cyclopts_runner(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Callable[..., str]:
     """Run cyclopts application in temporary directory and isolated console.
 
     Parameters
@@ -64,6 +62,7 @@ def cyclopts_runner(
     -------
         Callable to run the application returning the command output.
     """
+    monkeypatch.chdir(tmp_path)
 
     def _wrapper(
         app: App,

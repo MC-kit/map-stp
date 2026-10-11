@@ -9,6 +9,8 @@ from mapstp.__main__ import app as mapstp
 from mapstp.__main__ import meta
 
 if TYPE_CHECKING:
+    import pytest
+
     from tests.cli._types import Runner
 
 
@@ -33,7 +35,8 @@ def test_meta_with_command() -> None:
     meta("tag", "--help")
 
 
-def test_meta_with_args(data: Path, cd_tmpdir: Path) -> None:  # noqa: ARG001
+def test_meta_with_args(data: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
     mcnp = data / "test1.i"
     meta("tag", "--sql", str(mcnp.with_suffix(".sqlite")), str(mcnp))
     assert Path("test1-tagged.i").exists(), "Should create test1-tagged.i"
