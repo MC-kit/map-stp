@@ -64,7 +64,7 @@ docs = [
   "sphinx-togglebutton>=0.4",
 ]
 analyze = [
-  "duckdb>=1.5.5,<2",
+  "duckdb>=1.5.5,<3",
   "marimo>=0.23.14",
   "polars>=2,<3",
   "pyarrow>=26,<27",
